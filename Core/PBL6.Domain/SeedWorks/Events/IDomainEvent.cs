@@ -1,6 +1,8 @@
-﻿namespace PBL6.Domain.SeedWorks.Events;
+﻿using MediatR;
 
-public interface IDomainEvent
+namespace PBL6.Domain.SeedWorks.Events;
+
+public interface IDomainEvent : INotification
 {
     
 }
