@@ -1,20 +1,37 @@
+using PBL6.API.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddServices()
+                .AddApplicationCors()
+                .AddDatabase(builder.Configuration, builder.Environment)
+                .AddIdentity(builder.Configuration, builder.Environment)
+                .AddRepositories()
+                .AddApplicationAuthentication(builder.Configuration)
+                .AddApplicationAuthorization()
+                .AddSwagger()
+                .AddMapper()
+                .AddRedisCache(builder.Configuration);
+
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseExceptionHandling();
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
 
+app.UseCors("pbl6");
+
+app.UseRouting();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
