@@ -19,7 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\PBL6.Application\PBL6.Application.csproj" />
-      <ProjectReference Include="..\..\PBL6.Infrastructure.EfCore\PBL6.Infrastructure.EfCore.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\PBL6.Infrastructure.EfCore\PBL6.Infrastructure.EfCore.csproj" />
     </ItemGroup>
 
 </Project>
