@@ -29,7 +29,7 @@ public static partial class DependencyInjectionExtensions
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Tiny CRM",
+                Title = "PBL6",
                 Version = "v1"
             });
 

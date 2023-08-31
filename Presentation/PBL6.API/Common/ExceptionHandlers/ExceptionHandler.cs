@@ -28,7 +28,7 @@ public class ExceptionHandler : IExceptionHandler
 
     private void LogException(HttpContext context, Exception exception)
     {
-        _logger.LogError(exception, "Exception occurred on request {path}", context.Request.Path);
+        _logger.LogError(exception, "Exception occurred on request [{method}] {path}", context.Request.Method, context.Request.Path);
     }
 
     private ErrorResponse GetErrorResponse(Exception exception)
@@ -56,6 +56,7 @@ public class ExceptionHandler : IExceptionHandler
             ResourceAccessDeniedException => StatusCodes.Status403Forbidden,
             ResourceAlreadyExistException => StatusCodes.Status409Conflict,
             ResourceInvalidOperationException => StatusCodes.Status400BadRequest,
+            ResourceInvalidDataException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError
         };
     }

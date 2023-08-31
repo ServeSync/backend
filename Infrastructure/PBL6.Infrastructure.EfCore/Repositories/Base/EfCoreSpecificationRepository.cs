@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using PBL6.Domain.SeedWorks.Models;
 using PBL6.Domain.SeedWorks.Repositories;
 using PBL6.Domain.SeedWorks.Specifications.Interfaces;
 using PBL6.Infrastructure.EfCore.Common;
 
-namespace PBL6.Infrastructure.EfCore.Repositories;
+namespace PBL6.Infrastructure.EfCore.Repositories.Base;
 
 public class EfCoreSpecificationRepository<TDbContext, TAggregateRoot, TKey> : ISpecificationRepository<TAggregateRoot, TKey>
     where TDbContext : DbContext
@@ -13,41 +14,71 @@ public class EfCoreSpecificationRepository<TDbContext, TAggregateRoot, TKey> : I
 {
     protected readonly TDbContext DbContext;
     protected readonly DbSet<TAggregateRoot> DbSet;
+
+    protected readonly List<Expression<Func<TAggregateRoot, object>>> DefaultIncludeExpressions;
+    protected readonly List<string> DefaultIncludeStrings;
     
     public EfCoreSpecificationRepository(TDbContext dbContext)
     {
         DbContext = dbContext;
         DbSet = dbContext.Set<TAggregateRoot>();
+
+        DefaultIncludeExpressions = new();
+        DefaultIncludeStrings = new();
     }
+    
     public async Task<IList<TAggregateRoot>> GetPagedListAsync(int skip, int take, ISpecification<TAggregateRoot, TKey> specification, string? sorting = null)
     {
-        return await SpecificationEvaluator<TAggregateRoot, TKey>.GetQuery(DbSet.AsQueryable(), specification)
+        return await GetQueryable(specification)
             .Skip(skip).Take(take).ToListAsync();
     }
 
     public async Task<IList<TAggregateRoot>> GetPagedListAsync(IPagingAndSortingSpecification<TAggregateRoot, TKey> specification)
     {
-        return await SpecificationEvaluator<TAggregateRoot, TKey>.GetQuery(DbSet.AsQueryable(), specification).ToListAsync();
+        return await GetQueryable(specification).ToListAsync();
     }
 
     public Task<TAggregateRoot?> FindAsync(ISpecification<TAggregateRoot, TKey> specification)
     {
-        return SpecificationEvaluator<TAggregateRoot, TKey>.GetQuery(DbSet.AsQueryable(), specification).FirstOrDefaultAsync();
+        return GetQueryable(specification).FirstOrDefaultAsync();
     }
 
     public Task<int> GetCountAsync(ISpecification<TAggregateRoot, TKey> specification)
     {
-        return DbSet.CountAsync(specification.ToExpression());
+        return GetQueryable(specification).CountAsync(specification.ToExpression());
     }
 
     public Task<bool> AnyAsync(ISpecification<TAggregateRoot, TKey> specification)
     {
-        return DbSet.AnyAsync(specification.ToExpression());
+        return GetQueryable(specification).AnyAsync(specification.ToExpression());
     }
 
     public Task<bool> AllAsync(ISpecification<TAggregateRoot, TKey> specification)
     {
-        return DbSet.AllAsync(specification.ToExpression());
+        return GetQueryable(specification).AllAsync(specification.ToExpression());
+    }
+    
+    protected void AddInclude(Expression<Func<TAggregateRoot, object>> includeExpression)
+    {
+        ArgumentNullException.ThrowIfNull(includeExpression);
+        
+        DefaultIncludeExpressions.Add(includeExpression);
+    }
+    
+    protected void AddInclude(string includeProp)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(includeProp);
+        
+        DefaultIncludeStrings.Add(includeProp);
+    }
+    
+    private IQueryable<TAggregateRoot> GetQueryable(ISpecification<TAggregateRoot, TKey> specification)
+    {
+        var specificationQueryable = SpecificationEvaluator<TAggregateRoot, TKey>.GetQuery(DbSet.AsQueryable(), specification);
+        return new AppQueryableBuilder<TAggregateRoot, TKey>(specificationQueryable)
+                    .IncludeProp(DefaultIncludeStrings)
+                    .IncludeProp(DefaultIncludeExpressions)
+                    .Build();
     }
 }
 

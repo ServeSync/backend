@@ -1,4 +1,5 @@
 ﻿using PBL6.Domain.SeedWorks.Models;
+using PBL6.Domain.SeedWorks.Models.Interfaces;
 using PBL6.Domain.SeedWorks.Specifications.Interfaces;
 
 namespace PBL6.Domain.SeedWorks.Specifications;

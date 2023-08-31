@@ -2,16 +2,18 @@ using PBL6.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddServices()
-                .AddApplicationCors()
-                .AddDatabase(builder.Configuration, builder.Environment)
-                .AddIdentity(builder.Configuration, builder.Environment)
-                .AddRepositories()
-                .AddApplicationAuthentication(builder.Configuration)
-                .AddApplicationAuthorization()
-                .AddSwagger()
-                .AddMapper()
-                .AddRedisCache(builder.Configuration);
+builder.Services
+    .AddHttpContextAccessor()
+    .AddServices()
+    .AddApplicationCors()
+    .AddDatabase(builder.Configuration, builder.Environment)
+    .AddIdentity(builder.Configuration, builder.Environment)
+    .AddRepositories()
+    .AddApplicationAuthentication(builder.Configuration)
+    .AddApplicationAuthorization()
+    .AddSwagger()
+    .AddMapper()
+    .AddRedisCache(builder.Configuration);
 
 builder.Services.AddControllers();
 

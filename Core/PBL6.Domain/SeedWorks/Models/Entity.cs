@@ -1,4 +1,5 @@
 ﻿using PBL6.Domain.SeedWorks.Events;
+using PBL6.Domain.SeedWorks.Models.Interfaces;
 
 namespace PBL6.Domain.SeedWorks.Models;
 

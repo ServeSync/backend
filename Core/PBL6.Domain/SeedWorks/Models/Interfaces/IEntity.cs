@@ -1,6 +1,6 @@
 ﻿using PBL6.Domain.SeedWorks.Events;
 
-namespace PBL6.Domain.SeedWorks.Models;
+namespace PBL6.Domain.SeedWorks.Models.Interfaces;
 
 public interface IEntity<out TKey> where TKey : IEquatable<TKey>
 {

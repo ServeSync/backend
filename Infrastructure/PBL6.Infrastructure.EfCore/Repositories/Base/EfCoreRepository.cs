@@ -2,7 +2,7 @@
 using PBL6.Domain.SeedWorks.Models;
 using PBL6.Domain.SeedWorks.Repositories;
 
-namespace PBL6.Infrastructure.EfCore.Repositories;
+namespace PBL6.Infrastructure.EfCore.Repositories.Base;
 
 public class EfCoreRepository<TDbContext, TAggregateRoot, TKey> : EfCoreReadOnlyRepository<TDbContext, TAggregateRoot, TKey>, IRepository<TAggregateRoot, TKey>
     where TDbContext : DbContext
@@ -15,10 +15,9 @@ public class EfCoreRepository<TDbContext, TAggregateRoot, TKey> : EfCoreReadOnly
 
     public void Delete(TAggregateRoot entity)
     {
-        // if (typeof(ISoftDeleteEntity<TKey>).IsAssignableFrom(typeof(TAggregateRoot)))
+        // if (typeof(IHasSoftDeleteEntity<TKey>).IsAssignableFrom(typeof(TAggregateRoot)))
         // {
-        //     ((ISoftDeleteEntity<TKey>)entity).IsDeleted = true;
-        //     DbSet.Update(entity);
+        //     ((IHasSoftDeleteEntity<TKey>)entity).Delete();
         // }
         // else
         // {

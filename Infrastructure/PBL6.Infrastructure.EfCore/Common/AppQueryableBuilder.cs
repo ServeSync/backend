@@ -16,6 +16,11 @@ public class AppQueryableBuilder<TAggregateRoot, TKey>
         _queryable = tracking ? dbSet.AsQueryable() : dbSet.AsNoTracking();
     }
 
+    public AppQueryableBuilder(IQueryable<TAggregateRoot> queryable)
+    {
+        _queryable = queryable;
+    }
+
     public AppQueryableBuilder<TAggregateRoot, TKey> ApplyFilter(Expression<Func<TAggregateRoot, bool>> expression)
     {
         _queryable = _queryable.Where(expression);
@@ -36,6 +41,16 @@ public class AppQueryableBuilder<TAggregateRoot, TKey>
         _queryable = _queryable.Include(includeProps);
         return this;
     }
+    
+    public AppQueryableBuilder<TAggregateRoot, TKey> IncludeProp(IEnumerable<Expression<Func<TAggregateRoot, object>>> includeProps)
+    {
+        foreach (var expression in includeProps)
+        {
+            _queryable = _queryable.Include(expression);
+        }
+        
+        return this;
+    }
 
     public AppQueryableBuilder<TAggregateRoot, TKey> IncludeProp(string? includeProps)
     {
@@ -47,6 +62,16 @@ public class AppQueryableBuilder<TAggregateRoot, TKey>
             }
         }
 
+        return this;
+    }
+    
+    public AppQueryableBuilder<TAggregateRoot, TKey> IncludeProp(IEnumerable<string> includeProps)
+    {
+        foreach (var prop in includeProps)
+        {
+            IncludeProp(prop);
+        }
+        
         return this;
     }
 

@@ -14,6 +14,8 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Core\PBL6.Application\PBL6.Application.csproj" />
       <ProjectReference Include="..\..\Core\PBL6.Domain\PBL6.Domain.csproj" />
+
+
     </ItemGroup>
 
 

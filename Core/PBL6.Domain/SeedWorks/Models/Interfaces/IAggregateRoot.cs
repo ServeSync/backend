@@ -1,4 +1,4 @@
-﻿namespace PBL6.Domain.SeedWorks.Models;
+﻿namespace PBL6.Domain.SeedWorks.Models.Interfaces;
 
 public interface IAggregateRoot<out TKey> : IEntity<TKey> where TKey : IEquatable<TKey>
 {
