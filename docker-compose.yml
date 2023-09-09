@@ -1,0 +1,34 @@
+﻿services:
+  servesync.api:
+    image: servesync.api
+    build:
+      context: .
+      dockerfile: Presentation/ServeSync.API/Dockerfile
+    ports:
+        - "5000:80"
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Production
+        - ASPNETCORE_URLS=http://+:80
+        - ConnectionStrings_Default=Server=database;Database=ServeSync;User=sa;Password=pbl6@2023;TrustServerCertificate=True;
+        - ConnectionStrings_Redis=redis
+    depends_on:
+      - db
+      - redis
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    user: root
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=pbl6@2023
+    ports:
+      - "14433:1433"
+    volumes:
+      - servesync:/var/opt/mssql/data
+  
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  servesync:
