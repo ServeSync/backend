@@ -1,12 +1,12 @@
 ﻿using System.Linq.Dynamic.Core;
 using Microsoft.EntityFrameworkCore;
-using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Domain.SeedWorks.Models.Interfaces;
 using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 
 namespace ServeSync.Infrastructure.EfCore.Common;
 
 public static class SpecificationEvaluator<TAggregateRoot, TKey> 
-    where TAggregateRoot : AggregateRoot<TKey>
+    where TAggregateRoot : class, IAggregateRoot<TKey>
     where TKey : IEquatable<TKey>
 {
     public static IQueryable<TAggregateRoot> GetQuery(IQueryable<TAggregateRoot> inputQuery, ISpecification<TAggregateRoot, TKey> specification)

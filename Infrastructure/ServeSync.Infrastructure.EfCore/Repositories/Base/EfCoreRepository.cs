@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Domain.SeedWorks.Models.Interfaces;
 using ServeSync.Domain.SeedWorks.Repositories;
 
 namespace ServeSync.Infrastructure.EfCore.Repositories.Base;
 
-public class EfCoreRepository<TDbContext, TAggregateRoot, TKey> : EfCoreReadOnlyRepository<TDbContext, TAggregateRoot, TKey>, IRepository<TAggregateRoot, TKey>
-    where TDbContext : DbContext
-    where TAggregateRoot : AggregateRoot<TKey>
+public class EfCoreRepository<TAggregateRoot, TKey> : EfCoreReadOnlyRepository<TAggregateRoot, TKey>, IRepository<TAggregateRoot, TKey>
+    where TAggregateRoot : class, IAggregateRoot<TKey>
     where TKey : IEquatable<TKey>
 {
-    public EfCoreRepository(TDbContext dbContext) : base(dbContext)
+    public EfCoreRepository(AppDbContext dbContext) : base(dbContext)
     {
     }
 
@@ -70,11 +70,10 @@ public class EfCoreRepository<TDbContext, TAggregateRoot, TKey> : EfCoreReadOnly
     }
 }
 
-public class EfCoreRepository<TDbContext, TAggregateRoot> : EfCoreRepository<TDbContext, TAggregateRoot, Guid>
-    where TDbContext : DbContext
+public class EfCoreRepository<TAggregateRoot> : EfCoreRepository<TAggregateRoot, Guid>
     where TAggregateRoot : AggregateRoot
 {
-    public EfCoreRepository(TDbContext dbContext) : base(dbContext)
+    public EfCoreRepository(AppDbContext dbContext) : base(dbContext)
     {
     }
 }

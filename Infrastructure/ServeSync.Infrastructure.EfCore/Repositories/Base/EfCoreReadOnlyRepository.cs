@@ -1,104 +1,61 @@
 ﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Domain.SeedWorks.Models.Interfaces;
 using ServeSync.Domain.SeedWorks.Repositories;
+using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 using ServeSync.Infrastructure.EfCore.Common;
 
 namespace ServeSync.Infrastructure.EfCore.Repositories.Base;
 
-public class EfCoreReadOnlyRepository<TDbContext, TAggregateRoot, TKey> : EfCoreSpecificationRepository<TDbContext, TAggregateRoot, TKey>, IReadOnlyRepository<TAggregateRoot, TKey>
-    where TDbContext : DbContext
-    where TAggregateRoot : AggregateRoot<TKey>
+public class EfCoreReadOnlyRepository<TAggregateRoot, TKey> : EfCoreBasicReadOnlyRepository<TAggregateRoot, TKey>, IReadOnlyRepository<TAggregateRoot, TKey>
+    where TAggregateRoot : class, IAggregateRoot<TKey>
     where TKey : IEquatable<TKey>
 {
-    public EfCoreReadOnlyRepository(TDbContext dbContext) : base(dbContext)
+    private readonly List<Expression<Func<TAggregateRoot, object>>> _defaultIncludeExpressions;
+    private readonly List<string> _defaultIncludeStrings;
+    
+    public EfCoreReadOnlyRepository(AppDbContext dbContext) : base(dbContext)
     {
-    }
-
-    public async Task<IList<TAggregateRoot>> FindAllAsync(Expression<Func<TAggregateRoot, bool>>? expression = null)
-    {
-        var queryable = GetQueryable();
-        return expression != null ? await queryable.Where(expression).ToListAsync() : await queryable.ToListAsync();
-    }
-
-    public async Task<IList<TAggregateRoot>> GetPagedListAsync(int skip, int take, Expression<Func<TAggregateRoot, bool>> expression, string? sorting = null, bool tracking = true, string? includeProps = null)
-    {
-        var queryable = new AppQueryableBuilder<TAggregateRoot, TKey>(GetQueryable(tracking))
-                                    .IncludeProp(includeProps)
-                                    .ApplyFilter(expression)
-                                    .ApplySorting(sorting)
-                                    .Build();
-
-        return await queryable.Skip(skip).Take(take).ToListAsync();
-    }
-
-    public Task<TAggregateRoot?> FindByIdAsync(object id, string? includeProps = null, bool tracking = true)
-    {
-        var queryable = new AppQueryableBuilder<TAggregateRoot, TKey>(GetQueryable(tracking))
-                                    .IncludeProp(includeProps)
-                                    .Build();
-
-        return queryable.FirstOrDefaultAsync(x => id.Equals(x.Id));
-    }
-
-    public Task<TAggregateRoot?> FindAsync(Expression<Func<TAggregateRoot, bool>> expression, bool tracking = true,
-        string? includeProps = null)
-    {
-        var queryable = new AppQueryableBuilder<TAggregateRoot, TKey>(GetQueryable(tracking))
-                                    .IncludeProp(includeProps)
-                                    .Build();
-        
-        return queryable.FirstOrDefaultAsync(expression);
-    }
-
-    public Task<bool> IsExistingAsync(Guid id)
-    {
-        var queryable = GetQueryable();
-        return queryable.AnyAsync(x => id.Equals(x.Id));
-    }
-
-    public Task<bool> AnyAsync(Expression<Func<TAggregateRoot, bool>>? expression = null)
-    {
-        var queryable = GetQueryable();
-        return expression != null ? queryable.AnyAsync(expression) : queryable.AnyAsync();
-    }
-
-    public Task<bool> AllAsync(Expression<Func<TAggregateRoot, bool>> expression)
-    {
-        var queryable = GetQueryable();
-        return queryable.AllAsync(expression);
-    }
-
-    public Task<int> GetCountAsync(Expression<Func<TAggregateRoot, bool>>? expression = null)
-    {
-        var queryable = GetQueryable();
-        return expression != null ? queryable.CountAsync(expression) : queryable.CountAsync();
-    }
-
-    public Task<decimal> GetAverageAsync(Expression<Func<TAggregateRoot, decimal>> selector, Expression<Func<TAggregateRoot, bool>>? expression = null)
-    {
-        var queryable = GetQueryable();
-        if (expression != null)
-        {
-            queryable = queryable.Where(expression);
-        }
-
-        return queryable.AverageAsync(selector);
+        _defaultIncludeExpressions = new();
+        _defaultIncludeStrings = new();
     }
     
-    protected IQueryable<TAggregateRoot> GetQueryable(bool tracking = true)
+    protected void AddInclude(Expression<Func<TAggregateRoot, object>> includeExpression)
+    {
+        ArgumentNullException.ThrowIfNull(includeExpression);
+        
+        _defaultIncludeExpressions.Add(includeExpression);
+    }
+    
+    protected void AddInclude(string includeProp)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(includeProp);
+        
+        _defaultIncludeStrings.Add(includeProp);
+    }
+
+    protected override IQueryable<TAggregateRoot> GetQueryable(bool tracking = true)
     {
         return new AppQueryableBuilder<TAggregateRoot, TKey>(DbSet, tracking)
-            .IncludeProp(DefaultIncludeExpressions)
-            .IncludeProp(DefaultIncludeStrings)
+            .IncludeProp(_defaultIncludeExpressions)
+            .IncludeProp(_defaultIncludeStrings)
+            .Build();
+    }
+
+    protected override IQueryable<TAggregateRoot> GetQueryable(ISpecification<TAggregateRoot, TKey> specification)
+    {
+        var specificationQueryable = SpecificationEvaluator<TAggregateRoot, TKey>.GetQuery(DbSet.AsQueryable(), specification);
+        return new AppQueryableBuilder<TAggregateRoot, TKey>(specificationQueryable)
+            .IncludeProp(_defaultIncludeStrings)
+            .IncludeProp(_defaultIncludeExpressions)
             .Build();
     }
 }
 
-public class EfCoreReadOnlyRepository<TAggregateRoot> : EfCoreReadOnlyRepository<DbContext, TAggregateRoot, Guid>
+public class EfCoreReadOnlyRepository<TAggregateRoot> : EfCoreReadOnlyRepository<TAggregateRoot, Guid>
     where TAggregateRoot : AggregateRoot<Guid>
 {
-    public EfCoreReadOnlyRepository(DbContext dbContext) : base(dbContext)
+    public EfCoreReadOnlyRepository(AppDbContext dbContext) : base(dbContext)
     {
     }
 }

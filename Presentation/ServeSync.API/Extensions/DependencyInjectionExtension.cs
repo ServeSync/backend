@@ -1,16 +1,30 @@
 ﻿using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.ExceptionHandlers;
 using ServeSync.Application;
+using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Application.SeedWorks.Sessions;
+using ServeSync.Application.Services;
+using ServeSync.Application.Services.Interfaces;
+using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Infrastructure.EfCore;
+using ServeSync.Infrastructure.EfCore.Repositories;
+using ServeSync.Infrastructure.EfCore.Repositories.Base;
 using ServeSync.Infrastructure.EfCore.UnitOfWorks;
+using ServeSync.Infrastructure.Identity;
+using ServeSync.Infrastructure.Identity.Models.PermissionAggregate;
+using ServeSync.Infrastructure.Identity.Models.RoleAggregate;
+using ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities;
+using ServeSync.Infrastructure.Identity.Models.UserAggregate;
+using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
+using ServeSync.Infrastructure.Identity.Seeder;
 
 namespace ServeSync.API.Extensions;
 
@@ -19,7 +33,8 @@ public static partial class DependencyInjectionExtensions
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<IExceptionHandler, ExceptionHandler>();
-
+        services.AddScoped<ITokenProvider, JwtTokenProvider>();
+        services.AddScoped<IDataSeeder, IdentityDataSeeder>();
         return services;
     }
     
@@ -81,14 +96,23 @@ public static partial class DependencyInjectionExtensions
     
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IUnitOfWork, EfCoreUnitOfWork<AppDbContext>>();
-
+        services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
+        
+        services.AddScoped(typeof(IRepository<,>), typeof(EfCoreRepository<,>));
+        services.AddScoped(typeof(IReadOnlyRepository<,>), typeof(EfCoreReadOnlyRepository<,>));
+        services.AddScoped(typeof(IBasicReadOnlyRepository<,>), typeof(EfCoreReadOnlyRepository<,>));
+        services.AddScoped(typeof(ISpecificationRepository<,>), typeof(EfCoreSpecificationRepository<,>));
+        
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IPermissionRepository, PermissionRepository>();
+        
         return services;
     }
     
     public static IServiceCollection AddApplicationAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        // services.Configure<JwtSetting>(configuration.GetSection("Jwt"));
+        services.Configure<JwtSetting>(configuration.GetSection("Jwt"));
 
         services.AddAuthentication(options =>
             {
@@ -105,7 +129,7 @@ public static partial class DependencyInjectionExtensions
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ClockSkew = TimeSpan.Zero,
-
+        
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
@@ -126,11 +150,41 @@ public static partial class DependencyInjectionExtensions
     
     public static IServiceCollection AddMapper(this IServiceCollection services)
     {
+        services.AddAutoMapper(typeof(ServeSyncApplicationReference));
+        services.AddAutoMapper(typeof(ServeSyncIdentityReference));
+        
         return services;
     }
     
     public static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
+        services.Configure<IdentityOptions>(options =>
+        {
+            // Password settings.
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequiredLength = 6;
+            options.Password.RequiredUniqueChars = 1;
+
+            // Lockout settings.
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.AllowedForNewUsers = true;
+
+            // User settings.
+            options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+            options.User.RequireUniqueEmail = true;
+
+            // Signin settings.
+            options.SignIn.RequireConfirmedEmail = false;
+        });
+
         return services;
     }
     
@@ -139,6 +193,7 @@ public static partial class DependencyInjectionExtensions
         services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(ServeSyncApplicationReference)));
+            config.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(ServeSyncIdentityReference)));
         });
         
         return services;

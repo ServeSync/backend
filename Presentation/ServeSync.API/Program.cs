@@ -39,4 +39,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+await app.ApplyMigrationAsync(app.Logger);
+await app.SeedDataAsync();
+
 app.Run();

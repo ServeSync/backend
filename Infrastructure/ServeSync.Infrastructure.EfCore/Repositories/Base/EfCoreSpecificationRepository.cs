@@ -1,30 +1,24 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Domain.SeedWorks.Models.Interfaces;
 using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 using ServeSync.Infrastructure.EfCore.Common;
 
 namespace ServeSync.Infrastructure.EfCore.Repositories.Base;
 
-public class EfCoreSpecificationRepository<TDbContext, TAggregateRoot, TKey> : ISpecificationRepository<TAggregateRoot, TKey>
-    where TDbContext : DbContext
-    where TAggregateRoot : AggregateRoot<TKey>
+public class EfCoreSpecificationRepository<TAggregateRoot, TKey> : ISpecificationRepository<TAggregateRoot, TKey>
+    where TAggregateRoot : class, IAggregateRoot<TKey>
     where TKey : IEquatable<TKey>
 {
-    protected readonly TDbContext DbContext;
+    protected readonly AppDbContext DbContext;
     protected readonly DbSet<TAggregateRoot> DbSet;
-
-    protected readonly List<Expression<Func<TAggregateRoot, object>>> DefaultIncludeExpressions;
-    protected readonly List<string> DefaultIncludeStrings;
     
-    public EfCoreSpecificationRepository(TDbContext dbContext)
+    public EfCoreSpecificationRepository(AppDbContext dbContext)
     {
         DbContext = dbContext;
         DbSet = dbContext.Set<TAggregateRoot>();
-
-        DefaultIncludeExpressions = new();
-        DefaultIncludeStrings = new();
     }
     
     public async Task<IList<TAggregateRoot>> GetPagedListAsync(int skip, int take, ISpecification<TAggregateRoot, TKey> specification, string? sorting = null)
@@ -58,35 +52,16 @@ public class EfCoreSpecificationRepository<TDbContext, TAggregateRoot, TKey> : I
         return GetQueryable(specification).AllAsync(specification.ToExpression());
     }
     
-    protected void AddInclude(Expression<Func<TAggregateRoot, object>> includeExpression)
+    protected virtual IQueryable<TAggregateRoot> GetQueryable(ISpecification<TAggregateRoot, TKey> specification)
     {
-        ArgumentNullException.ThrowIfNull(includeExpression);
-        
-        DefaultIncludeExpressions.Add(includeExpression);
-    }
-    
-    protected void AddInclude(string includeProp)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(includeProp);
-        
-        DefaultIncludeStrings.Add(includeProp);
-    }
-    
-    private IQueryable<TAggregateRoot> GetQueryable(ISpecification<TAggregateRoot, TKey> specification)
-    {
-        var specificationQueryable = SpecificationEvaluator<TAggregateRoot, TKey>.GetQuery(DbSet.AsQueryable(), specification);
-        return new AppQueryableBuilder<TAggregateRoot, TKey>(specificationQueryable)
-                    .IncludeProp(DefaultIncludeStrings)
-                    .IncludeProp(DefaultIncludeExpressions)
-                    .Build();
+        return SpecificationEvaluator<TAggregateRoot, TKey>.GetQuery(DbSet.AsQueryable(), specification);
     }
 }
 
-public class EfCoreSpecificationRepository<TDbContext, TAggregateRoot> : EfCoreSpecificationRepository<TDbContext, TAggregateRoot, Guid>
-    where TDbContext : DbContext
+public class EfCoreSpecificationRepository<TAggregateRoot> : EfCoreSpecificationRepository<TAggregateRoot, Guid>
     where TAggregateRoot : AggregateRoot
 {
-    public EfCoreSpecificationRepository(TDbContext dbContext) : base(dbContext)
+    public EfCoreSpecificationRepository(AppDbContext dbContext) : base(dbContext)
     {
     }
 }

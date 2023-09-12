@@ -1,10 +1,13 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities;
+using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 
 namespace ServeSync.Infrastructure.EfCore;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
 {
     private readonly IMediator _mediator;
     

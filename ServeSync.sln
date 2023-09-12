@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServeSync.Infrastructure.Identity", "Infrastructure\ServeSync.Infrastructure.Identity\ServeSync.Infrastructure.Identity.csproj", "{65A00606-43CE-43CB-97F3-68C8DBC39D71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,7 @@ Global
 		{2A4824A9-6112-402F-9595-C089E65EC22F} = {8354D976-0E34-45E4-8C35-A70F3BE14087}
 		{2F63CA5E-6347-40F2-90C1-203471425DF9} = {AEF17033-69F7-4C29-9B54-F0B857ECFD1E}
 		{40C134FC-B3DB-4C93-A75A-31AF931EA236} = {6E05D748-2774-4913-9BEE-64F065038DA7}
+		{65A00606-43CE-43CB-97F3-68C8DBC39D71} = {6E05D748-2774-4913-9BEE-64F065038DA7}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{764D2922-0773-411A-AB73-6A1B8EB36858}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -47,5 +50,9 @@ Global
 		{40C134FC-B3DB-4C93-A75A-31AF931EA236}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40C134FC-B3DB-4C93-A75A-31AF931EA236}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40C134FC-B3DB-4C93-A75A-31AF931EA236}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65A00606-43CE-43CB-97F3-68C8DBC39D71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65A00606-43CE-43CB-97F3-68C8DBC39D71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65A00606-43CE-43CB-97F3-68C8DBC39D71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65A00606-43CE-43CB-97F3-68C8DBC39D71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

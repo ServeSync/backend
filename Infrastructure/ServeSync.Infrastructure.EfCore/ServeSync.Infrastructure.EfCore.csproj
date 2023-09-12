@@ -8,15 +8,17 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.10" />
       <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.4" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Core\ServeSync.Application\ServeSync.Application.csproj" />
       <ProjectReference Include="..\..\Core\ServeSync.Domain\ServeSync.Domain.csproj" />
-
-
+      <ProjectReference Include="..\ServeSync.Infrastructure.Identity\ServeSync.Infrastructure.Identity.csproj" />
     </ItemGroup>
+
+
 
 
 
