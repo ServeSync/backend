@@ -6,6 +6,8 @@ namespace ServeSync.API.Dtos.Roles;
 
 public class RoleFilterAndPagingRequestDto : PagingAndSortingRequestDto
 {
-    [SortConstraint(Fields = $"{nameof(ApplicationRole.Name)}")]
     public string Name { get; set; } = string.Empty;
+
+    [SortConstraint(Fields = $"{nameof(ApplicationRole.Name)}")]
+    public override string Sorting { get; set; } = string.Empty;
 }
