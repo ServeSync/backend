@@ -88,7 +88,7 @@ public static partial class DependencyInjectionExtensions
         services.AddDbContext<AppDbContext>(options =>
         {
             options.EnableSensitiveDataLogging(env.IsDevelopment());
-            options.UseSqlServer(configuration.GetConnectionString("Default"));
+            options.UseMySQL(configuration.GetConnectionString("Default"));
         });
         
         return services;

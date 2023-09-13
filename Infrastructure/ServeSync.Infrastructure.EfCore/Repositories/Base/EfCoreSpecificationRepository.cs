@@ -56,6 +56,11 @@ public class EfCoreSpecificationRepository<TAggregateRoot, TKey> : ISpecificatio
     {
         return SpecificationEvaluator<TAggregateRoot, TKey>.GetQuery(DbSet.AsQueryable(), specification);
     }
+    
+    protected virtual IQueryable<TAggregateRoot> GetQueryable(IPagingAndSortingSpecification<TAggregateRoot, TKey> specification)
+    {
+        return SpecificationEvaluator<TAggregateRoot, TKey>.GetQuery(DbSet.AsQueryable(), specification);
+    }
 }
 
 public class EfCoreSpecificationRepository<TAggregateRoot> : EfCoreSpecificationRepository<TAggregateRoot, Guid>

@@ -7,6 +7,7 @@ namespace ServeSync.Infrastructure.Identity.Models.RoleAggregate.Specifications;
 public class RoleFilterAndPagingSpecification : PagingAndSortingSpecification<ApplicationRole, string>
 {
     private readonly string _name;
+    
     public RoleFilterAndPagingSpecification(int page, int size, string sorting, string name) 
         : base(page, size, sorting, false)
     {
