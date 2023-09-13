@@ -28,7 +28,6 @@ public class IdentityDataSeeder : IDataSeeder
         try
         {
             if (
-                !_roleManager.Roles.Any() &&
                 !_userManager.Users.Any()
             )
             {
