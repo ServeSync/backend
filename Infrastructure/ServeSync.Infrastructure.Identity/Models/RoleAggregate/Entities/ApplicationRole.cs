@@ -35,11 +35,6 @@ public partial class ApplicationRole : IdentityRole
     
     public void GrantPermission(Guid permissionId)
     {
-        if (IsAdminRole(Name))
-        {
-            throw new AdminRoleAccessDeniedException();    
-        }
-        
         if (HasPermission(permissionId))
         {
             throw new PermissionHasAlreadyGrantedToRoleException(Id, permissionId);
