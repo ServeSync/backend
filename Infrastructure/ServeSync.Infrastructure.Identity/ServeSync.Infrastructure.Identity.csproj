@@ -29,9 +29,6 @@
 
     <ItemGroup>
       <Folder Include="Services\" />
-      <Folder Include="UseCases\Permissions\Commands\" />
-      <Folder Include="UseCases\Permissions\Dtos\" />
-      <Folder Include="UseCases\Permissions\Queries\" />
     </ItemGroup>
 
 

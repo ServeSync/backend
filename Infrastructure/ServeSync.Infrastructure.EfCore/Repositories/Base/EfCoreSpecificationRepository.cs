@@ -20,7 +20,12 @@ public class EfCoreSpecificationRepository<TAggregateRoot, TKey> : ISpecificatio
         DbContext = dbContext;
         DbSet = dbContext.Set<TAggregateRoot>();
     }
-    
+
+    public async Task<IList<TAggregateRoot>> FilterAsync(ISpecification<TAggregateRoot, TKey> specification)
+    {
+        return await GetQueryable(specification).ToListAsync();
+    }
+
     public async Task<IList<TAggregateRoot>> GetPagedListAsync(int skip, int take, ISpecification<TAggregateRoot, TKey> specification, string? sorting = null)
     {
         return await GetQueryable(specification)

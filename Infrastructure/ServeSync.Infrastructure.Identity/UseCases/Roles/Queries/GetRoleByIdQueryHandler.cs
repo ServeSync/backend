@@ -24,7 +24,7 @@ public class GetRoleByIdQueryHandler : IQueryHandler<GetRoleByIdQuery, RoleDto>
         var role = await _roleRepository.FindByIdAsync(request.Id);
         if (role == null)
         {
-            throw new RoleNotFoundException(role.Id);
+            throw new RoleNotFoundException(request.Id);
         }
         
         return _mapper.Map<RoleDto>(role);

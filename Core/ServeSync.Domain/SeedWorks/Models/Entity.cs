@@ -5,7 +5,7 @@ namespace ServeSync.Domain.SeedWorks.Models;
 
 public abstract class Entity<TKey> : IEntity<TKey> where TKey : IEquatable<TKey>
 {
-    public TKey Id { get; }
+    public TKey Id { get; protected set; }
     
     private List<IDomainEvent> _domainEvents;
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents?.AsReadOnly();

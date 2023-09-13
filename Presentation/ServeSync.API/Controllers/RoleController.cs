@@ -1,7 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ServeSync.API.Dtos.Permissions;
 using ServeSync.API.Dtos.Roles;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Infrastructure.Identity.UseCases.Permissions.Commands;
+using ServeSync.Infrastructure.Identity.UseCases.Permissions.Dtos;
+using ServeSync.Infrastructure.Identity.UseCases.Permissions.Queries;
 using ServeSync.Infrastructure.Identity.UseCases.Roles.Commands;
 using ServeSync.Infrastructure.Identity.UseCases.Roles.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Roles.Queries;
@@ -58,5 +62,21 @@ public class RoleController : ControllerBase
     {
         await _mediator.Send(new DeleteRoleCommand(id));
         return NoContent();
+    }
+    
+    [HttpGet("{id}/permissions")]
+    [ProducesResponseType(typeof(IEnumerable<PermissionDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPermissionForRoleAsync(string id, [FromQuery] PermissionFilterRequestDto dto)
+    {
+        var permissions = await _mediator.Send(new GetAllPermissionForRoleQuery(id, dto.Name));
+        return Ok(permissions);
+    }
+    
+    [HttpPut("{id}/permissions")]
+    [ProducesResponseType(typeof(IEnumerable<PermissionDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdatePermissionForRoleAsync(string id, IEnumerable<Guid> permissionIds)
+    {
+        var permissions = await _mediator.Send(new UpdatePermissionForRoleCommand(id, permissionIds));
+        return Ok(permissions);
     }
 }

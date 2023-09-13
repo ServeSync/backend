@@ -8,6 +8,8 @@ public interface ISpecificationRepository<TAggregateRoot, TKey>
     where TAggregateRoot : IAggregateRoot<TKey>
     where TKey : IEquatable<TKey>
 {
+    Task<IList<TAggregateRoot>> FilterAsync(ISpecification<TAggregateRoot, TKey> specification);
+    
     Task<IList<TAggregateRoot>> GetPagedListAsync(int skip, int take, ISpecification<TAggregateRoot, TKey> specification, string? sorting = null);
 
     Task<IList<TAggregateRoot>> GetPagedListAsync(IPagingAndSortingSpecification<TAggregateRoot, TKey> specification);

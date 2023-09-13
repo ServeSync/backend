@@ -35,6 +35,8 @@ public static partial class DependencyInjectionExtensions
         services.AddScoped<IExceptionHandler, ExceptionHandler>();
         services.AddScoped<ITokenProvider, JwtTokenProvider>();
         services.AddScoped<IDataSeeder, IdentityDataSeeder>();
+        services.AddScoped<IDataSeeder, PermissionDataSeeder>();
+        
         return services;
     }
     

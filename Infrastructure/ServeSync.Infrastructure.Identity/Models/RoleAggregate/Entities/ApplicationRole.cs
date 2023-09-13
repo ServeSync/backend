@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
-using ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Models.RoleAggregate.Exceptions;
 
 namespace ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities;
@@ -24,24 +23,29 @@ public partial class ApplicationRole : IdentityRole
         
     }
 
-    public void GrantPermission(ApplicationPermission permission)
+    public void ClearPermission()
     {
-        if (HasPermission(permission.Id))
+        if (IsAdminRole(Name))
         {
-            throw new PermissionHasAlreadyGrantedToRoleException(Id, permission.Id);
+            throw new AdminRoleAccessDeniedException();    
         }
         
-        Permissions.Add(new RolePermission(Id, permission.Id));
+        Permissions.Clear();
     }
     
-    public void UnGrantPermission(ApplicationPermission permission)
+    public void GrantPermission(Guid permissionId)
     {
-        if (!HasPermission(permission.Id))
+        if (IsAdminRole(Name))
         {
-            throw new PermissionHasNotGrantedToRoleException(Id, permission.Id);
+            throw new AdminRoleAccessDeniedException();    
         }
         
-        Permissions.Add(new RolePermission(Id, permission.Id));
+        if (HasPermission(permissionId))
+        {
+            throw new PermissionHasAlreadyGrantedToRoleException(Id, permissionId);
+        }
+        
+        Permissions.Add(new RolePermission(Id, permissionId));
     }
 
     public void Update(string name)
