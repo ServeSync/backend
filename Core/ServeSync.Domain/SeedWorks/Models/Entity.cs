@@ -29,5 +29,4 @@ public abstract class Entity<TKey> : IEntity<TKey> where TKey : IEquatable<TKey>
 
 public abstract class Entity : Entity<Guid>
 {
-    
 }
