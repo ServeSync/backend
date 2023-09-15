@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ServeSync.API.Dtos.Auth;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Commands;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 
@@ -21,6 +22,14 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> SignInAsync(SignInCommand signInCommand)
     {
         var authCredential = await _mediator.Send(signInCommand);
+        return Ok(authCredential);
+    }
+    
+    [HttpPost("refresh-token")]
+    [ProducesResponseType(typeof(AuthCredentialDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SignInAsync(RefreshTokenDto dto)
+    {
+        var authCredential = await _mediator.Send(new RefreshTokenCommand(dto.RefreshToken, dto.AccessToken));
         return Ok(authCredential);
     }
 }

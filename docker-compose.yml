@@ -12,6 +12,9 @@
         - ConnectionStrings__Default=server=db;database=ServeSync;user=root;password=pbl6@2023
         - ConnectionStrings__Redis=redis
         - Jwt__Key=this_is_my_secret_key_for_authentication
+        - Jwt__ExpiresInMinute=30
+        - Jwt__RefreshTokenExpiresInDay=3
+    restart: always
     depends_on:
       - db
       - redis
