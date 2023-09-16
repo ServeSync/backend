@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.Common.Settings;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Application.Services.Interfaces;

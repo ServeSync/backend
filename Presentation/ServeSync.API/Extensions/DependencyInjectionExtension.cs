@@ -9,6 +9,7 @@ using ServeSync.API.Authorization;
 using ServeSync.API.Common.ExceptionHandlers;
 using ServeSync.Application;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.Common.Settings;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Application.SeedWorks.MailSender;
 using ServeSync.Application.SeedWorks.MailSender.Interfaces;
@@ -28,13 +29,16 @@ using ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Seeder;
+using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
+using ServeSync.Infrastructure.Identity.UseCases.Auth.Settings;
 
 namespace ServeSync.API.Extensions;
 
-public static partial class DependencyInjectionExtensions
+public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<ForgetPasswordSetting>(configuration.GetSection("ForgetPasswordSetting"));
         services.AddScoped<IExceptionHandler, ExceptionHandler>();
         services.AddScoped<ITokenProvider, JwtTokenProvider>();
         services.AddScoped<IDataSeeder, IdentityDataSeeder>();
