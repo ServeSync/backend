@@ -10,6 +10,7 @@ using ServeSync.API.Common.ExceptionHandlers;
 using ServeSync.Application;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.SeedWorks.Data;
+using ServeSync.Application.SeedWorks.MailSender;
 using ServeSync.Application.SeedWorks.Sessions;
 using ServeSync.Application.Services;
 using ServeSync.Application.Services.Interfaces;
@@ -18,6 +19,7 @@ using ServeSync.Infrastructure.EfCore;
 using ServeSync.Infrastructure.EfCore.Repositories;
 using ServeSync.Infrastructure.EfCore.Repositories.Base;
 using ServeSync.Infrastructure.EfCore.UnitOfWorks;
+using ServeSync.Infrastructure.Gmail;
 using ServeSync.Infrastructure.Identity;
 using ServeSync.Infrastructure.Identity.Models.PermissionAggregate;
 using ServeSync.Infrastructure.Identity.Models.RoleAggregate;
@@ -209,6 +211,14 @@ public static partial class DependencyInjectionExtensions
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         }));
+
+        return services;
+    }
+
+    public static IServiceCollection AddEmailSender(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<EmailConfiguration>(configuration.GetSection("Email"));
+        services.AddScoped<IEmailSender, GmailSender>();
 
         return services;
     }

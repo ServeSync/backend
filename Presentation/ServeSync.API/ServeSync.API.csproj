@@ -22,6 +22,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Core\ServeSync.Application\ServeSync.Application.csproj" />
       <ProjectReference Include="..\..\Infrastructure\ServeSync.Infrastructure.EfCore\ServeSync.Infrastructure.EfCore.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\ServeSync.Infrastructure\ServeSync.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
