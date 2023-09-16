@@ -5,5 +5,7 @@ namespace ServeSync.Infrastructure.Identity.Models.UserAggregate;
 
 public interface IUserRepository : IRepository<ApplicationUser, string>
 {
-    Task<ApplicationUser> FindByUserNameOrEmailAsync(string username, string email);
+    Task<ApplicationUser?> FindByUserNameOrEmailAsync(string username, string email);
+    
+    Task<ApplicationUser?> FindByRefreshTokenAsync(string refreshToken);
 }

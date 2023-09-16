@@ -9,10 +9,18 @@ public class UserRepository : EfCoreRepository<ApplicationUser, string>, IUserRe
 {
     public UserRepository(AppDbContext dbContext) : base(dbContext)
     {
+        AddInclude(x => x.RefreshToken);
     }
 
-    public Task<ApplicationUser> FindByUserNameOrEmailAsync(string username, string email)
+    public Task<ApplicationUser?> FindByUserNameOrEmailAsync(string username, string email)
     {
         return DbSet.FirstOrDefaultAsync(x => x.UserName == username || x.Email == email);
+    }
+
+    public async Task<ApplicationUser?> FindByRefreshTokenAsync(string refreshToken)
+    {
+        return (await DbContext.Set<RefreshToken>()
+                               .Include(x => x.User)
+                               .FirstOrDefaultAsync(x => x.Value == refreshToken))?.User;
     }
 }

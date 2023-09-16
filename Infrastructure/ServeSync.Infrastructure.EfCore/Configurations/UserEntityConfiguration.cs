@@ -8,6 +8,5 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>
 {
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
-        
     }
 }

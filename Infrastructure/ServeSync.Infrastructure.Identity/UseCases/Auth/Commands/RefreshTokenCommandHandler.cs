@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.SeedWorks.Cqrs;
@@ -13,60 +12,54 @@ using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 
 namespace ServeSync.Infrastructure.Identity.UseCases.Auth.Commands;
 
-public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentialDto>
+public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, AuthCredentialDto>
 {
     private readonly JwtSetting _jwtSetting;
-    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ITokenProvider _tokenProvider;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
-
-    public SignInCommandHandler(
+    
+    public RefreshTokenCommandHandler(
         IOptions<JwtSetting> jwtOptions,
-        SignInManager<ApplicationUser> signInManager,
         ITokenProvider tokenProvider,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork)
     {
         _jwtSetting = jwtOptions.Value;
-        _signInManager = signInManager;
         _tokenProvider = tokenProvider;
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<AuthCredentialDto> Handle(SignInCommand request, CancellationToken cancellationToken)
+    public async Task<AuthCredentialDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.FindByUserNameOrEmailAsync(request.UserNameOrEmail, request.UserNameOrEmail);
+        var user = await _userRepository.FindByRefreshTokenAsync(request.RefreshToken);
         if (user == null)
         {
-            throw new UserNameOrEmailNotFoundException(request.UserNameOrEmail);
+            throw new RefreshTokenNotFoundException(request.RefreshToken);
         }
 
-        var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, true);
-        if (result.Succeeded)
+        var accessTokenId = string.Empty;
+        if (_tokenProvider.ValidateToken(request.AccessToken, ref accessTokenId))
         {
-            var accessToken = _tokenProvider.GenerateAccessToken(GetUserAuthenticateClaimsAsync(user));
-            var credential = new AuthCredentialDto()
-            {
-                AccessToken = accessToken.Value,
-                RefreshToken = _tokenProvider.GenerateRefreshToken()
-            };
-            
-            user.AddRefreshToken(accessToken.Id, credential.RefreshToken, DateTime.Now.AddDays(_jwtSetting.RefreshTokenExpiresInDay));
-            
-            _userRepository.Update(user);
-            await _unitOfWork.CommitAsync();
-
-            return credential;
+            throw new AccessTokenStillValidException();
         }
-
-        if (result.IsLockedOut)
+        
+        user.UseRefreshToken(accessTokenId, request.RefreshToken);
+        
+        var accessToken = _tokenProvider.GenerateAccessToken(GetUserAuthenticateClaimsAsync(user));
+        var credential = new AuthCredentialDto()
         {
-            throw new AccountLockedOutException();
-        }
+            AccessToken = accessToken.Value,
+            RefreshToken = _tokenProvider.GenerateRefreshToken()
+        };
+            
+        user.AddRefreshToken(accessToken.Id, credential.RefreshToken, DateTime.Now.AddDays(_jwtSetting.RefreshTokenExpiresInDay));
+            
+        _userRepository.Update(user);
+        await _unitOfWork.CommitAsync();
 
-        throw new InvalidCredentialException();
+        return credential;
     }
     
     private IEnumerable<Claim> GetUserAuthenticateClaimsAsync(ApplicationUser user)
