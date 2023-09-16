@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.Common.Settings;
 using ServeSync.Application.Services.Interfaces;
 
 namespace ServeSync.Application.Services;

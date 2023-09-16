@@ -46,13 +46,44 @@ public class IdentityDataSeeder : IDataSeeder
 
     private async Task SeedDefaultAdminAccountAsync()
     {
-        var user = new ApplicationUser()
+        var users = new List<ApplicationUser>()
         {
-            UserName = "admin",
-            Email = "admin@gmail.com",
+            new ApplicationUser()
+            {
+                UserName = "admin1",
+                Email = "ngocnguyen752002@gmail.com"
+            },
+            new ApplicationUser()
+            {
+                UserName = "admin2",
+                Email = "ronle9519@gmail.com"
+            },
+            new ApplicationUser()
+            {
+                UserName = "admin3",
+                Email = "tannang09032002@gmail.com"
+            },
+            new ApplicationUser()
+            {
+                UserName = "admin4",
+                Email = "tuankiettruong.work@gmail.com"
+            },
+            new ApplicationUser()
+            {
+                UserName = "admin5",
+                Email = "trankimquy1952@gmail.com"
+            },
+            new ApplicationUser()
+            {
+                UserName = "admin",
+                Email = "admin@gmail.com"
+            }
         };
 
-        await _userManager.CreateAsync(user, "admin123");
-        await _userManager.AddToRoleAsync(user, AppRole.Admin);
+        foreach (var user in users)
+        {
+            await _userManager.CreateAsync(user, "admin123");
+            await _userManager.AddToRoleAsync(user, AppRole.Admin);
+        };
     }
 }

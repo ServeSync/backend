@@ -7,4 +7,10 @@ public class SignInCommand : ICommand<AuthCredentialDto>
 {
     public string UserNameOrEmail { get; set; }
     public string Password { get; set; }
+
+    public SignInCommand(string userNameOrEmail, string password)
+    {
+        UserNameOrEmail = userNameOrEmail;
+        Password = password;
+    }
 }

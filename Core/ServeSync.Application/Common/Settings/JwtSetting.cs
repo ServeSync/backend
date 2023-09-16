@@ -1,4 +1,4 @@
-﻿namespace ServeSync.Application.Common.Dtos;
+﻿namespace ServeSync.Application.Common.Settings;
 
 public class JwtSetting
 {

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Dtos.Auth;
+using ServeSync.Application.SeedWorks.MailSender;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Commands;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 
@@ -19,10 +20,18 @@ public class AuthController : ControllerBase
 
     [HttpPost("sign-in")]
     [ProducesResponseType(typeof(AuthCredentialDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SignInAsync(SignInCommand signInCommand)
+    public async Task<IActionResult> SignInAsync(SignInDto dto)
     {
-        var authCredential = await _mediator.Send(signInCommand);
+        var authCredential = await _mediator.Send(new SignInCommand(dto.UserNameOrEmail, dto.Password));
         return Ok(authCredential);
+    }
+    
+    [HttpPost("forget-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> RequestForgetPasswordAsync(RequestForgetPasswordDto dto)
+    {
+        await _mediator.Send(new RequestForgetPasswordTokenCommand(dto.UserNameOrEmail, dto.CallBackUrl));
+        return Ok();
     }
     
     [HttpPost("refresh-token")]
