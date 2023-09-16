@@ -11,6 +11,7 @@ using ServeSync.Application;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Application.SeedWorks.MailSender;
+using ServeSync.Application.SeedWorks.MailSender.Interfaces;
 using ServeSync.Application.SeedWorks.Sessions;
 using ServeSync.Application.Services;
 using ServeSync.Application.Services.Interfaces;
@@ -218,7 +219,12 @@ public static partial class DependencyInjectionExtensions
     public static IServiceCollection AddEmailSender(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EmailConfiguration>(configuration.GetSection("Email"));
+        services.AddScoped<IEmailTemplateGenerator, EmailTemplateGenerator>();
         services.AddScoped<IEmailSender, GmailSender>();
+        
+        services.Configure<DataProtectionTokenProviderOptions>(opt =>
+            opt.TokenLifespan = TimeSpan.FromMinutes(30)
+        );
 
         return services;
     }

@@ -12,27 +12,26 @@ namespace ServeSync.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IEmailSender _emailSender;
 
-    public AuthController(IMediator mediator, IEmailSender emailSender)
+    public AuthController(IMediator mediator)
     {
         _mediator = mediator;
-        _emailSender = emailSender;
     }
 
     [HttpPost("sign-in")]
     [ProducesResponseType(typeof(AuthCredentialDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SignInAsync(SignInCommand signInCommand)
+    public async Task<IActionResult> SignInAsync(SignInDto dto)
     {
-        await _emailSender.SendAsync(new EmailMessage()
-        {
-            ToAddress = "ronle9519@gmail.com",
-            Subject = "Hello World",
-            Body = "<h1>Hello World</h1>"
-        });
-        
-        var authCredential = await _mediator.Send(signInCommand);
+        var authCredential = await _mediator.Send(new SignInCommand(dto.UserNameOrEmail, dto.Password));
         return Ok(authCredential);
+    }
+    
+    [HttpPost("forget-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> RequestForgetPasswordAsync(RequestForgetPasswordDto dto)
+    {
+        await _mediator.Send(new RequestForgetPasswordTokenCommand(dto.UserNameOrEmail, dto.CallBackUrl));
+        return Ok();
     }
     
     [HttpPost("refresh-token")]

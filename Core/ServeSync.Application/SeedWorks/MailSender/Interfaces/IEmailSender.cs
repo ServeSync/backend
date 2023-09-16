@@ -1,4 +1,4 @@
-﻿namespace ServeSync.Application.SeedWorks.MailSender;
+﻿namespace ServeSync.Application.SeedWorks.MailSender.Interfaces;
 
 public interface IEmailSender
 {

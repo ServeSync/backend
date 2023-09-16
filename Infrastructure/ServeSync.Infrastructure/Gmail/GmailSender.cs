@@ -3,6 +3,7 @@ using System.Net.Mail;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ServeSync.Application.SeedWorks.MailSender;
+using ServeSync.Application.SeedWorks.MailSender.Interfaces;
 
 namespace ServeSync.Infrastructure.Gmail;
 

@@ -14,6 +14,8 @@
         - Jwt__Key=this_is_my_secret_key_for_authentication
         - Jwt__ExpiresInMinute=30
         - Jwt__RefreshTokenExpiresInDay=3
+        - Email__Username=minishop.pbl3@gmail.com
+        - Email__Password=yimcdficrfejnvfd
     restart: always
     depends_on:
       - db

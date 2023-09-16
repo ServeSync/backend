@@ -19,6 +19,11 @@
     <ItemGroup>
         <ProjectReference Include="..\ServeSync.Domain\ServeSync.Domain.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.Hosting.Abstractions">
+        <HintPath>..\..\..\..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\7.0.9\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 
 
 
