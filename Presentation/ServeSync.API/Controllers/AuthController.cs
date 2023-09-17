@@ -34,6 +34,14 @@ public class AuthController : ControllerBase
         return Ok();
     }
     
+    [HttpPost("forget-password/callback")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ResetPasswordAsync(ResetPasswordDto dto)
+    {
+        await _mediator.Send(new ResetPasswordByTokenCommand(dto.Token, dto.NewPassword));
+        return Ok();
+    }
+    
     [HttpPost("refresh-token")]
     [ProducesResponseType(typeof(AuthCredentialDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignInAsync(RefreshTokenDto dto)

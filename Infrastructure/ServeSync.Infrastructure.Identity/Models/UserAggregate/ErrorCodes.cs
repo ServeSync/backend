@@ -10,4 +10,5 @@ public static class ErrorCodes
     public const string RefreshTokenNotFound = "User:000006";
     public const string RefreshTokenAlreadyAdded = "User:000007";
     public const string AccessTokenStillValid = "User:000008";
+    public const string InvalidForgetPasswordToken = "InvalidToken";
 }
