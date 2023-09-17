@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using ServeSync.Application.Common.Helpers;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.MailSender;
 using ServeSync.Application.SeedWorks.MailSender.Interfaces;
@@ -47,11 +49,16 @@ public class RequestForgetPasswordTokenCommandHandler : ICommandHandler<RequestF
         {
             throw new UserNameOrEmailNotFoundException(request.UserNameOrEmail);
         }
+
+        var token = new ForgetPasswordTokenDto()
+        {
+            Value = await _userManager.GeneratePasswordResetTokenAsync(user),
+            UserId = user.Id
+        };
         
-        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var callBackUrlWithToken = QueryHelpers.AddQueryString(request.CallBackUrl, new Dictionary<string, string>()
         {
-            {"token", token }
+            {"token", Encryptor.Base64Encode<ForgetPasswordTokenDto>(token) }
         });
 
         await _emailSender.SendAsync(new EmailMessage()
