@@ -5,7 +5,7 @@ namespace ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 
 public partial class ApplicationUser : IdentityUser
 {
-    public List<RefreshToken> RefreshToken;
+    public List<RefreshToken> RefreshToken { get; set; }
 
     public ApplicationUser()
     {
