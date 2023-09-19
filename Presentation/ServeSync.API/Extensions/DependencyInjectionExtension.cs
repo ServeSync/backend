@@ -31,6 +31,8 @@ using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Seeder;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Settings;
+using ServeSync.Application.Caching;
+using ServeSync.Infrastructure.Caching;
 
 namespace ServeSync.API.Extensions;
 
@@ -90,6 +92,14 @@ public static class DependencyInjectionExtensions
     
     public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddTransient<ICachingService, ServeSyncDistributedCachingService>();
+        
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+            options.InstanceName = "ServeSync";
+        });
+
         return services;
     }
     
