@@ -39,6 +39,7 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<ForgetPasswordSetting>(configuration.GetSection("ForgetPasswordSetting"));
+        
         services.AddScoped<IExceptionHandler, ExceptionHandler>();
         services.AddScoped<ITokenProvider, JwtTokenProvider>();
         services.AddScoped<IDataSeeder, IdentityDataSeeder>();
@@ -227,7 +228,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEmailSender, GmailSender>();
         
         services.Configure<DataProtectionTokenProviderOptions>(opt =>
-            opt.TokenLifespan = TimeSpan.FromMinutes(30)
+            opt.TokenLifespan = TimeSpan.FromMinutes(int.Parse(configuration["ForgetPasswordSetting:ExpiresInMinute"]))
         );
 
         return services;
