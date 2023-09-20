@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ServeSync.API.Authorization;
 using ServeSync.API.Dtos.Permissions;
 using ServeSync.API.Dtos.Roles;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Commands;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Queries;
@@ -24,6 +26,7 @@ public class RoleController : ControllerBase
     }
 
     [HttpGet]
+    [HasPermission(Permissions.Roles.View)]
     [ProducesResponseType(typeof(PagedResultDto<RoleDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPagedRoleAsync([FromQuery] RoleFilterAndPagingRequestDto dto)
     {
@@ -32,6 +35,7 @@ public class RoleController : ControllerBase
     }
     
     [HttpGet("{id}")]
+    [HasPermission(Permissions.Roles.View)]
     [ActionName(nameof(GetRoleByIdAsync))]
     [ProducesResponseType(typeof(RoleDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRoleByIdAsync(string id)
@@ -41,6 +45,7 @@ public class RoleController : ControllerBase
     }
     
     [HttpPost]
+    [HasPermission(Permissions.Roles.Create)]
     [ProducesResponseType(typeof(RoleDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateRoleAsync(CreateRoleDto dto)
     {
@@ -49,6 +54,7 @@ public class RoleController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [HasPermission(Permissions.Roles.Edit)]
     [ProducesResponseType(typeof(RoleDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateRoleAsync(string id, UpdateRoleDto dto)
     {
@@ -57,6 +63,7 @@ public class RoleController : ControllerBase
     }
     
     [HttpDelete("{id}")]
+    [HasPermission(Permissions.Roles.Delete)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteRoleAsync(string id)
     {
@@ -65,6 +72,7 @@ public class RoleController : ControllerBase
     }
     
     [HttpGet("{id}/permissions")]
+    [HasPermission(Permissions.Roles.ViewPermission)]
     [ProducesResponseType(typeof(IEnumerable<PermissionDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPermissionForRoleAsync(string id, [FromQuery] PermissionFilterRequestDto dto)
     {
@@ -73,6 +81,7 @@ public class RoleController : ControllerBase
     }
     
     [HttpPut("{id}/permissions")]
+    [HasPermission(Permissions.Roles.UpdatePermission)]
     [ProducesResponseType(typeof(IEnumerable<PermissionDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdatePermissionForRoleAsync(string id, IEnumerable<Guid> permissionIds)
     {

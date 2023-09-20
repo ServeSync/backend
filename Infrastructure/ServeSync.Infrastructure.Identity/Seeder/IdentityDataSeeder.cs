@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
@@ -27,20 +28,25 @@ public class IdentityDataSeeder : IDataSeeder
     {
         try
         {
-            if (
-                !_userManager.Users.Any()
-            )
+            _logger.LogInformation("Begin seeding identity data...");
+            
+            // Admin role seed by migration
+            if (!await _userManager.Users.AnyAsync())
             {
-                _logger.LogInformation("Begin seeding identity data...");
-                
-                await SeedDefaultAdminAccountAsync();
-
-                _logger.LogInformation("Seed identity data successfully!");
+                await SeedStudentRoleAsync();   
             }
+            
+            if (!await _userManager.Users.AnyAsync())
+            {
+                await SeedDefaultAdminAccountAsync();
+                await SeedDefaultStudentAccountAsync();
+            }
+            
+            _logger.LogInformation("Seed identity data successfully!");
         }
         catch (Exception ex)
         {
-            _logger.LogWarning("Seeding identity data failed!", ex);
+            _logger.LogWarning("Seeding identity data failed: {Message}!", ex.Message);
         }
     }
 
@@ -85,5 +91,29 @@ public class IdentityDataSeeder : IDataSeeder
             await _userManager.CreateAsync(user, "admin123");
             await _userManager.AddToRoleAsync(user, AppRole.Admin);
         };
+    }
+    
+    private async Task SeedDefaultStudentAccountAsync()
+    {
+        var users = new List<ApplicationUser>()
+        {
+            new ApplicationUser()
+            {
+                UserName = "student",
+                Email = "student@gmail.com"
+            }
+        };
+
+        foreach (var user in users)
+        {
+            await _userManager.CreateAsync(user, "student123");
+            await _userManager.AddToRoleAsync(user, AppRole.Student);
+        };
+    }
+
+    private Task SeedStudentRoleAsync()
+    {
+        var studentRole = new ApplicationRole(AppRole.Student);
+        return _roleManager.CreateAsync(studentRole);
     }
 }
