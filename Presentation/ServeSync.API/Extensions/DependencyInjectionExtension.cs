@@ -12,8 +12,6 @@ using ServeSync.Application;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.Common.Settings;
 using ServeSync.Application.SeedWorks.Data;
-using ServeSync.Application.SeedWorks.MailSender;
-using ServeSync.Application.SeedWorks.MailSender.Interfaces;
 using ServeSync.Application.SeedWorks.Sessions;
 using ServeSync.Application.Services;
 using ServeSync.Application.Services.Interfaces;
@@ -34,6 +32,9 @@ using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Settings;
 using ServeSync.Application.Caching;
 using ServeSync.Application.Identity;
+using ServeSync.Application.MailSender;
+using ServeSync.Application.MailSender.Interfaces;
+using ServeSync.Application.SeedWorks.Behavior;
 using ServeSync.Infrastructure.Caching;
 using ServeSync.Infrastructure.Identity.Caching;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
@@ -225,6 +226,8 @@ public static class DependencyInjectionExtensions
         {
             config.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(ServeSyncApplicationReference)));
             config.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(ServeSyncIdentityReference)));
+            
+            config.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
         
         return services;
@@ -244,7 +247,7 @@ public static class DependencyInjectionExtensions
 
     public static IServiceCollection AddEmailSender(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<EmailConfiguration>(configuration.GetSection("Email"));
+        services.Configure<EmailSetting>(configuration.GetSection("Email"));
         services.AddScoped<IEmailTemplateGenerator, EmailTemplateGenerator>();
         services.AddScoped<IEmailSender, GmailSender>();
         

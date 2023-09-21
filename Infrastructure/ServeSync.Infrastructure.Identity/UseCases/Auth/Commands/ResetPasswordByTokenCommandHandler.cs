@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using ServeSync.Application.Common.Helpers;
 using ServeSync.Application.SeedWorks.Cqrs;
-using ServeSync.Application.SeedWorks.MailSender.Interfaces;
 using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;

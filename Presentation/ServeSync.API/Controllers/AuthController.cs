@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Dtos.Auth;
-using ServeSync.Application.SeedWorks.MailSender;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Commands;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 

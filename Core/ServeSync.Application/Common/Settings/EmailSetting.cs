@@ -1,6 +1,6 @@
-﻿namespace ServeSync.Application.SeedWorks.MailSender;
+﻿namespace ServeSync.Application.Common.Settings;
 
-public class EmailConfiguration
+public class EmailSetting
 {
     public string From { get; set; }
     public string SmtpServer { get; set; }

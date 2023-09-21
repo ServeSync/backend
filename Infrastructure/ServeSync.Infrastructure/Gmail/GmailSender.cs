@@ -2,18 +2,19 @@
 using System.Net.Mail;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ServeSync.Application.SeedWorks.MailSender;
-using ServeSync.Application.SeedWorks.MailSender.Interfaces;
+using ServeSync.Application.Common.Settings;
+using ServeSync.Application.MailSender;
+using ServeSync.Application.MailSender.Interfaces;
 
 namespace ServeSync.Infrastructure.Gmail;
 
 public class GmailSender : IEmailSender
 {
-    private readonly EmailConfiguration _emailSetting;
+    private readonly EmailSetting _emailSetting;
     private readonly ILogger<GmailSender> _logger;
     
     public GmailSender(
-        IOptions<EmailConfiguration> emailSetting,
+        IOptions<EmailSetting> emailSetting,
         ILogger<GmailSender> logger)
     {
         _emailSetting = emailSetting.Value;

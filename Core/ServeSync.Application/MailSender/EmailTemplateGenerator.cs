@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
-using ServeSync.Application.SeedWorks.MailSender.Interfaces;
+using ServeSync.Application.MailSender.Interfaces;
 
-namespace ServeSync.Application.SeedWorks.MailSender;
+namespace ServeSync.Application.MailSender;
 
 public class EmailTemplateGenerator : IEmailTemplateGenerator
 {

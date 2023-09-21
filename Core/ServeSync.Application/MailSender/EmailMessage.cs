@@ -1,4 +1,4 @@
-﻿namespace ServeSync.Application.SeedWorks.MailSender;
+﻿namespace ServeSync.Application.MailSender;
 
 public class EmailMessage
 {
