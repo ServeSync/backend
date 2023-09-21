@@ -28,23 +28,44 @@
 
 
     <ItemGroup>
-      <Folder Include="Services\" />
-    </ItemGroup>
-
-
-
-
-
-
-
-
-    <ItemGroup>
       <Compile Update="Models\UserAggregate\Entities\ApplicationUser.Entity.cs">
         <DependentUpon>ApplicationUser.cs</DependentUpon>
       </Compile>
       <Compile Update="Models\RoleAggregate\Entities\ApplicationRole.Entity.cs">
         <DependentUpon>ApplicationRole.cs</DependentUpon>
       </Compile>
+
+
+
+
+
+
+
+
     </ItemGroup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </Project>

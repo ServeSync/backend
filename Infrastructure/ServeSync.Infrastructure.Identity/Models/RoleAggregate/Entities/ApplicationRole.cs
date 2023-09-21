@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
+using ServeSync.Infrastructure.Identity.Models.RoleAggregate.DomainEvents;
 using ServeSync.Infrastructure.Identity.Models.RoleAggregate.Exceptions;
 
 namespace ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities;
@@ -31,6 +32,7 @@ public partial class ApplicationRole : IdentityRole
         }
         
         Permissions.Clear();
+        AddDomainEvent(new PermissionForRoleUpdatedDomainEvent(Id));
     }
     
     public void GrantPermission(Guid permissionId)
@@ -41,6 +43,7 @@ public partial class ApplicationRole : IdentityRole
         }
         
         Permissions.Add(new RolePermission(Id, permissionId));
+        AddDomainEvent(new PermissionForRoleUpdatedDomainEvent(Id));
     }
 
     public void Update(string name)

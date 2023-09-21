@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ServeSync.API.Authorization;
+using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.UseCases.Users.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Users.Queries;
 
@@ -18,7 +20,7 @@ public class ProfileController : ControllerBase
     }
     
     [HttpGet]
-    [Authorize]
+    [HasPermission(Permissions.Users.ViewProfile)]
     [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetProfile()
     {

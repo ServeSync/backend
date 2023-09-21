@@ -1,4 +1,5 @@
 ﻿using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Entities;
 
 namespace ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities;
 

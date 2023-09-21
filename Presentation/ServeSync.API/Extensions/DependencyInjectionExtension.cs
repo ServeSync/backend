@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -31,6 +32,12 @@ using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Seeder;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Settings;
+using ServeSync.Application.Caching;
+using ServeSync.Application.Identity;
+using ServeSync.Infrastructure.Caching;
+using ServeSync.Infrastructure.Identity.Caching;
+using ServeSync.Infrastructure.Identity.Caching.Interfaces;
+using ServeSync.Infrastructure.Identity.Services;
 
 namespace ServeSync.API.Extensions;
 
@@ -90,6 +97,16 @@ public static class DependencyInjectionExtensions
     
     public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddTransient<ICachingService, ServeSyncDistributedCachingService>();
+        services.AddTransient<IUserCacheManager, UserCacheManager>();
+        services.AddTransient<IPermissionCacheManager, PermissionCacheManager>();
+        
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+            options.InstanceName = "ServeSync";
+        });
+
         return services;
     }
     
@@ -154,6 +171,8 @@ public static class DependencyInjectionExtensions
         services.AddAuthorization();
 
         services.AddScoped<ICurrentUser, CurrentUser>();
+        services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
         return services;
     }
@@ -168,6 +187,8 @@ public static class DependencyInjectionExtensions
     
     public static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
+        services.AddScoped<IIdentityService, IdentityService>();
+        
         services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
