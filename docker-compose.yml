@@ -9,21 +9,29 @@
     environment:
         - ASPNETCORE_ENVIRONMENT=Production
         - ASPNETCORE_URLS=http://+:80
-        - ConnectionStrings_Default=Server=database;Database=ServeSync;User=sa;Password=pbl6@2023;TrustServerCertificate=True;
-        - ConnectionStrings_Redis=redis
+        - ConnectionStrings__Default=server=db;database=ServeSync;user=root;password=pbl6@2023
+        - ConnectionStrings__Redis=redis
+        - Jwt__Key=this_is_my_secret_key_for_authentication
+        - Jwt__ExpiresInMinute=30
+        - Jwt__RefreshTokenExpiresInDay=3
+        - Email__Username=minishop.pbl3@gmail.com
+        - Email__Password=yimcdficrfejnvfd
+        - ForgetPasswordSetting__ExpiresInMinute=30
+        - ForgetPasswordSetting__AllowedClients__0=http://localhost:4200
+        - ForgetPasswordSetting__AllowedClients__1=http://localhost:4300
+    restart: always
     depends_on:
       - db
       - redis
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mysql
     user: root
     environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=pbl6@2023
+      - MYSQL_ROOT_PASSWORD=pbl6@2023
     ports:
-      - "14433:1433"
+      - "33306:3306"
     volumes:
-      - servesync:/var/opt/mssql/data
+      - servesync:/var/lib/mysql
   
   redis:
     image: redis

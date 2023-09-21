@@ -4,12 +4,12 @@ using ServeSync.Application.SeedWorks.Data;
 
 namespace ServeSync.Infrastructure.EfCore.UnitOfWorks;
 
-public class EfCoreUnitOfWork<TDbContext> : IUnitOfWork where TDbContext : DbContext
+public class EfCoreUnitOfWork : IUnitOfWork
 {
-    private readonly TDbContext _dbContext;
+    private readonly AppDbContext _dbContext;
     private IDbContextTransaction _transaction;
     
-    public EfCoreUnitOfWork(TDbContext dbContext)
+    public EfCoreUnitOfWork(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

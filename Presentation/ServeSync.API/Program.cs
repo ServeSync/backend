@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddHttpContextAccessor()
-    .AddServices()
+    .AddServices(builder.Configuration)
     .AddApplicationCors()
     .AddDatabase(builder.Configuration, builder.Environment)
     .AddIdentity(builder.Configuration, builder.Environment)
@@ -14,7 +14,8 @@ builder.Services
     .AddSwagger()
     .AddMapper()
     .AddCqrs()
-    .AddRedisCache(builder.Configuration);
+    .AddRedisCache(builder.Configuration)
+    .AddEmailSender(builder.Configuration);
 
 builder.Services.AddControllers();
 
@@ -38,5 +39,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+await app.ApplyMigrationAsync(app.Logger);
+await app.SeedDataAsync();
 
 app.Run();

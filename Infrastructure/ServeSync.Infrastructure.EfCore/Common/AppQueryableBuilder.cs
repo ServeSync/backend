@@ -1,12 +1,12 @@
 ﻿using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Domain.SeedWorks.Models.Interfaces;
 
 namespace ServeSync.Infrastructure.EfCore.Common;
 
 public class AppQueryableBuilder<TAggregateRoot, TKey> 
-    where TAggregateRoot : AggregateRoot<TKey>
+    where TAggregateRoot : class, IAggregateRoot<TKey>
     where TKey : IEquatable<TKey>
 {
     private IQueryable<TAggregateRoot> _queryable;

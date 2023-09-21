@@ -1,16 +1,26 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Domain.SeedWorks.Models.Interfaces;
+using ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities;
+using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 
 namespace ServeSync.Infrastructure.EfCore;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
 {
     private readonly IMediator _mediator;
+    private readonly ILogger<AppDbContext> _logger;
     
-    public AppDbContext(DbContextOptions<AppDbContext> options, IMediator mediator) : base(options)
+    public AppDbContext(
+        DbContextOptions<AppDbContext> options, 
+        IMediator mediator,
+        ILogger<AppDbContext> logger) : base(options)
     {
         _mediator = mediator;
+        _logger = logger;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,20 +39,22 @@ public class AppDbContext : DbContext
 
     private async Task DispatchDomainEventsAsync()
     {
-        var entityType = typeof(Entity<>);
-        var domainEntities = ChangeTracker
-            .Entries()
-            .Where(x => x.Entity.GetType().IsGenericType && x.Entity.GetType().GetGenericTypeDefinition() == entityType)
-            .Where(x => ((dynamic)x.Entity).DomainEvents != null && ((dynamic)x.Entity).DomainEvents.Any());
+        var domainEntities = ChangeTracker.Entries<IDomainModel>()
+            .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any())
+            .ToList();
 
         var domainEvents = domainEntities
-            .Select(x => ((dynamic)x.Entity).DomainEvents)
+            .SelectMany(x => x.Entity.DomainEvents)
+            .Distinct()
             .ToList();
 
         domainEntities.ToList()
-            .ForEach(entity => ((dynamic)entity.Entity).ClearDomainEvents());
+            .ForEach(entity => entity.Entity.ClearDomainEvents());
 
         foreach (var domainEvent in domainEvents)
-            await _mediator.Publish((dynamic)domainEvent);
+        {
+            _logger.LogInformation("Dispatching domain event: {EventName}", domainEvent.GetType().Name);
+            await _mediator.Publish(domainEvent);   
+        }
     }
 }

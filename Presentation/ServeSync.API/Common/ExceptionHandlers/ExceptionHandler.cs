@@ -1,4 +1,5 @@
-﻿using ServeSync.API.Common.Dtos;
+﻿using FluentValidation;
+using ServeSync.API.Dtos.Shared;
 using ServeSync.Domain.SeedWorks.Exceptions;
 using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 
@@ -38,11 +39,13 @@ public class ExceptionHandler : IExceptionHandler
             Code = exception switch
             {
                 CoreException coreException => coreException.ErrorCode,
+                ValidationException validationException => "ValidationError",
                 _ => ErrorCodes.SystemError
             },
             Message = exception switch
             {
                 CoreException coreException => coreException.Message,
+                ValidationException validationException => validationException.Errors.First().ErrorMessage,
                 _ => _env.IsDevelopment() ? exception.Message : "Something went wrong, please try again!"
             }
         };
@@ -57,6 +60,7 @@ public class ExceptionHandler : IExceptionHandler
             ResourceAlreadyExistException => StatusCodes.Status409Conflict,
             ResourceInvalidOperationException => StatusCodes.Status400BadRequest,
             ResourceInvalidDataException => StatusCodes.Status400BadRequest,
+            ValidationException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError
         };
     }
