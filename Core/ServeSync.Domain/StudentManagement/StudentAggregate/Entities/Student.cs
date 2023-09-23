@@ -25,7 +25,7 @@ public class Student : AggregateRoot
 
     public string IdentityId { get; private set; }
 
-    public Student(
+    internal Student(
         string code,
         string fullName,
         bool gender,

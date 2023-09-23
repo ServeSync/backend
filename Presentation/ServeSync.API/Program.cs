@@ -15,7 +15,9 @@ builder.Services
     .AddMapper()
     .AddCqrs()
     .AddRedisCache(builder.Configuration)
-    .AddEmailSender(builder.Configuration);
+    .AddEmailSender(builder.Configuration)
+    .AddDomainServices()
+    .AddDataSeeders();
 
 builder.Services.AddControllers();
 

@@ -10,7 +10,7 @@ public class HomeRoom : AggregateRoot
     public Guid FacultyId { get; private set; }
     public Faculty? Faculty { get; private set; }
 
-    public HomeRoom(string name, Guid facultyId)
+    internal HomeRoom(string name, Guid facultyId)
     {
         Name = Guard.NotNullOrEmpty(name, nameof(Name));
         FacultyId = Guard.NotNull(facultyId, nameof(FacultyId));

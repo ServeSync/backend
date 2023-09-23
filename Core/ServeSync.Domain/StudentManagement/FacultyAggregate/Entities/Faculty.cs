@@ -6,7 +6,7 @@ public class Faculty : AggregateRoot
 {
     public string Name { get; set; }
 
-    public Faculty(string name)
+    internal Faculty(string name)
     {
         Name = Guard.NotNullOrEmpty(name, nameof(Name));
     }

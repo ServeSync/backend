@@ -8,7 +8,7 @@ public class EducationProgram : AggregateRoot
     public int RequiredActivityScore { get; private set; }
     public int RequiredCredit { get; private set; }
 
-    public EducationProgram(string name, int requiredActivityScore, int requiredCredit)
+    internal EducationProgram(string name, int requiredActivityScore, int requiredCredit)
     {
         Name = Guard.NotNullOrEmpty(name, nameof(Name));
         RequiredActivityScore = Guard.Positive(requiredActivityScore, nameof(RequiredActivityScore));
