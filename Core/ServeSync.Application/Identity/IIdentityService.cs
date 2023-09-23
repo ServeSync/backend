@@ -10,7 +10,7 @@ public interface IIdentityService
 
     Task<bool> HasPermissionAsync(string userId, string permission);
 
-    Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string username, string email, string password);
+    Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string email, string password, string? phone = null);
 
     Task<IdentityResult<bool>> DeleteAsync(string userId);
     

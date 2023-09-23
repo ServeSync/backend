@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using ServeSync.Domain.SeedWorks.Models;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Exceptions;
 
 namespace ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 
 public partial class ApplicationUser : IdentityUser
 {
+    public string FullName { get; private set; }
     public List<RefreshToken> RefreshToken { get; set; }
 
-    public ApplicationUser()
+    public ApplicationUser(string fullname)
     {
+        FullName = Guard.NotNullOrEmpty(fullname, nameof(FullName));
         RefreshToken = new List<RefreshToken>();
     }
 
@@ -50,5 +53,10 @@ public partial class ApplicationUser : IdentityUser
     private RefreshToken? GetRefreshToken(string accessTokenId, string refreshToken)
     {
         return RefreshToken.FirstOrDefault(x => x.AccessTokenId == accessTokenId && x.Value == refreshToken);
+    }
+
+    private ApplicationUser()
+    {
+        
     }
 }
