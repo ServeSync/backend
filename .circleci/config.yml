@@ -57,4 +57,4 @@ workflows:
               only:
                 - master
                 - dev
-      - deploy:
+      - deploy
