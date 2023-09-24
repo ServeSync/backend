@@ -1,9 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ServeSync.API.Authorization;
 using ServeSync.API.Dtos.Students;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Queries;
+using ServeSync.Infrastructure.Identity.Commons.Constants;
 
 namespace ServeSync.API.Controllers;
 
@@ -19,6 +21,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet]
+    [HasPermission(Permissions.Students.View)]
     [ProducesResponseType(typeof(PagedResultDto<StudentDetailDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllStudentsAsync([FromQuery] StudentFilterRequestDto dto)
     {
