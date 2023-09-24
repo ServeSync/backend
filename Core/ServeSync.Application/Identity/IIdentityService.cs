@@ -12,6 +12,8 @@ public interface IIdentityService
 
     Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string email, string password, string? phone = null);
 
+    Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string email, string password, string? phone = null);
+    
     Task<IdentityResult<bool>> DeleteAsync(string userId);
     
     Task<IdentityResult<bool>> GrantToRoleAsync(string userId, string role);

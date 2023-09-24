@@ -21,5 +21,9 @@
     <ItemGroup>
         <ProjectReference Include="..\ServeSync.Domain\ServeSync.Domain.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="UseCases\StudentManagement\Students\" />
+    </ItemGroup>
 
 </Project>
