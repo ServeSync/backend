@@ -8,17 +8,21 @@ public static class Permissions
 
     public static List<ApplicationPermission> Provider => new()
     {
-        new(Roles.Create, "Create role."),
-        new(Roles.View, "View roles."),
-        new(Roles.Edit, "Edit roles."),
-        new(Roles.Delete, "Delete roles."),
-        new(Roles.ViewPermission, "View permission of role."),
-        new(Roles.UpdatePermission, "Update permission for role."),
+        new(Roles.Create, "Tạo role."),
+        new(Roles.View, "Xem role."),
+        new(Roles.Edit, "Chỉnh sửa roles."),
+        new(Roles.Delete, "Xóa roles."),
+        new(Roles.ViewPermission, "Xem quyền của role."),
+        new(Roles.UpdatePermission, "Cập nhật quyền cho role."),
 
-        new(PermissionManagement.View, "View permissions."),
+        new(PermissionManagement.View, "Xem danh sách quyền."),
         
-        new(Users.ViewPermissions, "View permissions of user."),
-        new(Users.ViewProfile, "View profile of user."),
+        new(Users.ViewPermissions, "Xem quyền của người dùng."),
+        new(Users.ViewProfile, "Xem thông tin cá nhân."),
+        
+        new(Faculties.View, "Xem danh sách khoa."),
+        new(HomeRooms.View, "Xem danh sách lớp sinh hoạt."),
+        new(EducationPrograms.View, "Xem danh sách chương trình học."),
     };
 
     public static class Roles
@@ -47,6 +51,27 @@ public static class Permissions
 
         public const string ViewProfile = $"{Group}.ViewProfile";
         public const string ViewPermissions = $"{Group}.ViewPermissions";
+    }
+
+    public static class Faculties
+    {
+        public const string Group = $"{Default}.Faculties";
+        
+        public const string View = $"{Group}.View";
+    }
+    
+    public static class EducationPrograms
+    {
+        public const string Group = $"{Default}.EducationPrograms";
+        
+        public const string View = $"{Group}.View";
+    }
+    
+    public static class HomeRooms
+    {
+        public const string Group = $"{Default}.HomeRooms";
+        
+        public const string View = $"{Group}.View";
     }
 
     public static List<string> GeneratePermissionsForModule(string module)

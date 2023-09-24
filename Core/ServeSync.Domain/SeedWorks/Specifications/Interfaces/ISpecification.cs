@@ -16,6 +16,8 @@ public interface ISpecification<TEntity, TKey>
 
     bool IsSatisfiedBy(TEntity entity);
 
+    ISpecification<TEntity, TKey> AndIf(bool condition, ISpecification<TEntity, TKey> specification);
+    
     ISpecification<TEntity, TKey> And(ISpecification<TEntity, TKey> specification);
 
     Expression<Func<TEntity, bool>> ToExpression();

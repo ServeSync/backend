@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using ServeSync.Application.Identity;
 using ServeSync.Application.Identity.Dtos;
+using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Queries;
 
@@ -64,6 +65,25 @@ public class IdentityService : IIdentityService
 
         var error = result.Errors.First();
         return IdentityResult<IdentityUserDto>.Failed(error.Code, error.Description);
+    }
+
+    public async Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string email, string password, string? phone = null)
+    {
+        var createIdentityUserResult = await CreateUserAsync(fullname, username, email, password, phone);
+        if (createIdentityUserResult.IsSuccess)
+        {
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data.Id, AppRole.Student);
+            if (grantRoleResult.IsSuccess)
+            {
+                return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
+            }
+            else
+            {
+                return IdentityResult<IdentityUserDto>.Failed(grantRoleResult.Error, grantRoleResult.ErrorCode);
+            }
+        }
+
+        return createIdentityUserResult;
     }
 
     public async Task<IdentityResult<bool>> DeleteAsync(string userId)

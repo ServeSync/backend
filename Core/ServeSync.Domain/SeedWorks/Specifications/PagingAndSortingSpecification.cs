@@ -23,12 +23,35 @@ public abstract class PagingAndSortingSpecification<TEntity, TKey> : Specificati
     {
         Take = specification.Take;
         Skip = specification.Skip;
-        Sorting = specification.Sorting;
+        Sorting = specification.BuildSorting();
         IncludeExpressions = specification.IncludeExpressions;
         IncludeStrings = specification.IncludeStrings;
         IsTracking = specification.IsTracking;
     }
+    
+    protected PagingAndSortingSpecification(IPagingAndSortingSpecification<TEntity, TKey> left, ISpecification<TEntity, TKey> right)
+    {
+        Take = left.Take;
+        Skip = left.Skip;
+        Sorting = left.BuildSorting();
+        IncludeExpressions = left.IncludeExpressions;
+        IncludeStrings = left.IncludeStrings;
+        IsTracking = left.IsTracking;
+        
+        IncludeExpressions.AddRange(right.IncludeExpressions);
+        IncludeStrings.AddRange(right.IncludeStrings);
+    }
 
+    public new IPagingAndSortingSpecification<TEntity, TKey> AndIf(bool condition, ISpecification<TEntity, TKey> specification)
+    {
+        if (!condition)
+        {
+            return this;
+        }
+        
+        return new AndPagingAndSortingSpecification<TEntity, TKey>(this, specification);
+    }
+    
     public new IPagingAndSortingSpecification<TEntity, TKey> And(ISpecification<TEntity, TKey> specification)
     {
         return new AndPagingAndSortingSpecification<TEntity, TKey>(this, specification);

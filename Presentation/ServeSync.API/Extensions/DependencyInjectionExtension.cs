@@ -240,7 +240,7 @@ public static class DependencyInjectionExtensions
             config.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(ServeSyncApplicationReference)));
             config.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(ServeSyncIdentityReference)));
             
-            config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            // config.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
         
         return services;

@@ -198,7 +198,7 @@ public class StudentManagementDataSeeder : IDataSeeder
                     var email = $"{faker.Random.AlphaNumeric(9)}@gmail.com";
                     var code = faker.Random.AlphaNumeric(8);
                     
-                    var result = await _identityService.CreateUserAsync(
+                    var result = await _identityService.CreateStudentAsync(
                         fullName,
                         code,
                         email,

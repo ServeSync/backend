@@ -57,6 +57,6 @@ public partial class ApplicationUser : IdentityUser
 
     private ApplicationUser()
     {
-        
+        RefreshToken = new List<RefreshToken>();
     }
 }
