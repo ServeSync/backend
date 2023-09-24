@@ -47,12 +47,13 @@ public class IdentityService : IIdentityService
         return permissions.Contains(permission);
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string username, string email, string password)
+    public async Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string email, string password, string? phone)
     {
-        var user = new ApplicationUser()
+        var user = new ApplicationUser(fullname)
         {
             UserName = username,
-            Email = email
+            Email = email,
+            PhoneNumber = phone
         };
 
         var result = await _userManager.CreateAsync(user, password);

@@ -34,7 +34,16 @@ using ServeSync.Application.Caching;
 using ServeSync.Application.Identity;
 using ServeSync.Application.MailSender;
 using ServeSync.Application.MailSender.Interfaces;
+using ServeSync.Application.Seeders;
 using ServeSync.Application.SeedWorks.Behavior;
+using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
+using ServeSync.Domain.StudentManagement.EducationProgramAggregate.DomainServices;
+using ServeSync.Domain.StudentManagement.FacultyAggregate;
+using ServeSync.Domain.StudentManagement.FacultyAggregate.DomainServices;
+using ServeSync.Domain.StudentManagement.HomeRoomAggregate;
+using ServeSync.Domain.StudentManagement.HomeRoomAggregate.DomainServices;
+using ServeSync.Domain.StudentManagement.StudentAggregate;
+using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
 using ServeSync.Infrastructure.Caching;
 using ServeSync.Infrastructure.Identity.Caching;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
@@ -134,6 +143,10 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
+        services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<IEducationProgramRepository, EducationProgramRepository>();
+        services.AddScoped<IHomeRoomRepository, HomeRoomRepository>();
+        services.AddScoped<IFacultyRepository, FacultyRepository>();
         
         return services;
     }
@@ -254,6 +267,23 @@ public static class DependencyInjectionExtensions
         services.Configure<DataProtectionTokenProviderOptions>(opt =>
             opt.TokenLifespan = TimeSpan.FromMinutes(int.Parse(configuration["ForgetPasswordSetting:ExpiresInMinute"]))
         );
+
+        return services;
+    }
+
+    public static IServiceCollection AddDomainServices(this IServiceCollection services)
+    {
+        services.AddScoped<IStudentDomainService, StudentDomainService>();
+        services.AddScoped<IFacultyDomainService, FacultyDomainService>();
+        services.AddScoped<IEducationProgramDomainService, EducationProgramDomainService>();
+        services.AddScoped<IHomeRoomDomainService, HomeRoomDomainService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddDataSeeders(this IServiceCollection services)
+    {
+        services.AddScoped<IDataSeeder, StudentManagementDataSeeder>();
 
         return services;
     }

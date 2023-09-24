@@ -7,7 +7,7 @@ public abstract class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot<TKey> w
     
 }
 
-public abstract class AggregateRoot : AggregateRoot<Guid>
+public abstract class AggregateRoot : Entity, IAggregateRoot
 {
     
 }

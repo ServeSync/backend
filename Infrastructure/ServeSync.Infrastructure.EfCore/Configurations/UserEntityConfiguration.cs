@@ -8,5 +8,7 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>
 {
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
+        builder.Property(x => x.FullName)
+               .IsRequired();
     }
 }
