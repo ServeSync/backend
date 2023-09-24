@@ -58,5 +58,3 @@ workflows:
                 - master
                 - dev
       - deploy:
-          requires:
-            - build-and-deploy-api-image
