@@ -23,6 +23,8 @@ public static class Permissions
         new(Faculties.View, "Xem danh sách khoa."),
         new(HomeRooms.View, "Xem danh sách lớp sinh hoạt."),
         new(EducationPrograms.View, "Xem danh sách chương trình học."),
+        
+        new(Students.View, "Xem danh sách sinh viên."),
     };
 
     public static class Roles
@@ -70,6 +72,13 @@ public static class Permissions
     public static class HomeRooms
     {
         public const string Group = $"{Default}.HomeRooms";
+        
+        public const string View = $"{Group}.View";
+    }
+    
+    public static class Students
+    {
+        public const string Group = $"{Default}.Students";
         
         public const string View = $"{Group}.View";
     }
