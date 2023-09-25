@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Dtos.Students;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Queries;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
@@ -41,5 +42,14 @@ public class StudentController : ControllerBase
     {
         var student = await _mediator.Send(new GetStudentByIdQuery(id));
         return Ok(student);
+    }
+    
+    [HttpDelete("{id:guid}")]
+    [HasPermission(Permissions.Students.Delete)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteStudentByIdAsync(Guid id)
+    {
+        await _mediator.Send(new DeleteStudentCommand(id));
+        return Ok();
     }
 }

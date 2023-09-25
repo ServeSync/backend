@@ -18,4 +18,6 @@ public interface IStudentDomainService
         string identityId,
         string? homeTown = null,
         string? address = null);
+
+    void Delete(Student student);
 }
