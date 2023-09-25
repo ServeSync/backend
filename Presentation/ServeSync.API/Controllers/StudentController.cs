@@ -32,5 +32,14 @@ public class StudentController : ControllerBase
         var students = await _mediator.Send(query);
         return Ok(students);
     }
-    
+
+
+    [HttpGet("{id:guid}")]
+    [HasPermission(Permissions.Students.View)]
+    [ProducesResponseType(typeof(FlatStudentDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStudentByIdAsync(Guid id)
+    {
+        var student = await _mediator.Send(new GetStudentByIdQuery(id));
+        return Ok(student);
+    }
 }

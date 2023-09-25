@@ -4,4 +4,5 @@ public static class ErrorCodes
 {
     public const string DuplicateStudentCode = "Student:000001";
     public const string DuplicateStudentCitizenIdentifier = "Student:000002";
+    public const string StudentNotFound = "Student:000003";
 }
