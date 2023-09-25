@@ -2,6 +2,7 @@
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.Exceptions;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.Exceptions;
+using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Specifications;
@@ -63,7 +64,13 @@ public class StudentDomainService : IStudentDomainService
         await _studentRepository.InsertAsync(student);
         return student;
     }
-    
+
+    public void Delete(Student student)
+    {
+        _studentRepository.Delete(student);
+        student.AddDomainEvent(new StudentDeletedDomainEvent(student.Id, student.IdentityId));
+    }
+
     private async Task CheckDuplicateCodeAsync(string code)
     {
         if (await _studentRepository.AnyAsync(new StudentByCodeSpecification(code)))
