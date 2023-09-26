@@ -3,6 +3,7 @@ using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.Models.PermissionAggregate;
 using ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Entities;
+using ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Specifications;
 using ServeSync.Infrastructure.Identity.Models.RoleAggregate;
 
 namespace ServeSync.Infrastructure.Identity.Seeder;
@@ -30,6 +31,7 @@ public class PermissionDataSeeder : IDataSeeder
     {
         await SyncPermissionAsync();
         await SeedPermissionForAdminRoleAsync();
+        await SeedPermissionForStudentRoleAsync();
     }
 
     private async Task SyncPermissionAsync()
@@ -79,6 +81,35 @@ public class PermissionDataSeeder : IDataSeeder
         }
 
         _roleRepository.Update(adminRole);
+        await _unitOfWork.CommitAsync();
+    }
+
+    private async Task SeedPermissionForStudentRoleAsync()
+    {
+        _logger.LogInformation("Begin seeding not granted permissions for admin...");
+
+        var studentRole = await _roleRepository.FindByNameAsync(AppRole.Student);
+        if (studentRole == null)
+        {
+            _logger.LogWarning("Student role not found.");
+            return;
+        }
+        
+        var permissions = await _permissionRepository.FilterAsync(new ReadOnlyPermissionSpecification());
+        var notGrantedPermissions = permissions.ExceptBy(studentRole.Permissions.Select(x => x.PermissionId), x => x.Id);
+
+        if (!notGrantedPermissions.Any())
+        {
+            _logger.LogInformation("Student role has all permissions.");
+            return;   
+        }
+        
+        foreach (var permission in notGrantedPermissions)
+        {
+            studentRole.GrantPermission(permission.Id);
+        }
+
+        _roleRepository.Update(studentRole);
         await _unitOfWork.CommitAsync();
     }
 }
