@@ -17,6 +17,9 @@
         - Email__Username=minishop.pbl3@gmail.com
         - Email__Password=yimcdficrfejnvfd
         - ForgetPasswordSetting__ExpiresInMinute=30
+        - Cloudinary__CloudName=dboijruhe
+        - Cloudinary__ApiKey=431114562135728
+        - Cloudinary__ApiSecret=tmDw4SrmffqZp2hA2tiDDZgemTU
         - ForgetPasswordSetting__AllowedClients__0=http://localhost:4200
         - ForgetPasswordSetting__AllowedClients__1=http://localhost:4300
     restart: always

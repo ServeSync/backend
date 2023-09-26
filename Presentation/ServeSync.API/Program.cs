@@ -17,7 +17,8 @@ builder.Services
     .AddRedisCache(builder.Configuration)
     .AddEmailSender(builder.Configuration)
     .AddDomainServices()
-    .AddDataSeeders();
+    .AddDataSeeders()
+    .AddCloudinary(builder.Configuration);
 
 builder.Services.AddControllers();
 

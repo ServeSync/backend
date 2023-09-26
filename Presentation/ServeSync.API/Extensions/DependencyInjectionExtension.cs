@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using System.Text;
+using CloudinaryDotNet;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +34,7 @@ using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Settings;
 using ServeSync.Application.Caching;
 using ServeSync.Application.Identity;
+using ServeSync.Application.ImageUploader;
 using ServeSync.Application.MailSender;
 using ServeSync.Application.MailSender.Interfaces;
 using ServeSync.Application.Seeders;
@@ -45,6 +48,7 @@ using ServeSync.Domain.StudentManagement.HomeRoomAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
 using ServeSync.Infrastructure.Caching;
+using ServeSync.Infrastructure.Cloudinary;
 using ServeSync.Infrastructure.Identity.Caching;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
 using ServeSync.Infrastructure.Identity.Services;
@@ -240,8 +244,11 @@ public static class DependencyInjectionExtensions
             config.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(ServeSyncApplicationReference)));
             config.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(ServeSyncIdentityReference)));
             
-            // config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            config.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
+
+        services.AddValidatorsFromAssembly(Assembly.GetAssembly(typeof(ServeSyncApplicationReference)));
+        services.AddValidatorsFromAssembly(Assembly.GetAssembly(typeof(ServeSyncIdentityReference)));
         
         return services;
     }
@@ -285,6 +292,26 @@ public static class DependencyInjectionExtensions
     {
         services.AddScoped<IDataSeeder, StudentManagementDataSeeder>();
 
+        return services;
+    }
+    
+    public static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<CloudinaryDotNet.Cloudinary>(provider =>
+        {
+            var cloudinarySection = configuration.GetSection("Cloudinary");
+            var account = new Account()
+            {
+                Cloud = cloudinarySection["CloudName"],
+                ApiKey = cloudinarySection["ApiKey"],
+                ApiSecret = cloudinarySection["ApiSecret"]
+            };
+            
+            return new CloudinaryDotNet.Cloudinary(account);
+        });
+
+        services.AddScoped<IImageUploader, CloudinaryImageUploader>();
+        
         return services;
     }
 }
