@@ -32,7 +32,7 @@ public partial class ApplicationRole : IdentityRole
         }
         
         Permissions.Clear();
-        AddDomainEvent(new PermissionForRoleUpdatedDomainEvent(Id));
+        AddDomainEvent(new PermissionForRoleUpdatedDomainEvent(Name));
     }
     
     public void GrantPermission(Guid permissionId)
@@ -43,7 +43,7 @@ public partial class ApplicationRole : IdentityRole
         }
         
         Permissions.Add(new RolePermission(Id, permissionId));
-        AddDomainEvent(new PermissionForRoleUpdatedDomainEvent(Id));
+        AddDomainEvent(new PermissionForRoleUpdatedDomainEvent(Name));
     }
 
     public void Update(string name)
@@ -53,6 +53,7 @@ public partial class ApplicationRole : IdentityRole
             throw new AdminRoleAccessDeniedException();    
         }
         
+        AddDomainEvent(new RoleNameUpdatedDomainEvent(Name));
         Name = name;
     }
 

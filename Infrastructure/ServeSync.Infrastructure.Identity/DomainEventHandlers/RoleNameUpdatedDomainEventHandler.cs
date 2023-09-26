@@ -5,12 +5,12 @@ using ServeSync.Infrastructure.Identity.Models.RoleAggregate.DomainEvents;
 
 namespace ServeSync.Infrastructure.Identity.DomainEventHandlers;
 
-public class PermissionForRoleUpdatedDomainEventHandler : IDomainEventHandler<PermissionForRoleUpdatedDomainEvent>
+public class RoleNameUpdatedDomainEventHandler : IDomainEventHandler<RoleNameUpdatedDomainEvent>
 {
     private readonly IPermissionCacheManager _permissionCacheManager;
     private readonly ILogger<PermissionForRoleUpdatedDomainEventHandler> _logger;
     
-    public PermissionForRoleUpdatedDomainEventHandler(
+    public RoleNameUpdatedDomainEventHandler(
         IPermissionCacheManager permissionCacheManager,
         ILogger<PermissionForRoleUpdatedDomainEventHandler> logger)
     {
@@ -18,7 +18,7 @@ public class PermissionForRoleUpdatedDomainEventHandler : IDomainEventHandler<Pe
         _logger = logger;
     }
     
-    public async Task Handle(PermissionForRoleUpdatedDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(RoleNameUpdatedDomainEvent notification, CancellationToken cancellationToken)
     {
         _logger.LogInformation("[Cache] Remove permission cache data for role {Role}!", notification.Name);
         

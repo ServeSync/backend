@@ -6,7 +6,7 @@ public interface IPermissionCacheManager
 {
     Task<IEnumerable<PermissionDto>?> GetForRoleAsync(string role);
     
-    Task SetForRoleAsync(string roleId, IEnumerable<PermissionDto> permissions);
+    Task SetForRoleAsync(string role, IEnumerable<PermissionDto> permissions);
     
-    Task RemoveForRoleAsync(string roleId);
+    Task RemoveForRoleAsync(string role);
 }
