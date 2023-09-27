@@ -1,4 +1,5 @@
-﻿using ServeSync.Application.SeedWorks.Cqrs;
+﻿using Microsoft.Extensions.Logging;
+using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
@@ -11,15 +12,18 @@ public class DeleteStudentCommandHandler : ICommandHandler<DeleteStudentCommand>
     private readonly IStudentRepository _studentRepository;
     private readonly IStudentDomainService _studentDomainService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<DeleteStudentCommandHandler> _logger;
     
     public DeleteStudentCommandHandler(
         IStudentRepository studentRepository,
         IStudentDomainService studentDomainService, 
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILogger<DeleteStudentCommandHandler> logger)
     {
         _studentRepository = studentRepository;
         _studentDomainService = studentDomainService;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
     
     public async Task Handle(DeleteStudentCommand request, CancellationToken cancellationToken)
@@ -32,5 +36,7 @@ public class DeleteStudentCommandHandler : ICommandHandler<DeleteStudentCommand>
         
         _studentDomainService.Delete(student);
         await _unitOfWork.CommitAsync();
+        
+        _logger.LogInformation("Student with id {StudentId} was deleted!", request.Id);
     }
 }

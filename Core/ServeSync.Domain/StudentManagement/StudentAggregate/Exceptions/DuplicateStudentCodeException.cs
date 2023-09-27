@@ -6,7 +6,7 @@ namespace ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
 public class DuplicateStudentCodeException : ResourceAlreadyExistException
 {
     public DuplicateStudentCodeException(string code) 
-        : base(nameof(Student), code, ErrorCodes.DuplicateStudentCode)
+        : base(nameof(Student), nameof(Student.Code), code, ErrorCodes.DuplicateStudentCode)
     {
     }
 }

@@ -21,7 +21,10 @@ public class StudentManagementMapperProfile : Profile
         CreateMap<HomeRoom, HomeRoomDto>();
 
         CreateMap<Student, BasicStudentDto>();
-        CreateMap<Student, FlatStudentDto>();
+        CreateMap<Student, FlatStudentDto>()
+            .ForMember(dest => dest.FacultyId,
+                opt => opt.MapFrom(src => src.HomeRoom.FacultyId));
+        
         CreateMap<Student, StudentDetailDto>()
             .ForMember(dest => dest.HomeRoom,
                 opt => opt.MapFrom(src => new HomeRoomDto()

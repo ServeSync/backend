@@ -4,6 +4,7 @@ using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Specifications;
 
 namespace ServeSync.Application.UseCases.StudentManagement.Students.Queries;
 
@@ -20,7 +21,7 @@ public class GetStudentByIdQueryHandler : IQueryHandler<GetStudentByIdQuery, Fla
     
     public async Task<FlatStudentDto> Handle(GetStudentByIdQuery request, CancellationToken cancellationToken)
     {
-        var student = await _studentRepository.FindByIdAsync(request.Id);
+        var student = await _studentRepository.FindAsync(new StudentByIdSpecification(request.Id));
         if (student == null)
         {
             throw new StudentNotFoundException(request.Id);

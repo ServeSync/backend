@@ -1,6 +1,7 @@
 ﻿using ServeSync.Domain.SeedWorks.Models;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.Entities;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.Entities;
+using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 
 namespace ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 
@@ -23,7 +24,7 @@ public class Student : AggregateRoot
     public Guid EducationProgramId { get; private set; }
     public EducationProgram? EducationProgram { get; private set; }
 
-    public string IdentityId { get; private set; }
+    public string IdentityId { get; private set; } = null!;
 
     internal Student(
         string code,
@@ -36,7 +37,6 @@ public class Student : AggregateRoot
         string phone,
         Guid homeRoomId,
         Guid educationProgramId,
-        string identityId,
         string? homeTown = null,
         string? address = null)
     {
@@ -50,9 +50,15 @@ public class Student : AggregateRoot
         Phone = Guard.NotNullOrEmpty(phone, nameof(Phone));
         HomeRoomId = Guard.NotNull(homeRoomId, nameof(HomeRoomId));
         EducationProgramId = Guard.NotNull(educationProgramId, nameof(EducationProgramId));
-        IdentityId = Guard.NotNullOrEmpty(identityId, nameof(IdentityId));
         HomeTown = homeTown;
         Address = address;
+        
+        AddDomainEvent(new NewStudentCreatedDomainEvent(this));
+    }
+
+    internal void WithIdentity(string identityId)
+    {
+        IdentityId = Guard.NotNullOrEmpty(identityId, nameof(IdentityId));;
     }
 
     private Student()

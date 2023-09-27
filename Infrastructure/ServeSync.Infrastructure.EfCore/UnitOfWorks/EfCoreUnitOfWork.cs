@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using ServeSync.Application.SeedWorks.Data;
 
 namespace ServeSync.Infrastructure.EfCore.UnitOfWorks;
@@ -8,10 +9,12 @@ public class EfCoreUnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _dbContext;
     private IDbContextTransaction _transaction;
+    private readonly IServiceProvider _serviceProvider;
     
-    public EfCoreUnitOfWork(AppDbContext dbContext)
+    public EfCoreUnitOfWork(AppDbContext dbContext, IServiceProvider serviceProvider)
     {
         _dbContext = dbContext;
+        _serviceProvider = serviceProvider;
     }
 
     public Task<int> CommitAsync()
@@ -51,5 +54,11 @@ public class EfCoreUnitOfWork : IUnitOfWork
             await _transaction.RollbackAsync();
             await _transaction.DisposeAsync();
         }
+    }
+
+    public IUnitOfWork InitScope()
+    {
+        var scope = _serviceProvider.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     }
 }

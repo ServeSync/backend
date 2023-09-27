@@ -34,8 +34,21 @@ public class StudentController : ControllerBase
         return Ok(students);
     }
 
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateStudentAsync(CreateStudentDto dto)
+    {
+        var command = new CreateStudentCommand(
+            dto.Code, dto.FullName, dto.Gender, dto.Birth, dto.Email, dto.Phone,
+            dto.Address, dto.ImageUrl, dto.HomeTown, dto.CitizenId, dto.HomeRoomId, dto.EducationProgramId);
+        
+        var studentId = await _mediator.Send(command);
+        return CreatedAtAction(nameof(GetStudentByIdAsync), new { id = studentId }, null);
+    }
+
 
     [HttpGet("{id:guid}")]
+    [ActionName(nameof(GetStudentByIdAsync))]
     [HasPermission(Permissions.Students.View)]
     [ProducesResponseType(typeof(FlatStudentDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStudentByIdAsync(Guid id)

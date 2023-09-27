@@ -35,8 +35,7 @@ public class StudentDomainService : IStudentDomainService
         string email, 
         string phone, 
         Guid homeRoomId, 
-        Guid educationProgramId, 
-        string identityId, 
+        Guid educationProgramId,
         string? homeTown = null,
         string? address = null)
     {
@@ -44,6 +43,7 @@ public class StudentDomainService : IStudentDomainService
         await CheckEducationProgramExistsAsync(educationProgramId);
         
         await CheckDuplicateCodeAsync(code);
+        await CheckDuplicateEmailAsync(email);
         await CheckDuplicateCitizenIdentifierAsync(citizenId);
 
         var student = new Student(
@@ -56,8 +56,7 @@ public class StudentDomainService : IStudentDomainService
             email, 
             phone, 
             homeRoomId, 
-            educationProgramId, 
-            identityId, 
+            educationProgramId,
             homeTown,
             address);
 
@@ -69,6 +68,14 @@ public class StudentDomainService : IStudentDomainService
     {
         _studentRepository.Delete(student);
         student.AddDomainEvent(new StudentDeletedDomainEvent(student.Id, student.IdentityId));
+    }
+
+    public async Task SetIdentityAsync(Student student, string identityId)
+    {
+        await CheckDuplicateIdentityAsync(identityId);
+        
+        student.WithIdentity(identityId);
+        _studentRepository.Update(student);
     }
 
     private async Task CheckDuplicateCodeAsync(string code)
@@ -84,6 +91,22 @@ public class StudentDomainService : IStudentDomainService
         if (await _studentRepository.AnyAsync(new StudentByCitizenIdentifierSpecification(citizenId)))
         {
             throw new DuplicateStudentCitizenIdentifierException(citizenId);
+        }
+    }
+
+    private async Task CheckDuplicateEmailAsync(string email)
+    {
+        if (await _studentRepository.AnyAsync(new StudentByEmailSpecification(email)))
+        {
+            throw new DuplicateStudentEmailException(email);
+        }
+    }
+
+    private async Task CheckDuplicateIdentityAsync(string identityId)
+    {
+        if (await _studentRepository.AnyAsync(new StudentByIdentitySpecification(identityId)))
+        {
+            throw new DuplicateStudentIdentityException(identityId);
         }
     }
     
