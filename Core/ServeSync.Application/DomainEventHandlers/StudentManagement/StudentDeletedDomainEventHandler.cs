@@ -20,8 +20,6 @@ public class StudentDeletedDomainEventHandler : IDomainEventHandler<StudentDelet
     
     public async Task Handle(StudentDeletedDomainEvent @event, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Student with id {StudentId} was deleted!", @event.Id);
-        
         var result = await _identityService.DeleteAsync(@event.IdentityId);
         if (result.IsSuccess)
         {

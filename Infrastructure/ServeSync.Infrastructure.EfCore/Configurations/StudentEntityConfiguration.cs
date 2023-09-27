@@ -53,7 +53,7 @@ public class StudentEntityConfiguration : IEntityTypeConfiguration<Student>
               .IsRequired();
 
        builder.Property(x => x.IdentityId)
-              .IsRequired();
+              .IsRequired(false);
 
        builder.HasOne(x => x.HomeRoom)
               .WithMany()

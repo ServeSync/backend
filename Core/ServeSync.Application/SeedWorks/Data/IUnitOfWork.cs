@@ -9,4 +9,6 @@ public interface IUnitOfWork
     Task CommitTransactionAsync(bool autoRollbackOnFail = false);
     
     Task RollbackTransactionAsync();
+
+    IUnitOfWork InitScope();
 }

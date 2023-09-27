@@ -15,9 +15,10 @@ public interface IStudentDomainService
         string phone,
         Guid homeRoomId,
         Guid educationProgramId,
-        string identityId,
         string? homeTown = null,
         string? address = null);
 
     void Delete(Student student);
+
+    Task SetIdentityAsync(Student student, string identityId);
 }

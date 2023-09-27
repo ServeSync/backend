@@ -27,8 +27,6 @@ public class StudentManagementDataSeeder : IDataSeeder
     private readonly IHomeRoomDomainService _homeRoomDomainService;
     private readonly IStudentDomainService _studentDomainService;
 
-    private readonly IIdentityService _identityService;
-
     private readonly ILogger<StudentManagementDataSeeder> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -41,7 +39,6 @@ public class StudentManagementDataSeeder : IDataSeeder
         IFacultyDomainService facultyDomainService,
         IHomeRoomDomainService homeRoomDomainService,
         IStudentDomainService studentDomainService,
-        IIdentityService identityService,
         ILogger<StudentManagementDataSeeder> logger,
         IUnitOfWork unitOfWork)
     {
@@ -53,7 +50,6 @@ public class StudentManagementDataSeeder : IDataSeeder
         _facultyDomainService = facultyDomainService;
         _homeRoomDomainService = homeRoomDomainService;
         _studentDomainService = studentDomainService;
-        _identityService = identityService;
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
@@ -198,33 +194,23 @@ public class StudentManagementDataSeeder : IDataSeeder
                     var email = $"{faker.Random.AlphaNumeric(9)}@gmail.com";
                     var code = faker.Random.AlphaNumeric(8);
                     
-                    var result = await _identityService.CreateStudentAsync(
-                        fullName,
+                    await _studentDomainService.CreateAsync(
                         code,
+                        fullName,
+                        faker.Random.Bool(),
+                        faker.Person.DateOfBirth,
+                        faker.Person.Avatar,
+                        faker.Random.AlphaNumeric(8),
                         email,
-                        "Student");
-
-                    if (result.IsSuccess)
-                    {
-                        await _studentDomainService.CreateAsync(
-                            code,
-                            fullName,
-                            faker.Random.Bool(),
-                            faker.Person.DateOfBirth,
-                            faker.Person.Avatar,
-                            faker.Random.AlphaNumeric(8),
-                            email,
-                            faker.Person.Phone,
-                            homeroom.Id,
-                            educationPrograms[faker.Random.Int(0, educationPrograms.Count - 1)].Id,
-                            result.Data.Id,
-                            faker.Address.City(),
-                            faker.Address.FullAddress());    
-                    }
-                }    
+                        faker.Person.Phone,
+                        homeroom.Id,
+                        educationPrograms[faker.Random.Int(0, educationPrograms.Count - 1)].Id,
+                        faker.Address.City(),
+                        faker.Address.FullAddress());
+                }
             }
-
-            await _unitOfWork.CommitTransactionAsync(true);
+            
+            await _unitOfWork.CommitTransactionAsync(false);
         
             _logger.LogInformation("Seeded students data successfully!");
         }
