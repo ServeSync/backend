@@ -89,7 +89,7 @@ public class EfCoreBasicReadOnlyRepository<TAggregateRoot, TKey> : EfCoreSpecifi
     
     protected virtual IQueryable<TAggregateRoot> GetQueryable(bool tracking = true)
     {
-        return new AppQueryableBuilder<TAggregateRoot, TKey>(DbSet, tracking).Build();
+        return new AppQueryableBuilder<TAggregateRoot, TKey>(DbSet, false).Build();
     }
 }
 

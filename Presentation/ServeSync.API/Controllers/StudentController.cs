@@ -35,6 +35,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPost]
+    [HasPermission(Permissions.Students.Create)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateStudentAsync(CreateStudentDto dto)
     {
@@ -55,6 +56,19 @@ public class StudentController : ControllerBase
     {
         var student = await _mediator.Send(new GetStudentByIdQuery(id));
         return Ok(student);
+    }
+    
+    [HttpPut("{id:guid}")]
+    [HasPermission(Permissions.Students.Edit)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateStudentByIdAsync(Guid id, StudentUpdateDto dto)
+    {
+        var command = new UpdateStudentCommand(
+            id, dto.Code, dto.FullName, dto.Gender, dto.Birth, dto.Email, dto.Phone,
+            dto.Address, dto.ImageUrl, dto.CitizenId, dto.HomeTown, dto.HomeRoomId, dto.EducationProgramId);
+        
+        await _mediator.Send(command);
+        return NoContent();
     }
     
     [HttpDelete("{id:guid}")]

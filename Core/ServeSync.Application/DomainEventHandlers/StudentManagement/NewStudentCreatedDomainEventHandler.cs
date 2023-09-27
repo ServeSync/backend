@@ -33,7 +33,7 @@ public class NewStudentCreatedDomainEventHandler : IDomainEventHandler<NewStuden
 
         if (!result.IsSuccess)
         {
-            _logger.LogError("Can not create identity user for student {StudentId}", @event.Student.Id);
+            _logger.LogError("Can not create identity user for student {StudentId}: {Message}", @event.Student.Id, result.Error);
             throw new ResourceInvalidOperationException(result.Error!, result.ErrorCode!);
         }
 

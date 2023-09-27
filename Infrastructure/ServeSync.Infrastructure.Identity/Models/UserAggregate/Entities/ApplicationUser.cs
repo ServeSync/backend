@@ -15,6 +15,11 @@ public partial class ApplicationUser : IdentityUser
         RefreshToken = new List<RefreshToken>();
     }
 
+    public void UpdateFullName(string fullName)
+    {
+        FullName = Guard.NotNullOrEmpty(fullName, nameof(FullName));
+    }
+
     public void AddRefreshToken(string accessTokenId, string refreshToken, DateTime expireAt)
     {
         if (GetRefreshToken(accessTokenId, refreshToken) != null)
