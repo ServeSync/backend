@@ -86,6 +86,46 @@ public class IdentityService : IIdentityService
         return createIdentityUserResult;
     }
 
+    public async Task<IdentityResult<bool>> UpdateAsync(string userId, string fullname, string email)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityUserNotFound, $"User with id {userId} not found!");
+        }
+        
+        user.UpdateFullName(fullname);
+        user.Email = email;
+        
+        var result = await _userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            return IdentityResult<bool>.Success(true);
+        }
+        
+        var error = result.Errors.First();
+        return IdentityResult<bool>.Failed(error.Code, error.Description);
+    }
+
+    public async Task<IdentityResult<bool>> UpdateUserNameAsync(string userId, string username)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityUserNotFound, $"User with id {userId} not found!");
+        }
+        
+        user.UserName = username;
+        var result = await _userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            return IdentityResult<bool>.Success(true);
+        }
+        
+        var error = result.Errors.First();
+        return IdentityResult<bool>.Failed(error.Code, error.Description);
+    }
+
     public async Task<IdentityResult<bool>> DeleteAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);

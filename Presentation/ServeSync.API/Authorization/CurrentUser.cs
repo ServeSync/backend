@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
+using MediatR;
 using ServeSync.Application.SeedWorks.Sessions;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
+using ServeSync.Infrastructure.Identity.UseCases.Roles.Queries;
 
 namespace ServeSync.API.Authorization;
 
@@ -12,15 +14,28 @@ public class CurrentUser : ICurrentUser
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IMediator _mediator;
 
-    public CurrentUser(IHttpContextAccessor httpContextAccessor)
+    public CurrentUser(IHttpContextAccessor httpContextAccessor, IMediator mediator)
     {
         _httpContextAccessor = httpContextAccessor;
+        _mediator = mediator;
     }
 
-    public bool IsInRole(string role)
+    public async Task<bool> IsInRoleAsync(string role)
     {
-        return _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
+        var roles = await _mediator.Send(new GetAllRoleForUserQuery(Id));
+        return roles.Contains(role);
+    }
+
+    public Task<bool> IsStudentAsync()
+    {
+        return IsInRoleAsync(AppRole.Student);
+    }
+
+    public Task<bool> IsAdminAsync()
+    {
+        return IsInRoleAsync(AppRole.Admin);
     }
 
     public string GetClaim(string claimType)

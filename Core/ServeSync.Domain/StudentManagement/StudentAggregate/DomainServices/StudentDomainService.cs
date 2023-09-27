@@ -64,6 +64,55 @@ public class StudentDomainService : IStudentDomainService
         return student;
     }
 
+    public async Task<Student> UpdateContactInfoAsync(
+        Student student, 
+        string fullName, 
+        bool gender, 
+        DateTime dateOfBirth, 
+        string imageUrl,
+        string citizenId,
+        string email, 
+        string phone, 
+        string? homeTown = null, 
+        string? address = null)
+    {
+        if (student.Email != email)
+        {
+            await CheckDuplicateEmailAsync(email);
+        }
+        
+        if (student.CitizenId != citizenId)
+        {
+            await CheckDuplicateCitizenIdentifierAsync(citizenId);
+        }
+        
+        student.UpdateContactInfo(fullName, gender, dateOfBirth, imageUrl, citizenId, email, phone, homeTown, address);
+        _studentRepository.Update(student);
+        return student;
+    }
+
+    public async Task<Student> UpdateEducationInfoAsync(Student student, string code, Guid homeRoomId, Guid educationProgramId)
+    {
+        if (student.Code != code)
+        {
+            await CheckDuplicateCodeAsync(code);
+        }
+        
+        if (student.HomeRoomId != homeRoomId)
+        {
+            await CheckHomeRoomExistsAsync(homeRoomId);
+        }
+        
+        if (student.EducationProgramId != educationProgramId)
+        {
+            await CheckEducationProgramExistsAsync(educationProgramId);
+        }
+        
+        student.UpdateEducationInfo(code, educationProgramId, homeRoomId);
+        _studentRepository.Update(student);
+        return student;
+    }
+
     public void Delete(Student student)
     {
         _studentRepository.Delete(student);

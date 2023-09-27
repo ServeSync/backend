@@ -13,6 +13,10 @@ public interface IIdentityService
     Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string email, string password, string? phone = null);
 
     Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string email, string password, string? phone = null);
+
+    Task<IdentityResult<bool>> UpdateAsync(string userId, string fullname, string email);
+    
+    Task<IdentityResult<bool>> UpdateUserNameAsync(string userId, string username);
     
     Task<IdentityResult<bool>> DeleteAsync(string userId);
     
