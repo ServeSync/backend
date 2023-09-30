@@ -3,7 +3,7 @@ using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 
 namespace ServeSync.Application.UseCases.StudentManagement.Students.Queries;
 
-public class GetStudentByIdentityQuery : IQuery<FlatStudentDto>
+public class GetStudentByIdentityQuery : IQuery<StudentDetailDto>
 {
     
 }
