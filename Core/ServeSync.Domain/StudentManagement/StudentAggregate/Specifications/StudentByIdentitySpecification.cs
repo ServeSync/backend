@@ -11,6 +11,10 @@ public class StudentByIdentitySpecification : Specification<Student, Guid>
     public StudentByIdentitySpecification(string identityId)
     {
         _identityId = identityId;
+        
+        AddInclude(x => x.HomeRoom);
+        AddInclude(x => x.EducationProgram);
+        AddInclude("HomeRoom.Faculty");
     }
     
     public override Expression<Func<Student, bool>> ToExpression()
