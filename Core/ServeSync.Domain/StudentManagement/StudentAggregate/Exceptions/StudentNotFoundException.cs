@@ -8,4 +8,8 @@ public class StudentNotFoundException : ResourceNotFoundException
     public StudentNotFoundException(Guid id) : base(nameof(Student), id, ErrorCodes.StudentNotFound)
     {
     }
+    
+    public StudentNotFoundException(string id) : base(nameof(Student), nameof(Student.IdentityId),id, ErrorCodes.StudentNotFound)
+    {
+    }
 }

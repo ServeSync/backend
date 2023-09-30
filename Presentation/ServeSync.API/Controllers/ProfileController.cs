@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
+using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
+using ServeSync.Application.UseCases.StudentManagement.Students.Queries;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.UseCases.Users.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Users.Queries;
@@ -22,9 +24,18 @@ public class ProfileController : ControllerBase
     [HttpGet]
     [HasPermission(Permissions.Users.ViewProfile)]
     [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetProfile()
+    public async Task<IActionResult> GetProfileAsync()
     {
         var userInfo = await _mediator.Send(new GetUserInfoQuery());
         return Ok(userInfo);
+    }
+    
+    [HttpGet("student")]
+    [HasPermission(Permissions.Students.View)]
+    [ProducesResponseType(typeof(FlatStudentDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStudentProfileAsync()
+    {
+        var student = await _mediator.Send(new GetStudentByIdentityQuery());
+        return Ok(student);
     }
 }
