@@ -74,7 +74,7 @@ public class Student : AggregateRoot
     {
         if (IsFullNameChanged(fullName) || IsEmailChanged(email))
         {
-            AddDomainEvent(new StudentContactInfoUpdatedDomainEvent(Id, FullName, Email, IdentityId));    
+            AddDomainEvent(new StudentContactInfoUpdatedDomainEvent(Id, fullName, email, IdentityId));    
         }
         
         FullName = Guard.NotNullOrEmpty(fullName, nameof(FullName));

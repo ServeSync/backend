@@ -28,6 +28,8 @@ public static class Permissions
         new(Students.Delete, "Xóa sinh viên."),
         new(Students.Create, "Tạo sinh viên."),
         new(Students.Edit, "Chỉnh sửa sinh viên."),
+        new(Students.ViewProfile, "Xem thông tin cá nhân của sinh viên."),
+        new(Students.EditProfile, "Chỉnh sửa thông tin cá nhân của sinh viên."),
     };
 
     public static class Roles
@@ -87,6 +89,9 @@ public static class Permissions
         public const string Create = $"{Group}.Create";
         public const string Delete = $"{Group}.Delete";
         public const string Edit = $"{Group}.Edit";
+        
+        public const string ViewProfile = $"{Group}.ViewProfile";
+        public const string EditProfile = $"{Group}.EditProfile";
     }
 
     public static List<string> GeneratePermissionsForModule(string module)
