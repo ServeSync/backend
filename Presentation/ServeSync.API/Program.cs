@@ -18,7 +18,8 @@ builder.Services
     .AddEmailSender(builder.Configuration)
     .AddDomainServices()
     .AddDataSeeders()
-    .AddCloudinary(builder.Configuration);
+    .AddCloudinary(builder.Configuration)
+    .AddHangFireBackGroundJob(builder.Configuration);
 
 builder.Services.AddControllers();
 

@@ -2,12 +2,15 @@
 using System.Text;
 using CloudinaryDotNet;
 using FluentValidation;
+using Hangfire;
+using Hangfire.MySql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MySqlConnector;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.ExceptionHandlers;
 using ServeSync.Application;
@@ -39,6 +42,7 @@ using ServeSync.Application.MailSender;
 using ServeSync.Application.MailSender.Interfaces;
 using ServeSync.Application.Seeders;
 using ServeSync.Application.SeedWorks.Behavior;
+using ServeSync.Application.SeedWorks.Schedulers;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.FacultyAggregate;
@@ -49,6 +53,7 @@ using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
 using ServeSync.Infrastructure.Caching;
 using ServeSync.Infrastructure.Cloudinary;
+using ServeSync.Infrastructure.HangFire;
 using ServeSync.Infrastructure.Identity.Caching;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
@@ -314,5 +319,42 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IImageUploader, CloudinaryImageUploader>();
         
         return services;
+    }
+
+    public static IServiceCollection AddHangFireBackGroundJob(this IServiceCollection services, IConfiguration configuration)
+    {
+        InitHangFireDb(configuration);
+        
+        services.AddHangfire(config => config
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseStorage(
+                    new MySqlStorage(configuration.GetConnectionString("HangFire"), new MySqlStorageOptions()
+                    {
+                        QueuePollInterval = TimeSpan.FromSeconds(10),
+                        JobExpirationCheckInterval = TimeSpan.FromHours(1),
+                        CountersAggregateInterval = TimeSpan.FromMinutes(5),
+                        TransactionTimeout = TimeSpan.FromMinutes(1),
+                        PrepareSchemaIfNecessary = true
+                    })
+                ));
+
+        services.AddScoped<IBackGroundJobManager, HangFireBackGroundJobManager>();
+        services.AddScoped<IBackGroundJobPublisher, BackGroundJobPublisher>();
+        services.AddHangfireServer();
+        
+        return services;
+    }
+
+    private static void InitHangFireDb(IConfiguration configuration)
+    {
+        using var connection = new MySqlConnection(configuration.GetConnectionString("HangFireMaster"));
+        connection.Open();
+            
+        var dbName = new MySqlConnection(configuration.GetConnectionString("HangFire")).Database;
+        
+        using var command = new MySqlCommand($"CREATE DATABASE IF NOT EXISTS {dbName};", connection);
+        command.ExecuteNonQuery();
     }
 }

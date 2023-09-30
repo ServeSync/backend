@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using ServeSync.Application.Common.Helpers;
@@ -61,7 +60,7 @@ public class RequestForgetPasswordTokenCommandHandler : ICommandHandler<RequestF
             {"token", Encryptor.Base64Encode<ForgetPasswordTokenDto>(token) }
         });
 
-        await _emailSender.SendAsync(new EmailMessage()
+        _emailSender.Push(new EmailMessage()
         {
             ToAddress = user.Email,
             Subject = "[ServeSync] Thay đổi mật khẩu",

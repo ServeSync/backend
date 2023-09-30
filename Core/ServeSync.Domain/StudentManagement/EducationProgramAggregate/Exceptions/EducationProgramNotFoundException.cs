@@ -9,4 +9,9 @@ public class EducationProgramNotFoundException : ResourceNotFoundException
         : base(nameof(EducationProgram), id, ErrorCodes.EducationProgramNotFound)
     {
     }
+    
+    public EducationProgramNotFoundException(string name) 
+        : base(nameof(EducationProgram), nameof(EducationProgram.Name),name, ErrorCodes.EducationProgramNotFound)
+    {
+    }
 }

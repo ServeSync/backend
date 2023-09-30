@@ -9,4 +9,9 @@ public class HomeRoomNotFoundException : ResourceNotFoundException
         : base(nameof(HomeRoom), id, ErrorCodes.HomeRoomNotFound)
     {
     }
+    
+    public HomeRoomNotFoundException(string name) 
+        : base(nameof(HomeRoom), nameof(HomeRoom.Name),name, ErrorCodes.HomeRoomNotFound)
+    {
+    }
 }

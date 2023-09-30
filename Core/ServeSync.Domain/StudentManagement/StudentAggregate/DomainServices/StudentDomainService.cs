@@ -37,7 +37,8 @@ public class StudentDomainService : IStudentDomainService
         Guid homeRoomId, 
         Guid educationProgramId,
         string? homeTown = null,
-        string? address = null)
+        string? address = null,
+        bool autoSave = true)
     {
         await CheckHomeRoomExistsAsync(homeRoomId);
         await CheckEducationProgramExistsAsync(educationProgramId);
@@ -60,7 +61,10 @@ public class StudentDomainService : IStudentDomainService
             homeTown,
             address);
 
-        await _studentRepository.InsertAsync(student);
+        if (autoSave)
+        {
+            await _studentRepository.InsertAsync(student);
+        }
         return student;
     }
 
