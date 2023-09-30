@@ -6,55 +6,59 @@ using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Specifications;
 
 namespace ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 
-public class UpdateStudentCommandHandler : ICommandHandler<UpdateStudentCommand>
+public class UpdateStudentByIdentityCommandHandler : ICommandHandler<UpdateStudentByIdentityCommand>
 {
     private readonly IStudentDomainService _studentDomainService;
     private readonly IStudentRepository _studentRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<UpdateStudentCommandHandler> _logger;
+    private readonly ICurrentUser _currentUser;
+    private readonly ILogger<UpdateStudentByIdentityCommandHandler> _logger;
     
-    public UpdateStudentCommandHandler(
+    public UpdateStudentByIdentityCommandHandler(
         IStudentDomainService studentDomainService, 
         IStudentRepository studentRepository,
         IUnitOfWork unitOfWork,
-        ILogger<UpdateStudentCommandHandler> logger)
+        ICurrentUser currentUser,
+        ILogger<UpdateStudentByIdentityCommandHandler> logger)
     {
         _studentDomainService = studentDomainService;
         _studentRepository = studentRepository;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
         _logger = logger;
     }
+
     
-    public async Task Handle(UpdateStudentCommand request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateStudentByIdentityCommand request, CancellationToken cancellationToken)
     {
-        var student = await _studentRepository.FindByIdAsync(request.Id);
+        if (!await _currentUser.IsStudentAsync())
+        {
+            throw new ResourceAccessDeniedException("Only student can access this resource.");
+        }
+        
+        var student = await _studentRepository.FindAsync(new StudentByIdentitySpecification(_currentUser.Id));
         if (student == null)
         {
-            throw new StudentNotFoundException(request.Id);
+            throw new StudentNotFoundException(_currentUser.Id);
         }
-
+        
         await _studentDomainService.UpdateContactInfoAsync(
             student, 
             request.FullName, 
             request.Gender, 
-            request.Birth,
+            request.DateOfBirth,
             request.ImageUrl, 
             request.CitizenId, 
             request.Email, 
             request.Phone, 
             request.HomeTown, 
             request.Address);
-        
-        await _studentDomainService.UpdateEducationInfoAsync(
-            student, 
-            request.Code, 
-            request.HomeRoomId, 
-            request.EducationProgramId);
-        
         await _unitOfWork.CommitAsync();
+        
         _logger.LogInformation("Updated student information with id '{StudentId}'", student.Id);
     }
 }
