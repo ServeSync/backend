@@ -46,6 +46,15 @@ public class StudentController : ControllerBase
         var studentId = await _mediator.Send(command);
         return CreatedAtAction(nameof(GetStudentByIdAsync), new { id = studentId }, null);
     }
+    
+    [HttpPost("import")]
+    // [HasPermission(Permissions.Students.Create)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ImportStudentsAsync([FromForm] IFormFile file)
+    {
+        await _mediator.Send(new ImportStudentFromCsvCommand(file));
+        return NoContent();
+    }
 
 
     [HttpGet("{id:guid}")]
