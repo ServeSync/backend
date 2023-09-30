@@ -10,7 +10,7 @@ using ServeSync.Domain.StudentManagement.StudentAggregate.Specifications;
 
 namespace ServeSync.Application.UseCases.StudentManagement.Students.Queries;
 
-public class GetStudentByIdentityQueryHandler : IQueryHandler<GetStudentByIdentityQuery, FlatStudentDto>
+public class GetStudentByIdentityQueryHandler : IQueryHandler<GetStudentByIdentityQuery, StudentDetailDto>
 {
     private readonly IBasicReadOnlyRepository<Student, Guid> _studentRepository;
     private readonly IMapper _mapper;
@@ -26,7 +26,7 @@ public class GetStudentByIdentityQueryHandler : IQueryHandler<GetStudentByIdenti
         _currentUser = currentUser;
     }
     
-    public async Task<FlatStudentDto> Handle(GetStudentByIdentityQuery request, CancellationToken cancellationToken)
+    public async Task<StudentDetailDto> Handle(GetStudentByIdentityQuery request, CancellationToken cancellationToken)
     {
         if (!await _currentUser.IsStudentAsync())
         {
@@ -39,6 +39,6 @@ public class GetStudentByIdentityQueryHandler : IQueryHandler<GetStudentByIdenti
             throw new StudentNotFoundException(_currentUser.Id);
         }
         
-        return _mapper.Map<FlatStudentDto>(student);
+        return _mapper.Map<StudentDetailDto>(student);
     }
 }

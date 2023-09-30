@@ -24,7 +24,7 @@ public class StudentManagementMapperProfile : Profile
         CreateMap<Student, FlatStudentDto>()
             .ForMember(dest => dest.FacultyId,
                 opt => opt.MapFrom(src => src.HomeRoom.FacultyId));
-        
+
         CreateMap<Student, StudentDetailDto>()
             .ForMember(dest => dest.HomeRoom,
                 opt => opt.MapFrom(src => new HomeRoomDto()
@@ -33,7 +33,13 @@ public class StudentManagementMapperProfile : Profile
                 opt => opt.MapFrom(src => new EducationProgramDto()
                     { Id = src.EducationProgramId, Name = src.EducationProgram.Name }))
             .ForMember(dest => dest.Faculty,
-                opt => opt.MapFrom(src => new FacultyDto() 
-                    { Id = src.HomeRoom.FacultyId, Name = src.HomeRoom.Faculty.Name }));
+                opt => opt.MapFrom(src => new FacultyDto()
+                    { Id = src.HomeRoom.FacultyId, Name = src.HomeRoom.Faculty.Name }))
+            .ForMember(dest => dest.EducationProgram, opt => opt.MapFrom(src => new EducationProgramDto()
+                    {
+                        Id = src.EducationProgramId, Name = src.EducationProgram.Name,
+                        RequiredActivityScore = src.EducationProgram.RequiredActivityScore,
+                        RequiredCredit = src.EducationProgram.RequiredCredit
+                    }));
     }
 }
