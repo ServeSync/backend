@@ -7,17 +7,24 @@ namespace ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 public partial class ApplicationUser : IdentityUser
 {
     public string FullName { get; private set; }
+    public string AvatarUrl { get; private set; }
     public List<RefreshToken> RefreshToken { get; set; }
 
-    public ApplicationUser(string fullname)
+    public ApplicationUser(string fullname, string avatarUrl = null)
     {
         FullName = Guard.NotNullOrEmpty(fullname, nameof(FullName));
+        AvatarUrl = string.IsNullOrWhiteSpace(avatarUrl) ? "https://static.thenounproject.com/png/5034901-200.png" : avatarUrl;
         RefreshToken = new List<RefreshToken>();
     }
 
     public void UpdateFullName(string fullName)
     {
         FullName = Guard.NotNullOrEmpty(fullName, nameof(FullName));
+    }
+
+    public void SetAvatar(string avatar)
+    {
+        AvatarUrl = Guard.NotNullOrWhiteSpace(avatar, nameof(AvatarUrl));
     }
 
     public void AddRefreshToken(string accessTokenId, string refreshToken, DateTime expireAt)

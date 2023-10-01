@@ -28,6 +28,7 @@ public class NewStudentCreatedDomainEventHandler : IDomainEventHandler<NewStuden
         var result = await _identityService.CreateStudentAsync(
             @event.Student.FullName,
             @event.Student.Code,
+            @event.Student.ImageUrl,
             @event.Student.Email,
             @event.Student.Code);
 

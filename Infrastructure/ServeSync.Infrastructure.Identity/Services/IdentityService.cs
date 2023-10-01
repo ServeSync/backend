@@ -48,9 +48,9 @@ public class IdentityService : IIdentityService
         return permissions.Contains(permission);
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string email, string password, string? phone)
+    public async Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone)
     {
-        var user = new ApplicationUser(fullname)
+        var user = new ApplicationUser(fullname, avatarUrl)
         {
             UserName = username,
             Email = email,
@@ -67,9 +67,9 @@ public class IdentityService : IIdentityService
         return IdentityResult<IdentityUserDto>.Failed(error.Code, error.Description);
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string email, string password, string? phone = null)
+    public async Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone = null)
     {
-        var createIdentityUserResult = await CreateUserAsync(fullname, username, email, password, phone);
+        var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone);
         if (createIdentityUserResult.IsSuccess)
         {
             var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data.Id, AppRole.Student);
@@ -86,7 +86,7 @@ public class IdentityService : IIdentityService
         return createIdentityUserResult;
     }
 
-    public async Task<IdentityResult<bool>> UpdateAsync(string userId, string fullname, string email)
+    public async Task<IdentityResult<bool>> UpdateAsync(string userId, string fullname, string email, string avatarUrl)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -95,6 +95,7 @@ public class IdentityService : IIdentityService
         }
         
         user.UpdateFullName(fullname);
+        user.SetAvatar(avatarUrl);
         user.Email = email;
         
         var result = await _userManager.UpdateAsync(user);

@@ -39,5 +39,9 @@ public class ImportStudentFromCsvCommandHandler : ICommandHandler<ImportStudentF
         {
             throw new ResourceInvalidDataException($"Could not convert {e.Text} to appropriate type!");
         }
+        catch (HeaderValidationException e)
+        {
+            throw new ResourceInvalidDataException("Invalid csv format!");
+        }
     }
 }

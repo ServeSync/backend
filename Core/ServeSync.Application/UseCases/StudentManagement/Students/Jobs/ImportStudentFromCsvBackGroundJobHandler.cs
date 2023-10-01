@@ -44,7 +44,7 @@ public class ImportStudentFromCsvBackGroundJobHandler : IBackGroundJobHandler<Im
 
         var homeRoomIdByName = await GetIncludedHomeRooms(job);
         var educationProgramIdByName = await GetIncludedEducationPrograms(job);
-
+        
         foreach (var student in job.Students)
         {
             try
@@ -71,10 +71,7 @@ public class ImportStudentFromCsvBackGroundJobHandler : IBackGroundJobHandler<Im
                     homeRoomIdByName[student.HomeRoom],
                     educationProgramIdByName[student.EducationProgram],
                     student.HomeTown,
-                    student.Address,
-                    autoSave: false);
-
-                await _studentRepository.InsertAsync(createdStudent);
+                    student.Address);
             }
             catch (CoreException e)
             {

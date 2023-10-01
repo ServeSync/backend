@@ -21,7 +21,7 @@ public class StudentContactInfoUpdatedDomainEventHandler : IDomainEventHandler<S
     
     public async Task Handle(StudentContactInfoUpdatedDomainEvent @event, CancellationToken cancellationToken)
     {
-        var result = await _identityService.UpdateAsync(@event.IdentityId, @event.FullName, @event.Email);
+        var result = await _identityService.UpdateAsync(@event.IdentityId, @event.FullName, @event.Email, @event.ImageUrl);
         if (!result.IsSuccess)
         {
             _logger.LogError("Can not update contact info of identity user for student {StudentId}: {Message}", @event.Id, result.Error);

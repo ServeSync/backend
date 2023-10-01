@@ -10,5 +10,8 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>
     {
         builder.Property(x => x.FullName)
                .IsRequired();
+
+        builder.Property(x => x.AvatarUrl)
+               .IsRequired();
     }
 }

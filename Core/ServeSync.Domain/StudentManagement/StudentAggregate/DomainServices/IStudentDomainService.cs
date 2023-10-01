@@ -16,8 +16,7 @@ public interface IStudentDomainService
         Guid homeRoomId,
         Guid educationProgramId,
         string? homeTown = null,
-        string? address = null,
-        bool autoSave = true);
+        string? address = null);
 
     Task<Student> UpdateContactInfoAsync(
         Student student,

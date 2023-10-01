@@ -72,9 +72,9 @@ public class Student : AggregateRoot
         string? homeTown = null, 
         string? address = null)
     {
-        if (IsFullNameChanged(fullName) || IsEmailChanged(email))
+        if (IsFullNameChanged(fullName) || IsEmailChanged(email) || IsImageUrlChanged(imageUrl))
         {
-            AddDomainEvent(new StudentContactInfoUpdatedDomainEvent(Id, fullName, email, IdentityId));    
+            AddDomainEvent(new StudentContactInfoUpdatedDomainEvent(Id, fullName, email, imageUrl, IdentityId));    
         }
         
         FullName = Guard.NotNullOrEmpty(fullName, nameof(FullName));
@@ -113,6 +113,11 @@ public class Student : AggregateRoot
     private bool IsEmailChanged(string email)
     {
         return Email != email;
+    }
+
+    private bool IsImageUrlChanged(string imageUrl)
+    {
+        return ImageUrl != imageUrl;
     }
 
     private Student()
