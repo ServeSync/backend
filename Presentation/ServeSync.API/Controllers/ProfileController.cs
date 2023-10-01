@@ -33,7 +33,7 @@ public class ProfileController : ControllerBase
     
     [HttpGet("student")]
     [HasPermission(Permissions.Students.ViewProfile)]
-    [ProducesResponseType(typeof(FlatStudentDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(StudentDetailDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStudentProfileAsync()
     {
         var student = await _mediator.Send(new GetStudentByIdentityQuery());
@@ -45,9 +45,7 @@ public class ProfileController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateStudentProfileAsync(StudentEditProfileDto dto)
     {
-        var command = new UpdateStudentByIdentityCommand(
-            dto.FullName, dto.Gender, dto.Birth, dto.ImageUrl, dto.CitizenId, 
-            dto.Email, dto.Phone, dto.HomeTown, dto.Address);
+        var command = new UpdateStudentByIdentityCommand(dto.ImageUrl, dto.Email, dto.Phone, dto.HomeTown, dto.Address);
         
         await _mediator.Send(command);
         return NoContent();
