@@ -48,11 +48,11 @@ public class UpdateStudentByIdentityCommandHandler : ICommandHandler<UpdateStude
         
         await _studentDomainService.UpdateContactInfoAsync(
             student, 
-            request.FullName, 
-            request.Gender, 
-            request.DateOfBirth,
+            student.FullName, 
+            student.Gender, 
+            student.DateOfBirth,
             request.ImageUrl, 
-            request.CitizenId, 
+            student.CitizenId, 
             request.Email, 
             request.Phone, 
             request.HomeTown, 

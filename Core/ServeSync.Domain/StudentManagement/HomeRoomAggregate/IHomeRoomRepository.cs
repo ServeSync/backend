@@ -5,5 +5,5 @@ namespace ServeSync.Domain.StudentManagement.HomeRoomAggregate;
 
 public interface IHomeRoomRepository : IRepository<HomeRoom>
 {
-    
+    Task<IList<HomeRoom>> FindByFacultyAsync(Guid? facultyId);
 }
