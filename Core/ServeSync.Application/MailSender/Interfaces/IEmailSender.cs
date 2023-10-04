@@ -3,4 +3,6 @@
 public interface IEmailSender
 {
     Task SendAsync(EmailMessage emailMessage);
+    
+    void Push(EmailMessage emailMessage);
 }

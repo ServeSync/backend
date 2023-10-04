@@ -94,7 +94,7 @@ public class GetAllPermissionForUserQueryHandler : IQueryHandler<GetAllPermissio
             var specification = new PermissionInSpecification(role.Permissions.Select(x => x.PermissionId));
             permissions = _mapper.Map<IEnumerable<PermissionDto>>(await _permissionRepository.FilterAsync(specification));
             
-            await _permissionCacheManager.SetForRoleAsync(role.Id, permissions);
+            await _permissionCacheManager.SetForRoleAsync(role.Name, permissions);
         }
 
         return permissions;

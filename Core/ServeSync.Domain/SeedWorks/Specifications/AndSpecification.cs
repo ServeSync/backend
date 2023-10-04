@@ -13,7 +13,7 @@ public class AndSpecification<TEntity, TKey> : Specification<TEntity, TKey>
 
     private readonly ISpecification<TEntity, TKey> _right;
 
-    public AndSpecification(ISpecification<TEntity, TKey> left, ISpecification<TEntity, TKey> right) : base(left)
+    public AndSpecification(ISpecification<TEntity, TKey> left, ISpecification<TEntity, TKey> right) : base(left, right)
     {
         _left = left;
         _right = right;

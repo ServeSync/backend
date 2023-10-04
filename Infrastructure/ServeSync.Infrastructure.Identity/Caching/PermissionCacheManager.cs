@@ -1,4 +1,4 @@
-﻿using ServeSync.Application.Caching;
+﻿using ServeSync.Application.Caching.Interfaces;
 using ServeSync.Application.Common.Helpers;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Dtos;
@@ -20,15 +20,15 @@ public class PermissionCacheManager : IPermissionCacheManager
         return _cacheService.GetRecordAsync<IEnumerable<PermissionDto>?>(key);
     }
 
-    public Task SetForRoleAsync(string roleId, IEnumerable<PermissionDto> permissions)
+    public Task SetForRoleAsync(string role, IEnumerable<PermissionDto> permissions)
     {
-        var key = KeyGenerator.Generate("PermissionRole", roleId);
+        var key = KeyGenerator.Generate("PermissionRole", role);
         return _cacheService.SetRecordAsync<IEnumerable<PermissionDto>?>(key, permissions, TimeSpan.FromMinutes(30));
     }
 
-    public Task RemoveForRoleAsync(string roleId)
+    public Task RemoveForRoleAsync(string role)
     {
-        var key = KeyGenerator.Generate("PermissionRole", roleId);
+        var key = KeyGenerator.Generate("PermissionRole", role);
         return _cacheService.RemoveRecordAsync(key);
     }
 }

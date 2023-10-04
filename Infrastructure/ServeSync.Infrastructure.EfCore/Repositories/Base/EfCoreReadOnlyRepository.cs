@@ -36,7 +36,7 @@ public class EfCoreReadOnlyRepository<TAggregateRoot, TKey> : EfCoreBasicReadOnl
 
     protected override IQueryable<TAggregateRoot> GetQueryable(bool tracking = true)
     {
-        return new AppQueryableBuilder<TAggregateRoot, TKey>(DbSet, tracking)
+        return new AppQueryableBuilder<TAggregateRoot, TKey>(DbSet, true)
             .IncludeProp(_defaultIncludeExpressions)
             .IncludeProp(_defaultIncludeStrings)
             .Build();

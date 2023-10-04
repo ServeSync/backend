@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ServeSync.Application.Caching;
+using ServeSync.Application.Caching.Interfaces;
 using ServeSync.Application.Common.Helpers;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
 

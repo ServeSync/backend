@@ -11,12 +11,17 @@
         - ASPNETCORE_URLS=http://+:80
         - ConnectionStrings__Default=server=db;database=ServeSync;user=root;password=pbl6@2023
         - ConnectionStrings__Redis=redis
+        - ConnectionStrings__HangFire=server=localhost;database=ServeSync_HangFire;user=root;password=pbl6@2023
+        - ConnectionStrings__HangFireMaster=server=localhost;database=sys;user=root;password=pbl6@2023
         - Jwt__Key=this_is_my_secret_key_for_authentication
         - Jwt__ExpiresInMinute=30
         - Jwt__RefreshTokenExpiresInDay=3
         - Email__Username=minishop.pbl3@gmail.com
         - Email__Password=yimcdficrfejnvfd
         - ForgetPasswordSetting__ExpiresInMinute=30
+        - Cloudinary__CloudName=dboijruhe
+        - Cloudinary__ApiKey=431114562135728
+        - Cloudinary__ApiSecret=tmDw4SrmffqZp2hA2tiDDZgemTU
         - ForgetPasswordSetting__AllowedClients__0=http://localhost:4200
         - ForgetPasswordSetting__AllowedClients__1=http://localhost:4300
     restart: always

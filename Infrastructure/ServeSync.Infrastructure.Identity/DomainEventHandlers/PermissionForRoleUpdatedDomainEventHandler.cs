@@ -20,8 +20,8 @@ public class PermissionForRoleUpdatedDomainEventHandler : IDomainEventHandler<Pe
     
     public async Task Handle(PermissionForRoleUpdatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("[Cache] Remove permission cache data for role {RoleId}!", notification.RoleId);
+        _logger.LogInformation("[Cache] Remove permission cache data for role {Role}!", notification.Name);
         
-        await _permissionCacheManager.RemoveForRoleAsync(notification.RoleId);
+        await _permissionCacheManager.RemoveForRoleAsync(notification.Name);
     }
 }

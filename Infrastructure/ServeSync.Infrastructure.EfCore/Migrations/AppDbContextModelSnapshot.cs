@@ -121,6 +121,134 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.EducationProgramAggregate.Entities.EducationProgram", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("RequiredActivityScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequiredCredit")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EducationProgram");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.FacultyAggregate.Entities.Faculty", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Faculty");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.HomeRoomAggregate.Entities.HomeRoom", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("FacultyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FacultyId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("HomeRoom");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.Student", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CitizenId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("EducationProgramId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("Gender")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid>("HomeRoomId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("HomeTown")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("IdentityId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CitizenId")
+                        .IsUnique();
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("EducationProgramId");
+
+                    b.HasIndex("HomeRoomId");
+
+                    b.ToTable("Student");
+                });
+
             modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Entities.ApplicationPermission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -192,6 +320,10 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("AvatarUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
@@ -202,6 +334,10 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("tinyint(1)");
@@ -331,6 +467,36 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.HomeRoomAggregate.Entities.HomeRoom", b =>
+                {
+                    b.HasOne("ServeSync.Domain.StudentManagement.FacultyAggregate.Entities.Faculty", "Faculty")
+                        .WithMany()
+                        .HasForeignKey("FacultyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Faculty");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.Student", b =>
+                {
+                    b.HasOne("ServeSync.Domain.StudentManagement.EducationProgramAggregate.Entities.EducationProgram", "EducationProgram")
+                        .WithMany()
+                        .HasForeignKey("EducationProgramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServeSync.Domain.StudentManagement.HomeRoomAggregate.Entities.HomeRoom", "HomeRoom")
+                        .WithMany()
+                        .HasForeignKey("HomeRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EducationProgram");
+
+                    b.Navigation("HomeRoom");
                 });
 
             modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities.RolePermission", b =>

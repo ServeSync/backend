@@ -26,10 +26,30 @@ public abstract class Specification<TEntity, TKey> : ISpecification<TEntity, TKe
         IncludeExpressions = specification.IncludeExpressions;
         IncludeStrings = specification.IncludeStrings;
     }
+    
+    protected Specification(ISpecification<TEntity, TKey> left, ISpecification<TEntity, TKey> right)
+    {
+        IsTracking = left.IsTracking;
+        IncludeExpressions = left.IncludeExpressions;
+        IncludeStrings = left.IncludeStrings;
+        
+        IncludeExpressions.AddRange(right.IncludeExpressions);
+        IncludeStrings.AddRange(right.IncludeStrings);
+    }
 
     public bool IsSatisfiedBy(TEntity entity)
     {
         return ToExpression().Compile().Invoke(entity);
+    }
+    
+    public ISpecification<TEntity, TKey> AndIf(bool condition, ISpecification<TEntity, TKey> specification)
+    {
+        if (!condition)
+        {
+            return this;
+        }
+        
+        return new AndSpecification<TEntity, TKey>(this, specification);
     }
     
     public ISpecification<TEntity, TKey> And(ISpecification<TEntity, TKey> specification)

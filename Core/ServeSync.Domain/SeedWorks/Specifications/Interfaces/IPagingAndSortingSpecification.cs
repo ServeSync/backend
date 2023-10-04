@@ -13,6 +13,8 @@ public interface IPagingAndSortingSpecification<TEntity, TKey> : ISpecification<
 
     string BuildSorting();
 
+    new IPagingAndSortingSpecification<TEntity, TKey> AndIf(bool condition, ISpecification<TEntity, TKey> specification);
+    
     new IPagingAndSortingSpecification<TEntity, TKey> And(ISpecification<TEntity, TKey> specification);
 }
 

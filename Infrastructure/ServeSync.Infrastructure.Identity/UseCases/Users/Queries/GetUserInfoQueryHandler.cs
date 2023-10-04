@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Sessions;
-using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Exceptions;
-using ServeSync.Infrastructure.Identity.Models.UserAggregate.Specifications;
 using ServeSync.Infrastructure.Identity.UseCases.Users.Dtos;
 
 namespace ServeSync.Infrastructure.Identity.UseCases.Users.Queries;
@@ -36,7 +33,9 @@ public class GetUserInfoQueryHandler : IQueryHandler<GetUserInfoQuery, UserInfoD
         return new UserInfoDto()
         {
             Id = user.Id,
+            FullName = user.FullName,
             Email = user.Email,
+            AvatarUrl = user.AvatarUrl,
             Roles = roles
         };
     }

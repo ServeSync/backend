@@ -1,11 +1,16 @@
 ﻿using System.Reflection;
 using System.Text;
+using CloudinaryDotNet;
+using FluentValidation;
+using Hangfire;
+using Hangfire.MySql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MySqlConnector;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.ExceptionHandlers;
 using ServeSync.Application;
@@ -31,13 +36,28 @@ using ServeSync.Infrastructure.Identity.Seeder;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Settings;
 using ServeSync.Application.Caching;
+using ServeSync.Application.Caching.Interfaces;
 using ServeSync.Application.Identity;
+using ServeSync.Application.ImageUploader;
 using ServeSync.Application.MailSender;
 using ServeSync.Application.MailSender.Interfaces;
+using ServeSync.Application.Seeders;
 using ServeSync.Application.SeedWorks.Behavior;
+using ServeSync.Application.SeedWorks.Schedulers;
+using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
+using ServeSync.Domain.StudentManagement.EducationProgramAggregate.DomainServices;
+using ServeSync.Domain.StudentManagement.FacultyAggregate;
+using ServeSync.Domain.StudentManagement.FacultyAggregate.DomainServices;
+using ServeSync.Domain.StudentManagement.HomeRoomAggregate;
+using ServeSync.Domain.StudentManagement.HomeRoomAggregate.DomainServices;
+using ServeSync.Domain.StudentManagement.StudentAggregate;
+using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
 using ServeSync.Infrastructure.Caching;
+using ServeSync.Infrastructure.Cloudinary;
+using ServeSync.Infrastructure.HangFire;
 using ServeSync.Infrastructure.Identity.Caching;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
+using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.Services;
 
 namespace ServeSync.API.Extensions;
@@ -99,6 +119,9 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<ICachingService, ServeSyncDistributedCachingService>();
+        services.AddTransient<IEducationCachingManager, EducationCachingManager>();
+        services.AddTransient<IHomeRoomCachingManager, HomeRoomCachingManager>();
+        services.AddTransient<IFacultyCachingManager, FacultyCachingManager>();
         services.AddTransient<IUserCacheManager, UserCacheManager>();
         services.AddTransient<IPermissionCacheManager, PermissionCacheManager>();
         
@@ -134,6 +157,10 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
+        services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<IEducationProgramRepository, EducationProgramRepository>();
+        services.AddScoped<IHomeRoomRepository, HomeRoomRepository>();
+        services.AddScoped<IFacultyRepository, FacultyRepository>();
         
         return services;
     }
@@ -229,6 +256,9 @@ public static class DependencyInjectionExtensions
             
             config.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
+
+        services.AddValidatorsFromAssembly(Assembly.GetAssembly(typeof(ServeSyncApplicationReference)));
+        services.AddValidatorsFromAssembly(Assembly.GetAssembly(typeof(ServeSyncIdentityReference)));
         
         return services;
     }
@@ -256,5 +286,79 @@ public static class DependencyInjectionExtensions
         );
 
         return services;
+    }
+
+    public static IServiceCollection AddDomainServices(this IServiceCollection services)
+    {
+        services.AddScoped<IStudentDomainService, StudentDomainService>();
+        services.AddScoped<IFacultyDomainService, FacultyDomainService>();
+        services.AddScoped<IEducationProgramDomainService, EducationProgramDomainService>();
+        services.AddScoped<IHomeRoomDomainService, HomeRoomDomainService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddDataSeeders(this IServiceCollection services)
+    {
+        services.AddScoped<IDataSeeder, StudentManagementDataSeeder>();
+
+        return services;
+    }
+    
+    public static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<CloudinaryDotNet.Cloudinary>(provider =>
+        {
+            var cloudinarySection = configuration.GetSection("Cloudinary");
+            var account = new Account()
+            {
+                Cloud = cloudinarySection["CloudName"],
+                ApiKey = cloudinarySection["ApiKey"],
+                ApiSecret = cloudinarySection["ApiSecret"]
+            };
+            
+            return new CloudinaryDotNet.Cloudinary(account);
+        });
+
+        services.AddScoped<IImageUploader, CloudinaryImageUploader>();
+        
+        return services;
+    }
+
+    public static IServiceCollection AddHangFireBackGroundJob(this IServiceCollection services, IConfiguration configuration)
+    {
+        InitHangFireDb(configuration);
+        
+        services.AddHangfire(config => config
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseStorage(
+                    new MySqlStorage(configuration.GetConnectionString("HangFire"), new MySqlStorageOptions()
+                    {
+                        QueuePollInterval = TimeSpan.FromSeconds(10),
+                        JobExpirationCheckInterval = TimeSpan.FromHours(1),
+                        CountersAggregateInterval = TimeSpan.FromMinutes(5),
+                        TransactionTimeout = TimeSpan.FromMinutes(1),
+                        PrepareSchemaIfNecessary = true
+                    })
+                ));
+
+        services.AddScoped<IBackGroundJobManager, HangFireBackGroundJobManager>();
+        services.AddScoped<IBackGroundJobPublisher, BackGroundJobPublisher>();
+        services.AddHangfireServer();
+        
+        return services;
+    }
+
+    private static void InitHangFireDb(IConfiguration configuration)
+    {
+        using var connection = new MySqlConnection(configuration.GetConnectionString("HangFireMaster"));
+        connection.Open();
+            
+        var dbName = new MySqlConnection(configuration.GetConnectionString("HangFire")).Database;
+        
+        using var command = new MySqlCommand($"CREATE DATABASE IF NOT EXISTS {dbName};", connection);
+        command.ExecuteNonQuery();
     }
 }

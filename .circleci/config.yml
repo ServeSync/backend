@@ -37,6 +37,14 @@ jobs:
             TAG=0.1.$CIRCLE_BUILD_NUM
             docker push $DOCKER_USER/servesync_api:latest
             docker push $DOCKER_USER/servesync_api:$TAG
+  deploy:
+    machine:
+      image: ubuntu-2204:2022.10.2
+    steps:
+      - run:
+          name: Deploy over ssh
+          command: |
+            ssh $SSH_USER@$SSH_HOST "cd /usr/src/servesync && sudo ./deploy-api.sh"
 workflows:
   deploy-api:
     jobs:
@@ -48,3 +56,12 @@ workflows:
             branches:
               only:
                 - master
+                - dev
+      - deploy:
+          requires:
+            - build-and-deploy-api-image
+          filters:
+            branches:
+              only:
+                - master
+                - dev

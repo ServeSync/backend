@@ -5,5 +5,5 @@ namespace ServeSync.Infrastructure.Identity.Models.PermissionAggregate;
 
 public interface IPermissionRepository : IRepository<ApplicationPermission, Guid>
 {
-    
+    Task<IList<ApplicationPermission>> FilterAsync(string name);
 }

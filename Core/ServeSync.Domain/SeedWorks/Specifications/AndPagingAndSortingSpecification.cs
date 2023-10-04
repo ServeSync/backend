@@ -13,7 +13,7 @@ public class AndPagingAndSortingSpecification<TEntity, TKey> : PagingAndSortingS
 
     private readonly ISpecification<TEntity, TKey> _right;
 
-    public AndPagingAndSortingSpecification(IPagingAndSortingSpecification<TEntity, TKey> left, ISpecification<TEntity, TKey> right) : base(left)
+    public AndPagingAndSortingSpecification(IPagingAndSortingSpecification<TEntity, TKey> left, ISpecification<TEntity, TKey> right) : base(left, right)
     {
         _left = left;
         _right = right;

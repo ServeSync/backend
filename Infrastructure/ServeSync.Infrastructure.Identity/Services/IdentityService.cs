@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using ServeSync.Application.Identity;
 using ServeSync.Application.Identity.Dtos;
+using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Queries;
 
@@ -47,12 +48,13 @@ public class IdentityService : IIdentityService
         return permissions.Contains(permission);
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string username, string email, string password)
+    public async Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone)
     {
-        var user = new ApplicationUser()
+        var user = new ApplicationUser(fullname, avatarUrl)
         {
             UserName = username,
-            Email = email
+            Email = email,
+            PhoneNumber = phone
         };
 
         var result = await _userManager.CreateAsync(user, password);
@@ -63,6 +65,66 @@ public class IdentityService : IIdentityService
 
         var error = result.Errors.First();
         return IdentityResult<IdentityUserDto>.Failed(error.Code, error.Description);
+    }
+
+    public async Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone = null)
+    {
+        var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone);
+        if (createIdentityUserResult.IsSuccess)
+        {
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data.Id, AppRole.Student);
+            if (grantRoleResult.IsSuccess)
+            {
+                return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
+            }
+            else
+            {
+                return IdentityResult<IdentityUserDto>.Failed(grantRoleResult.Error, grantRoleResult.ErrorCode);
+            }
+        }
+
+        return createIdentityUserResult;
+    }
+
+    public async Task<IdentityResult<bool>> UpdateAsync(string userId, string fullname, string email, string avatarUrl)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityUserNotFound, $"User with id {userId} not found!");
+        }
+        
+        user.UpdateFullName(fullname);
+        user.SetAvatar(avatarUrl);
+        user.Email = email;
+        
+        var result = await _userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            return IdentityResult<bool>.Success(true);
+        }
+        
+        var error = result.Errors.First();
+        return IdentityResult<bool>.Failed(error.Code, error.Description);
+    }
+
+    public async Task<IdentityResult<bool>> UpdateUserNameAsync(string userId, string username)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityUserNotFound, $"User with id {userId} not found!");
+        }
+        
+        user.UserName = username;
+        var result = await _userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            return IdentityResult<bool>.Success(true);
+        }
+        
+        var error = result.Errors.First();
+        return IdentityResult<bool>.Failed(error.Code, error.Description);
     }
 
     public async Task<IdentityResult<bool>> DeleteAsync(string userId)

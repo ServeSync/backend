@@ -7,6 +7,9 @@ public interface ICurrentUser
     public string Email { get; }
     public bool IsAuthenticated { get; }
 
-    bool IsInRole(string role);
+    Task<bool> IsInRoleAsync(string role);
+    Task<bool> IsStudentAsync();
+    Task<bool> IsAdminAsync();
+    
     string? GetClaim(string claimType);
 }

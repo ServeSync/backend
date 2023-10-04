@@ -4,10 +4,10 @@ namespace ServeSync.Infrastructure.Identity.Models.RoleAggregate.DomainEvents;
 
 public record PermissionForRoleUpdatedDomainEvent : EquatableDomainEvent
 {
-    public string RoleId { get; }
+    public string Name { get; }
     
-    public PermissionForRoleUpdatedDomainEvent(string roleId)
+    public PermissionForRoleUpdatedDomainEvent(string name)
     {
-        RoleId = roleId;
+        Name = name;
     }
 }

@@ -54,32 +54,32 @@ public class IdentityDataSeeder : IDataSeeder
     {
         var users = new List<ApplicationUser>()
         {
-            new ApplicationUser()
+            new ApplicationUser("Nguyễn Hùng Ngọc")
             {
                 UserName = "admin1",
                 Email = "ngocnguyen752002@gmail.com"
             },
-            new ApplicationUser()
+            new ApplicationUser("Lê Quốc Rôn")
             {
                 UserName = "admin2",
                 Email = "ronle9519@gmail.com"
             },
-            new ApplicationUser()
+            new ApplicationUser("Huỳnh Tấn Năng")
             {
                 UserName = "admin3",
                 Email = "tannang09032002@gmail.com"
             },
-            new ApplicationUser()
+            new ApplicationUser("Trương Tuấn Kiệt")
             {
                 UserName = "admin4",
                 Email = "tuankiettruong.work@gmail.com"
             },
-            new ApplicationUser()
+            new ApplicationUser("Trần Thị Kim Quy")
             {
                 UserName = "admin5",
                 Email = "trankimquy1952@gmail.com"
             },
-            new ApplicationUser()
+            new ApplicationUser("Lê Thị Admin")
             {
                 UserName = "admin",
                 Email = "admin@gmail.com"
@@ -97,7 +97,7 @@ public class IdentityDataSeeder : IDataSeeder
     {
         var users = new List<ApplicationUser>()
         {
-            new ApplicationUser()
+            new ApplicationUser("Nguyễn Thị Student")
             {
                 UserName = "student",
                 Email = "student@gmail.com"
