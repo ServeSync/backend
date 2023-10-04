@@ -43,7 +43,7 @@ public class HomeRoomCachingManager : CachingManager<HomeRoom>, IHomeRoomCaching
         {
             _logger.LogInformation("Cache missed home rooms!");
             
-            homeRooms = _mapper.Map<IList<HomeRoomDto>>(await _homeRoomRepository.FindAllAsync());
+            homeRooms = _mapper.Map<IList<HomeRoomDto>>(await _homeRoomRepository.FindAllAsync()).OrderBy(x => x.Name).ToList();
             await SetAsync(homeRooms);
         }
 
