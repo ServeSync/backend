@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using ServeSync.Application.Caching;
+using ServeSync.Application.Caching.Interfaces;
 
 namespace ServeSync.Infrastructure.Caching;
 

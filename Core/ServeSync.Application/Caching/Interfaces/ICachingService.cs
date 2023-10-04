@@ -1,4 +1,4 @@
-﻿namespace ServeSync.Application.Caching;
+﻿namespace ServeSync.Application.Caching.Interfaces;
 
 public interface ICachingService
 {

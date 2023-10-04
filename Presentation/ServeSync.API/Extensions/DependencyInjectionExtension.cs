@@ -36,6 +36,7 @@ using ServeSync.Infrastructure.Identity.Seeder;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Settings;
 using ServeSync.Application.Caching;
+using ServeSync.Application.Caching.Interfaces;
 using ServeSync.Application.Identity;
 using ServeSync.Application.ImageUploader;
 using ServeSync.Application.MailSender;
@@ -118,6 +119,9 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<ICachingService, ServeSyncDistributedCachingService>();
+        services.AddTransient<IEducationCachingManager, EducationCachingManager>();
+        services.AddTransient<IHomeRoomCachingManager, HomeRoomCachingManager>();
+        services.AddTransient<IFacultyCachingManager, FacultyCachingManager>();
         services.AddTransient<IUserCacheManager, UserCacheManager>();
         services.AddTransient<IPermissionCacheManager, PermissionCacheManager>();
         

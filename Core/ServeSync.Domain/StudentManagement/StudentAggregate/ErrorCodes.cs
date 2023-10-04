@@ -7,4 +7,5 @@ public static class ErrorCodes
     public const string StudentNotFound = "Student:000003";
     public const string DuplicateStudentEmail = "Student:000004";
     public const string DuplicateStudentIdentity = "Student:000005";
+    public const string StudentIdentityNotFound = "Student:000006";
 }
