@@ -33,6 +33,7 @@ public class GetUserInfoQueryHandler : IQueryHandler<GetUserInfoQuery, UserInfoD
         return new UserInfoDto()
         {
             Id = user.Id,
+            FullName = user.FullName,
             Email = user.Email,
             AvatarUrl = user.AvatarUrl,
             Roles = roles

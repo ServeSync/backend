@@ -9,7 +9,7 @@ public class StudentNotFoundException : ResourceNotFoundException
     {
     }
     
-    public StudentNotFoundException(string id) : base(nameof(Student), nameof(Student.IdentityId),id, ErrorCodes.StudentNotFound)
+    public StudentNotFoundException(string id) : base(nameof(Student), nameof(Student.IdentityId),id, ErrorCodes.StudentIdentityNotFound)
     {
     }
 }
