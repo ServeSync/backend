@@ -57,11 +57,11 @@ workflows:
               only:
                 - master
                 - dev
-      - deploy:
-          requires:
-            - build-and-deploy-api-image
-          filters:
-            branches:
-              only:
-                - master
-                - dev
+      # - deploy:
+      #     requires:
+      #       - build-and-deploy-api-image
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - dev

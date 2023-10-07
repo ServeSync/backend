@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MySqlConnector;
@@ -188,6 +189,26 @@ public static class DependencyInjectionExtensions
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
+                };
+
+                options.Events = new JwtBearerEvents()
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Headers.TryGetValue("X-AccessToken", out StringValues headerValue))
+                        {
+                            var bearerPrefix = "Bearer ";
+                            var token = headerValue.ToString();
+                            if (!string.IsNullOrEmpty(token) && token.StartsWith(bearerPrefix))
+                            {
+                                token = token[bearerPrefix.Length..];
+                            }
+
+                            context.Token = token;
+                        }
+
+                        return Task.CompletedTask;    
+                    }
                 };
             });
 
