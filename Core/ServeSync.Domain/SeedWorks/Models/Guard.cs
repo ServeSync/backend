@@ -254,6 +254,20 @@ public static class Guard
 
         return value;
     }
+    
+    public static DateTime Range(
+        DateTime value,
+        string parameterName,
+        DateTime minimumValue,
+        DateTime? maximumValue = null)
+    {
+        if (value < minimumValue || (maximumValue.HasValue && value > maximumValue))
+        {
+            throw new ResourceInvalidDataException($"{parameterName} is out of range min: {minimumValue} - max: {maximumValue}");
+        }
+
+        return value;
+    }
 
     public static T NotDefaultOrNull<T>(
         T? value,
