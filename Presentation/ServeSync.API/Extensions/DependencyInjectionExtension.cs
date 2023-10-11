@@ -45,6 +45,13 @@ using ServeSync.Application.MailSender.Interfaces;
 using ServeSync.Application.Seeders;
 using ServeSync.Application.SeedWorks.Behavior;
 using ServeSync.Application.SeedWorks.Schedulers;
+using ServeSync.Domain.EventManagement.EventAggregate;
+using ServeSync.Domain.EventManagement.EventCategoryAggregate;
+using ServeSync.Domain.EventManagement.EventCategoryAggregate.DomainServices;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainServices;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.FacultyAggregate;
@@ -162,6 +169,10 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEducationProgramRepository, EducationProgramRepository>();
         services.AddScoped<IHomeRoomRepository, HomeRoomRepository>();
         services.AddScoped<IFacultyRepository, FacultyRepository>();
+        services.AddScoped<IEventCategoryRepository, EventCategoryRepository>();
+        services.AddScoped<IEventCollaborationRequestRepository, EventCollaborationRequestRepository>();
+        services.AddScoped<IEventOrganizationRepository, EventOrganizationRepository>();
+        services.AddScoped<IEventRepository, EventRepository>();
         
         return services;
     }
@@ -315,6 +326,9 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IFacultyDomainService, FacultyDomainService>();
         services.AddScoped<IEducationProgramDomainService, EducationProgramDomainService>();
         services.AddScoped<IHomeRoomDomainService, HomeRoomDomainService>();
+        services.AddScoped<IEventCategoryDomainService, EventCategoryDomainService>();
+        services.AddScoped<IEventOrganizationDomainService, EventOrganizationDomainService>();
+        services.AddScoped<IEventCollaborationRequestDomainService, EventCollaborationRequestDomainService>();
 
         return services;
     }

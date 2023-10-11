@@ -11,8 +11,8 @@
         - ASPNETCORE_URLS=http://+:80
         - ConnectionStrings__Default=server=db;database=ServeSync;user=root;password=pbl6@2023
         - ConnectionStrings__Redis=redis
-        - ConnectionStrings__HangFire=server=localhost;database=ServeSync_HangFire;user=root;password=pbl6@2023
-        - ConnectionStrings__HangFireMaster=server=localhost;database=sys;user=root;password=pbl6@2023
+        - ConnectionStrings__HangFire=server=db;database=ServeSync_HangFire;user=root;password=pbl6@2023
+        - ConnectionStrings__HangFireMaster=server=db;database=sys;user=root;password=pbl6@2023
         - Jwt__Key=this_is_my_secret_key_for_authentication
         - Jwt__ExpiresInMinute=30
         - Jwt__RefreshTokenExpiresInDay=3
