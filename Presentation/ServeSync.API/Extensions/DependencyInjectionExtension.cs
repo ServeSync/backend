@@ -159,7 +159,7 @@ public static class DependencyInjectionExtensions
         
         services.AddScoped(typeof(IRepository<,>), typeof(EfCoreRepository<,>));
         services.AddScoped(typeof(IReadOnlyRepository<,>), typeof(EfCoreReadOnlyRepository<,>));
-        services.AddScoped(typeof(IBasicReadOnlyRepository<,>), typeof(EfCoreReadOnlyRepository<,>));
+        services.AddScoped(typeof(IBasicReadOnlyRepository<,>), typeof(EfCoreBasicReadOnlyRepository<,>));
         services.AddScoped(typeof(ISpecificationRepository<,>), typeof(EfCoreSpecificationRepository<,>));
         
         services.AddScoped<IUserRepository, UserRepository>();
@@ -336,7 +336,8 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddDataSeeders(this IServiceCollection services)
     {
         services.AddScoped<IDataSeeder, StudentManagementDataSeeder>();
-
+        services.AddScoped<IDataSeeder, EventManagementDataSeeder>();
+        
         return services;
     }
     
