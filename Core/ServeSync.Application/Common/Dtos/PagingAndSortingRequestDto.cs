@@ -11,7 +11,7 @@ public class PagingAndSortingRequestDto
         
     }
 
-    public PagingAndSortingRequestDto(int page, int size, string sorting)
+    public PagingAndSortingRequestDto(int page, int size, string? sorting)
     {
         Page = page < 1 ? 1 : page;
         Size = size < 1 ? 10 : size;

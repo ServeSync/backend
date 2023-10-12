@@ -12,6 +12,12 @@ public class EventCategory : AggregateRoot
         Name = Guard.NotNullOrEmpty(name, nameof(Name));
         Activities = new List<EventActivity>();
     }
+
+    internal void AddActivity(string name, double minScore, double maxScore)
+    {
+        var activity = new EventActivity(name, minScore, maxScore, Id);
+        Activities.Add(activity);
+    }
     
     private EventCategory()
     {
