@@ -2,5 +2,5 @@
 
 public static class ErrorCodes
 {
-    
+    public const string EventOrganizationNotFound = "EventOrganization:001";
 }
