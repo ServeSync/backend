@@ -29,6 +29,20 @@ public class EventOrganization : AggregateRoot
         Contacts = new List<EventOrganizationContact>();
     }
 
+    internal void AddContact(
+        string name, 
+        string email, 
+        string phoneNumber, 
+        string imageUrl, 
+        bool? gender, 
+        DateTime? birth, 
+        string? address, 
+        string? position)
+    {
+        var contact = new EventOrganizationContact(name, email, phoneNumber, imageUrl, Id, gender, birth, address, position);
+        Contacts.Add(contact);
+    }
+
     private EventOrganization()
     {
         Contacts = new List<EventOrganizationContact>();

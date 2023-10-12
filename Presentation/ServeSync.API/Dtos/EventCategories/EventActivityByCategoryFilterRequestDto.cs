@@ -1,6 +1,6 @@
 ﻿using ServeSync.Application.Common.Dtos;
 
-namespace ServeSync.API.Dtos.EventOrganizations;
+namespace ServeSync.API.Dtos.EventCategories;
 
 public class EventActivityByCategoryFilterRequestDto : PagingAndSortingRequestDto
 {
