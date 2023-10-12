@@ -48,7 +48,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("import")]
-    // [HasPermission(Permissions.Students.Create)]
+    [HasPermission(Permissions.Students.Create)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ImportStudentsAsync([FromForm] IFormFile file)
     {
