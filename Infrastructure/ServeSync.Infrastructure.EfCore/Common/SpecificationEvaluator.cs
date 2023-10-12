@@ -5,11 +5,11 @@ using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 
 namespace ServeSync.Infrastructure.EfCore.Common;
 
-public static class SpecificationEvaluator<TAggregateRoot, TKey> 
-    where TAggregateRoot : class, IAggregateRoot<TKey>
+public static class SpecificationEvaluator<TEntity, TKey> 
+    where TEntity : class, IEntity<TKey>
     where TKey : IEquatable<TKey>
 {
-    public static IQueryable<TAggregateRoot> GetQuery(IQueryable<TAggregateRoot> inputQuery, ISpecification<TAggregateRoot, TKey> specification)
+    public static IQueryable<TEntity> GetQuery(IQueryable<TEntity> inputQuery, ISpecification<TEntity, TKey> specification)
     {
         var queryable = specification.IsTracking ? inputQuery : inputQuery.AsNoTracking();
 
@@ -30,9 +30,9 @@ public static class SpecificationEvaluator<TAggregateRoot, TKey>
         return queryable.Where(specification.ToExpression());
     }
 
-    public static IQueryable<TAggregateRoot> GetQuery(IQueryable<TAggregateRoot> inputQuery, IPagingAndSortingSpecification<TAggregateRoot, TKey> specification)
+    public static IQueryable<TEntity> GetQuery(IQueryable<TEntity> inputQuery, IPagingAndSortingSpecification<TEntity, TKey> specification)
     {
-        var queryable = GetQuery(inputQuery, (ISpecification<TAggregateRoot, TKey>)specification);
+        var queryable = GetQuery(inputQuery, (ISpecification<TEntity, TKey>)specification);
 
         if (!string.IsNullOrWhiteSpace(specification.Sorting))
         {

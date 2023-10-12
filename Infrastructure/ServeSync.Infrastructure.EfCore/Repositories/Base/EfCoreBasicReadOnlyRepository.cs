@@ -1,30 +1,28 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using ServeSync.Domain.SeedWorks.Models;
 using ServeSync.Domain.SeedWorks.Models.Interfaces;
 using ServeSync.Domain.SeedWorks.Repositories;
-using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 using ServeSync.Infrastructure.EfCore.Common;
 
 namespace ServeSync.Infrastructure.EfCore.Repositories.Base;
 
-public class EfCoreBasicReadOnlyRepository<TAggregateRoot, TKey> : EfCoreSpecificationRepository<TAggregateRoot, TKey>, IBasicReadOnlyRepository<TAggregateRoot, TKey>
-    where TAggregateRoot : class, IAggregateRoot<TKey>
+public class EfCoreBasicReadOnlyRepository<TEntity, TKey> : EfCoreSpecificationRepository<TEntity, TKey>, IBasicReadOnlyRepository<TEntity, TKey>
+    where TEntity : class, IEntity<TKey>
     where TKey : IEquatable<TKey>
 {
     public EfCoreBasicReadOnlyRepository(AppDbContext dbContext) : base(dbContext)
     {
     }
 
-    public async Task<IList<TAggregateRoot>> FindAllAsync(Expression<Func<TAggregateRoot, bool>>? expression = null)
+    public async Task<IList<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? expression = null)
     {
         var queryable = GetQueryable();
         return expression != null ? await queryable.Where(expression).ToListAsync() : await queryable.ToListAsync();
     }
 
-    public async Task<IList<TAggregateRoot>> GetPagedListAsync(int skip, int take, Expression<Func<TAggregateRoot, bool>> expression, string? sorting = null, bool tracking = true, string? includeProps = null)
+    public async Task<IList<TEntity>> GetPagedListAsync(int skip, int take, Expression<Func<TEntity, bool>> expression, string? sorting = null, bool tracking = true, string? includeProps = null)
     {
-        var queryable = new AppQueryableBuilder<TAggregateRoot, TKey>(GetQueryable(tracking))
+        var queryable = new AppQueryableBuilder<TEntity, TKey>(GetQueryable(tracking))
                                     .IncludeProp(includeProps)
                                     .ApplyFilter(expression)
                                     .ApplySorting(sorting)
@@ -33,19 +31,19 @@ public class EfCoreBasicReadOnlyRepository<TAggregateRoot, TKey> : EfCoreSpecifi
         return await queryable.Skip(skip).Take(take).ToListAsync();
     }
 
-    public Task<TAggregateRoot?> FindByIdAsync(object id, string? includeProps = null, bool tracking = true)
+    public Task<TEntity?> FindByIdAsync(object id, string? includeProps = null, bool tracking = true)
     {
-        var queryable = new AppQueryableBuilder<TAggregateRoot, TKey>(GetQueryable(tracking))
+        var queryable = new AppQueryableBuilder<TEntity, TKey>(GetQueryable(tracking))
                                     .IncludeProp(includeProps)
                                     .Build();
 
         return queryable.FirstOrDefaultAsync(x => id.Equals(x.Id));
     }
 
-    public Task<TAggregateRoot?> FindAsync(Expression<Func<TAggregateRoot, bool>> expression, bool tracking = true,
+    public Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> expression, bool tracking = true,
         string? includeProps = null)
     {
-        var queryable = new AppQueryableBuilder<TAggregateRoot, TKey>(GetQueryable(tracking))
+        var queryable = new AppQueryableBuilder<TEntity, TKey>(GetQueryable(tracking))
                                     .IncludeProp(includeProps)
                                     .Build();
         
@@ -58,25 +56,25 @@ public class EfCoreBasicReadOnlyRepository<TAggregateRoot, TKey> : EfCoreSpecifi
         return queryable.AnyAsync(x => id.Equals(x.Id));
     }
 
-    public Task<bool> AnyAsync(Expression<Func<TAggregateRoot, bool>>? expression = null)
+    public Task<bool> AnyAsync(Expression<Func<TEntity, bool>>? expression = null)
     {
         var queryable = GetQueryable();
         return expression != null ? queryable.AnyAsync(expression) : queryable.AnyAsync();
     }
 
-    public Task<bool> AllAsync(Expression<Func<TAggregateRoot, bool>> expression)
+    public Task<bool> AllAsync(Expression<Func<TEntity, bool>> expression)
     {
         var queryable = GetQueryable();
         return queryable.AllAsync(expression);
     }
 
-    public Task<int> GetCountAsync(Expression<Func<TAggregateRoot, bool>>? expression = null)
+    public Task<int> GetCountAsync(Expression<Func<TEntity, bool>>? expression = null)
     {
         var queryable = GetQueryable();
         return expression != null ? queryable.CountAsync(expression) : queryable.CountAsync();
     }
 
-    public Task<decimal> GetAverageAsync(Expression<Func<TAggregateRoot, decimal>> selector, Expression<Func<TAggregateRoot, bool>>? expression = null)
+    public Task<decimal> GetAverageAsync(Expression<Func<TEntity, decimal>> selector, Expression<Func<TEntity, bool>>? expression = null)
     {
         var queryable = GetQueryable();
         if (expression != null)
@@ -87,14 +85,14 @@ public class EfCoreBasicReadOnlyRepository<TAggregateRoot, TKey> : EfCoreSpecifi
         return queryable.AverageAsync(selector);
     }
     
-    protected virtual IQueryable<TAggregateRoot> GetQueryable(bool tracking = true)
+    protected virtual IQueryable<TEntity> GetQueryable(bool tracking = true)
     {
-        return new AppQueryableBuilder<TAggregateRoot, TKey>(DbSet, false).Build();
+        return new AppQueryableBuilder<TEntity, TKey>(DbSet, false).Build();
     }
 }
 
-public class EfCoreBasicReadOnlyRepository<TAggregateRoot> : EfCoreBasicReadOnlyRepository<TAggregateRoot, Guid>
-    where TAggregateRoot : AggregateRoot<Guid>
+public class EfCoreBasicReadOnlyRepository<TEntity> : EfCoreBasicReadOnlyRepository<TEntity, Guid>
+    where TEntity : class, IEntity<Guid>
 {
     public EfCoreBasicReadOnlyRepository(AppDbContext dbContext) : base(dbContext)
     {

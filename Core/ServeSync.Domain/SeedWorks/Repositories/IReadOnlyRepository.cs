@@ -3,12 +3,12 @@
 namespace ServeSync.Domain.SeedWorks.Repositories;
 
 public interface IReadOnlyRepository<TAggregateRoot, TKey> : IBasicReadOnlyRepository<TAggregateRoot, TKey> 
-    where TAggregateRoot : IAggregateRoot<TKey>
+    where TAggregateRoot : class, IAggregateRoot<TKey>
     where TKey : IEquatable<TKey>
 {
 }
 
 public interface IReadOnlyRepository<TAggregate> : IReadOnlyRepository<TAggregate, Guid>
-    where TAggregate : IAggregateRoot
+    where TAggregate : class, IAggregateRoot
 {
 }

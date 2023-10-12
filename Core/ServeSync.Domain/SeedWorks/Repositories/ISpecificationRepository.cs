@@ -1,29 +1,28 @@
-﻿using ServeSync.Domain.SeedWorks.Models;
-using ServeSync.Domain.SeedWorks.Models.Interfaces;
+﻿using ServeSync.Domain.SeedWorks.Models.Interfaces;
 using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 
 namespace ServeSync.Domain.SeedWorks.Repositories;
 
-public interface ISpecificationRepository<TAggregateRoot, TKey> 
-    where TAggregateRoot : IAggregateRoot<TKey>
+public interface ISpecificationRepository<TEntity, TKey> 
+    where TEntity : IEntity<TKey>
     where TKey : IEquatable<TKey>
 {
-    Task<IList<TAggregateRoot>> FilterAsync(ISpecification<TAggregateRoot, TKey> specification);
+    Task<IList<TEntity>> FilterAsync(ISpecification<TEntity, TKey> specification);
     
-    Task<IList<TAggregateRoot>> GetPagedListAsync(int skip, int take, ISpecification<TAggregateRoot, TKey> specification, string? sorting = null);
+    Task<IList<TEntity>> GetPagedListAsync(int skip, int take, ISpecification<TEntity, TKey> specification, string? sorting = null);
 
-    Task<IList<TAggregateRoot>> GetPagedListAsync(IPagingAndSortingSpecification<TAggregateRoot, TKey> specification);
+    Task<IList<TEntity>> GetPagedListAsync(IPagingAndSortingSpecification<TEntity, TKey> specification);
 
-    Task<TAggregateRoot?> FindAsync(ISpecification<TAggregateRoot, TKey> specification);
+    Task<TEntity?> FindAsync(ISpecification<TEntity, TKey> specification);
 
-    Task<int> GetCountAsync(ISpecification<TAggregateRoot, TKey> specification);
+    Task<int> GetCountAsync(ISpecification<TEntity, TKey> specification);
 
-    Task<bool> AnyAsync(ISpecification<TAggregateRoot, TKey> specification);
+    Task<bool> AnyAsync(ISpecification<TEntity, TKey> specification);
     
-    Task<bool> AllAsync(ISpecification<TAggregateRoot, TKey> specification);
+    Task<bool> AllAsync(ISpecification<TEntity, TKey> specification);
 }
 
-public interface ISpecificationRepository<TAggregateRoot> : ISpecificationRepository<TAggregateRoot, Guid>
-    where TAggregateRoot : IAggregateRoot
+public interface ISpecificationRepository<TEntity> : ISpecificationRepository<TEntity, Guid>
+    where TEntity : IEntity
 {
 }
