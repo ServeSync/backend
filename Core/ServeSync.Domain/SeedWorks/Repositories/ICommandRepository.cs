@@ -1,10 +1,9 @@
-﻿using ServeSync.Domain.SeedWorks.Models;
-using ServeSync.Domain.SeedWorks.Models.Interfaces;
+﻿using ServeSync.Domain.SeedWorks.Models.Interfaces;
 
 namespace ServeSync.Domain.SeedWorks.Repositories;
 
 public interface ICommandRepository<in TAggregate, TKey> 
-    where TAggregate : IAggregateRoot<TKey> 
+    where TAggregate : class, IAggregateRoot<TKey> 
     where TKey : IEquatable<TKey>
 {
     Task InsertAsync(TAggregate entity);
@@ -19,6 +18,6 @@ public interface ICommandRepository<in TAggregate, TKey>
 }
 
 public interface ICommandRepository<in TAggregate> : ICommandRepository<TAggregate, Guid>
-    where TAggregate : IAggregateRoot
+    where TAggregate : class, IAggregateRoot
 {
 }

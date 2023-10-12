@@ -6,7 +6,7 @@ using ServeSync.Domain.SeedWorks.Models.Interfaces;
 namespace ServeSync.Infrastructure.EfCore.Common;
 
 public class AppQueryableBuilder<TAggregateRoot, TKey> 
-    where TAggregateRoot : class, IAggregateRoot<TKey>
+    where TAggregateRoot : class, IEntity<TKey>
     where TKey : IEquatable<TKey>
 {
     private IQueryable<TAggregateRoot> _queryable;
