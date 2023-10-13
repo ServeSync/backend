@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
+using ServeSync.API.Dtos.Shared;
 using ServeSync.API.Dtos.Students;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
@@ -36,7 +37,7 @@ public class StudentController : ControllerBase
 
     [HttpPost]
     [HasPermission(Permissions.Students.Create)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateStudentAsync(CreateStudentDto dto)
     {
         var command = new CreateStudentCommand(
@@ -44,7 +45,7 @@ public class StudentController : ControllerBase
             dto.Address, dto.ImageUrl, dto.HomeTown, dto.CitizenId, dto.HomeRoomId, dto.EducationProgramId);
         
         var studentId = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetStudentByIdAsync), new { id = studentId }, null);
+        return CreatedAtAction(nameof(GetStudentByIdAsync), new { id = studentId }, SimpleIdResponse<Guid>.Create(studentId));
     }
     
     [HttpPost("import")]

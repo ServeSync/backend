@@ -39,9 +39,17 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
             address.Property(x => x.Latitude)
                    .IsRequired();
         });
+
+        builder.Property(x => x.RepresentativeOrganizationId)
+               .IsRequired(false);
         
         builder.HasOne(x => x.Activity)
                .WithMany()
                .HasForeignKey(x => x.ActivityId);
+        
+        builder.HasOne(x => x.RepresentativeOrganization)
+               .WithOne()
+               .HasForeignKey<Event>(x => x.RepresentativeOrganizationId)
+               .IsRequired(false);
     }
 }

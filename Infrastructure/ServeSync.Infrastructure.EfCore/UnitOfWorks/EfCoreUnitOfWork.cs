@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Data;
 
 namespace ServeSync.Infrastructure.EfCore.UnitOfWorks;
@@ -10,10 +11,15 @@ public class EfCoreUnitOfWork : IUnitOfWork
     private readonly AppDbContext _dbContext;
     private IDbContextTransaction _transaction;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<EfCoreUnitOfWork> _logger;
     
-    public EfCoreUnitOfWork(AppDbContext dbContext, IServiceProvider serviceProvider)
+    public EfCoreUnitOfWork(
+        AppDbContext dbContext, 
+        ILogger<EfCoreUnitOfWork> logger,
+        IServiceProvider serviceProvider)
     {
         _dbContext = dbContext;
+        _logger = logger;
         _serviceProvider = serviceProvider;
     }
 
@@ -37,8 +43,9 @@ public class EfCoreUnitOfWork : IUnitOfWork
                 await _transaction.CommitAsync();
                 await _transaction.DisposeAsync();
             }
-            catch
+            catch(Exception e)
             {
+                _logger.LogError("Commit transaction failed: {Message}", e.Message);
                 if (autoRollbackOnFail)
                 {
                     await RollbackTransactionAsync();

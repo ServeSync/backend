@@ -46,6 +46,7 @@ using ServeSync.Application.Seeders;
 using ServeSync.Application.SeedWorks.Behavior;
 using ServeSync.Application.SeedWorks.Schedulers;
 using ServeSync.Domain.EventManagement.EventAggregate;
+using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate;
@@ -329,6 +330,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEventCategoryDomainService, EventCategoryDomainService>();
         services.AddScoped<IEventOrganizationDomainService, EventOrganizationDomainService>();
         services.AddScoped<IEventCollaborationRequestDomainService, EventCollaborationRequestDomainService>();
+        services.AddScoped<IEventDomainService, EventDomainService>();
 
         return services;
     }
