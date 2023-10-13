@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServeSync.Infrastructure.EfCore;
 
@@ -10,9 +11,11 @@ using ServeSync.Infrastructure.EfCore;
 namespace ServeSync.Infrastructure.EfCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231013104355_AddEventRoleQuantity")]
+    partial class AddEventRoleQuantity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,9 +152,6 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid?>("RepresentativeOrganizationId")
-                        .HasColumnType("char(36)");
-
                     b.Property<DateTime>("StartAt")
                         .HasColumnType("datetime(6)");
 
@@ -161,9 +161,6 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ActivityId");
-
-                    b.HasIndex("RepresentativeOrganizationId")
-                        .IsUnique();
 
                     b.ToTable("Event");
                 });
@@ -795,10 +792,6 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ServeSync.Domain.EventManagement.EventAggregate.Entities.OrganizationInEvent", "RepresentativeOrganization")
-                        .WithOne()
-                        .HasForeignKey("ServeSync.Domain.EventManagement.EventAggregate.Entities.Event", "RepresentativeOrganizationId");
-
                     b.OwnsOne("ServeSync.Domain.EventManagement.SharedKernel.ValueObjects.EventAddress", "Address", b1 =>
                         {
                             b1.Property<Guid>("EventId")
@@ -826,8 +819,6 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.Navigation("Address")
                         .IsRequired();
-
-                    b.Navigation("RepresentativeOrganization");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventAggregate.Entities.EventAttendanceInfo", b =>

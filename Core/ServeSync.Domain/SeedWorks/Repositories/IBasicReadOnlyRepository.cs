@@ -7,6 +7,8 @@ public interface IBasicReadOnlyRepository<TEntity, TKey> : ISpecificationReposit
     where TEntity : IEntity<TKey>
     where TKey : IEquatable<TKey>
 {
+    Task<IList<TEntity>> FindByIncludedIdsAsync(IEnumerable<TKey> ids);
+    
     Task<IList<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? expression = null);
 
     Task<IList<TEntity>> GetPagedListAsync(int skip, int take, Expression<Func<TEntity, bool>> expression, string? sorting = null, bool tracking = true, string? includeProps = null);

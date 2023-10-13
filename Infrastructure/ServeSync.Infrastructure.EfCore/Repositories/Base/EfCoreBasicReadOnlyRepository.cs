@@ -14,6 +14,11 @@ public class EfCoreBasicReadOnlyRepository<TEntity, TKey> : EfCoreSpecificationR
     {
     }
 
+    public async Task<IList<TEntity>> FindByIncludedIdsAsync(IEnumerable<TKey> ids)
+    {
+        return await GetQueryable().Where(x => ids.Contains(x.Id)).ToListAsync();
+    }
+
     public async Task<IList<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? expression = null)
     {
         var queryable = GetQueryable();

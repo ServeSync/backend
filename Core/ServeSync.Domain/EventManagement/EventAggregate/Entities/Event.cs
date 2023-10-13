@@ -1,4 +1,6 @@
-﻿using ServeSync.Domain.EventManagement.EventAggregate.Enums;
+﻿using ServeSync.Domain.EventManagement.EventAggregate.DomainEvents;
+using ServeSync.Domain.EventManagement.EventAggregate.Enums;
+using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.SharedKernel.ValueObjects;
 using ServeSync.Domain.SeedWorks.Models;
@@ -11,7 +13,7 @@ public class Event : AggregateRoot
     public string Introduction { get; private set; }
     public string Description { get; private set; }
     public string ImageUrl { get; private set; }
-    public DateTime StartAt { get; private set; }
+    public DateTime StartAt { get; private init; }
     public DateTime EndAt { get; private set; }
     
     public EventType Type { get; private set; }
@@ -19,6 +21,9 @@ public class Event : AggregateRoot
     
     public Guid ActivityId { get; private set; }
     public EventActivity? Activity { get; private set; }
+
+    public Guid? RepresentativeOrganizationId { get; private set; } = null!;
+    public OrganizationInEvent? RepresentativeOrganization { get; private set; }
     
     public List<EventRole> Roles { get; private set; }
     public List<EventAttendanceInfo> AttendanceInfos { get; private set; }
@@ -43,13 +48,76 @@ public class Event : AggregateRoot
         ImageUrl = Guard.NotNullOrWhiteSpace(imageUrl, nameof(ImageUrl));
         Type = type;
         StartAt = Guard.NotNull(startAt, nameof(StartAt));
-        EndAt = Guard.Range(endAt, nameof(EndAt), startAt);
+        SetEndAt(endAt);
         ActivityId = Guard.NotNull(activityId, nameof(ActivityId));
         Address = new EventAddress(fullAddress, longitude, latitude);
         
         Roles = new List<EventRole>();
         AttendanceInfos = new List<EventAttendanceInfo>();
         Organizations = new List<OrganizationInEvent>();
+        
+        AddDomainEvent(new NewEventCreatedDomainEvent(this));
+    }
+    
+    internal void AddAttendanceInfo(DateTime startAt, DateTime endAt)
+    {
+        if (AttendanceInfos.Any(x => x.IsOverlapped(startAt, endAt)))
+        {
+            throw new EventAttendanceInfoOverlappedException(startAt, endAt);
+        }
+        
+        AttendanceInfos.Add(new EventAttendanceInfo(startAt, endAt, Id));
+    }
+
+    internal void AddRole(string name, string description, bool isNeedApprove, double score, int quantity)
+    {
+        if (Roles.Any(x => x.Name == name))
+        {
+            throw new EventRoleHasAlreadyExistException(name);
+        }
+        
+        Roles.Add(new EventRole(name, description, isNeedApprove, score, quantity, Id));
+    }
+    
+    internal void AddOrganization(Guid organizationId, string role)
+    {
+        if (Organizations.Any(x => x.OrganizationId == organizationId))
+        {
+            throw new OrganizationHasAlreadyAddedToEventException(organizationId, Id);
+        }
+        
+        Organizations.Add(new OrganizationInEvent(organizationId, role, Id));
+    }
+
+    internal void AddOrganizationRepresentative(Guid organizationId, Guid representativeId, string role)
+    {
+        var organizationInEvent = Organizations.FirstOrDefault(x => x.OrganizationId == organizationId);
+        if (organizationInEvent == null)
+        {
+            throw new OrganizationHasNotAddedToEventException(Id, organizationId);
+        }
+        
+        organizationInEvent.AddRepresentative(representativeId, role);
+    }
+
+    internal void SetRepresentativeOrganization(Guid representativeOrganizationId)
+    {
+        var organizationInEvent = Organizations.FirstOrDefault(x => x.OrganizationId == representativeOrganizationId);
+        if (organizationInEvent == null)
+        {
+            throw new OrganizationHasNotAddedToEventException(Id, representativeOrganizationId);
+        }
+        
+        RepresentativeOrganizationId = Guard.NotNull(organizationInEvent.Id, nameof(RepresentativeOrganizationId));
+    }
+
+    public void SetEndAt(DateTime endAt)
+    {
+        if (endAt < StartAt.AddHours(1))
+        {
+            throw new EventHeldShorterException();
+        }
+        EndAt = Guard.Range(endAt, nameof(EndAt), StartAt);
     }
 
     private Event()
