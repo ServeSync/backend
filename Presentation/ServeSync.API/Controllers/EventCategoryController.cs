@@ -18,6 +18,16 @@ public class EventCategoryController : ControllerBase
         _mediator = mediator;
     }
 
+    [HttpGet]
+    [ProducesResponseType(typeof(PagedResultDto<EventCategoryDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllEventCategoriesAsync([FromQuery] EventActivityByCategoryFilterRequestDto dto)
+    {
+        var query = new GetAllEventCategoryQuery(dto.Search, dto.Page, dto.Size, dto.Sorting);
+        var categories = await _mediator.Send(query);
+        return Ok(categories);
+    }
+
+
     [HttpGet("{id:guid}/activities")]
     [ProducesResponseType(typeof(PagedResultDto<EventActivityDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetActivitiesByCategoryAsync(Guid id, [FromQuery] EventActivityByCategoryFilterRequestDto dto)
