@@ -8,5 +8,6 @@ public class EventOrganizationRepository : EfCoreRepository<EventOrganization>, 
 {
     public EventOrganizationRepository(AppDbContext dbContext) : base(dbContext)
     {
+        AddInclude(x => x.Contacts);
     }
 }

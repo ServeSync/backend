@@ -1,4 +1,5 @@
-﻿using ServeSync.Domain.EventManagement.EventAggregate.DomainEvents;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using ServeSync.Domain.EventManagement.EventAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
@@ -7,7 +8,7 @@ using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventAggregate.Entities;
 
-public class Event : AggregateRoot
+public class Event : AuditableAggregateRoot
 {
     public string Name { get; private set; }
     public string Introduction { get; private set; }
@@ -17,6 +18,7 @@ public class Event : AggregateRoot
     public DateTime EndAt { get; private set; }
     
     public EventType Type { get; private set; }
+    public EventStatus Status { get; private set; }
     public EventAddress Address { get; private set; }
     
     public Guid ActivityId { get; private set; }
@@ -47,6 +49,7 @@ public class Event : AggregateRoot
         Description = Guard.NotNullOrWhiteSpace(description, nameof(Description));
         ImageUrl = Guard.NotNullOrWhiteSpace(imageUrl, nameof(ImageUrl));
         Type = type;
+        Status = EventStatus.Pending;
         StartAt = Guard.NotNull(startAt, nameof(StartAt));
         SetEndAt(endAt);
         ActivityId = Guard.NotNull(activityId, nameof(ActivityId));
@@ -61,12 +64,19 @@ public class Event : AggregateRoot
     
     internal void AddAttendanceInfo(DateTime startAt, DateTime endAt)
     {
+        var attendanceInfo = new EventAttendanceInfo(startAt, endAt, Id);
+        
+        if (StartAt >= endAt || EndAt <= startAt)
+        {
+            throw new EventAttendanceInfoOutOfEventTimeException();
+        }
+        
         if (AttendanceInfos.Any(x => x.IsOverlapped(startAt, endAt)))
         {
             throw new EventAttendanceInfoOverlappedException(startAt, endAt);
         }
         
-        AttendanceInfos.Add(new EventAttendanceInfo(startAt, endAt, Id));
+        AttendanceInfos.Add(attendanceInfo);
     }
 
     internal void AddRole(string name, string description, bool isNeedApprove, double score, int quantity)
@@ -118,6 +128,29 @@ public class Event : AggregateRoot
             throw new EventHeldShorterException();
         }
         EndAt = Guard.Range(endAt, nameof(EndAt), StartAt);
+    }
+    
+    
+    public EventStatus GetCurrentStatus(DateTime dateTime)
+    {
+        if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime)
+        {
+            return EventStatus.Happening;
+        }
+        else if (Status == EventStatus.Approved && StartAt >= dateTime)
+        {
+            return EventStatus.Upcoming;
+        }
+        else if (Status == EventStatus.Approved && EndAt <= dateTime)
+        {
+            return EventStatus.Done;
+        }
+        else if (Status == EventStatus.Pending && StartAt <= dateTime)
+        {
+            return EventStatus.Expired;
+        }
+        
+        return Status;
     }
 
     private Event()
