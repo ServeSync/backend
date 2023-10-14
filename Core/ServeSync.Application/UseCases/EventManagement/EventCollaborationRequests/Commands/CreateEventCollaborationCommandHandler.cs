@@ -9,32 +9,21 @@ using ServeSync.Domain.SeedWorks.Repositories;
 namespace ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Commands;
 public class CreateEventCollaborationCommandHandler : ICommandHandler<CreateEventCollaborationCommand, Guid>
 {
-    private readonly IEventCollaborationRequestRepository _eventCollaborationRequestRepository;
-    private readonly IBasicReadOnlyRepository<EventOrganization, Guid> _eventOrganizationRepository;
-    private readonly IBasicReadOnlyRepository<EventOrganizationContact, Guid> _eventOrganizationContactRepository;
     private readonly IEventCollaborationRequestDomainService _eventCollaborationRequestDomainService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateEventCollaborationCommandHandler> _logger;
 
     public CreateEventCollaborationCommandHandler(
-        IEventCollaborationRequestRepository eventCollaborationRequestRepository,
-        IBasicReadOnlyRepository<EventOrganization, Guid> eventOrganizationRepository,
-        IBasicReadOnlyRepository<EventOrganizationContact, Guid> eventOrganizationContactRepository,
         IEventCollaborationRequestDomainService eventCollaborationRequestDomainService,
         IUnitOfWork unitOfWork,
         ILogger<CreateEventCollaborationCommandHandler> logger)
     {
-        _eventCollaborationRequestRepository = eventCollaborationRequestRepository;;
-        _eventOrganizationRepository = eventOrganizationRepository;
-        _eventOrganizationContactRepository = eventOrganizationContactRepository;
         _eventCollaborationRequestDomainService = eventCollaborationRequestDomainService;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
     public async Task<Guid> Handle(CreateEventCollaborationCommand request, CancellationToken cancellationToken)
     {
-        await _unitOfWork.BeginTransactionAsync();
-
         var eventCollaborationCreateRequest = await _eventCollaborationRequestDomainService.CreateAsync(
             request.EventCollaborationCreateRequest.Name,
             request.EventCollaborationCreateRequest.Introduction,
