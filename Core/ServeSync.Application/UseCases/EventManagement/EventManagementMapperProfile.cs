@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
+using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.EventManagement.SharedKernel.ValueObjects;
 
@@ -36,5 +38,7 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrganizationId))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Organization!.Name))
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Organization!.ImageUrl));
+
+        CreateMap<EventCollaborationRequest, EventCollaborationRequestDto>();
     }
 }
