@@ -32,7 +32,7 @@ public class ProfileController : ControllerBase
     }
     
     [HttpGet("student")]
-    [HasPermission(Permissions.Students.ViewProfile)]
+    [HasRole(AppRole.Student)]
     [ProducesResponseType(typeof(StudentDetailDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStudentProfileAsync()
     {
@@ -41,7 +41,7 @@ public class ProfileController : ControllerBase
     }
     
     [HttpPut("student")]
-    [HasPermission(Permissions.Students.EditProfile)]
+    [HasRole(AppRole.Student)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateStudentProfileAsync(StudentEditProfileDto dto)
     {

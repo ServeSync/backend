@@ -30,6 +30,7 @@ public class Event : AuditableAggregateRoot
     public List<EventRole> Roles { get; private set; }
     public List<EventAttendanceInfo> AttendanceInfos { get; private set; }
     public List<OrganizationInEvent> Organizations { get; private set; }
+    public List<EventRegistrationInfo> RegistrationInfos { get; private set; }
 
     internal Event(
         string name,
@@ -50,7 +51,7 @@ public class Event : AuditableAggregateRoot
         ImageUrl = Guard.NotNullOrWhiteSpace(imageUrl, nameof(ImageUrl));
         Type = type;
         Status = EventStatus.Pending;
-        StartAt = Guard.NotNull(startAt, nameof(StartAt));
+        StartAt = Guard.Range(startAt, nameof(StartAt), DateTime.Now);
         SetEndAt(endAt);
         ActivityId = Guard.NotNull(activityId, nameof(ActivityId));
         Address = new EventAddress(fullAddress, longitude, latitude);
@@ -58,6 +59,7 @@ public class Event : AuditableAggregateRoot
         Roles = new List<EventRole>();
         AttendanceInfos = new List<EventAttendanceInfo>();
         Organizations = new List<OrganizationInEvent>();
+        RegistrationInfos = new List<EventRegistrationInfo>();
         
         AddDomainEvent(new NewEventCreatedDomainEvent(this));
     }
@@ -121,6 +123,31 @@ public class Event : AuditableAggregateRoot
         RepresentativeOrganizationId = Guard.NotNull(organizationInEvent.Id, nameof(RepresentativeOrganizationId));
     }
 
+    internal void AddRegistrationInfo(DateTime startAt, DateTime endAt)
+    {
+        if (!CanUpdateRegistrationInfo())
+        {
+            throw new EventRegistrationInfoCannotBeUpdatedException(Id);    
+        }
+        
+        if (startAt >= StartAt || endAt >= StartAt)
+        {
+            throw new EventRegistrationOverlappedWithEventException();
+        }
+
+        if (RegistrationInfos.Any(x => x.IsOverlapped(startAt, endAt)))
+        {
+            throw new EventRegistrationInfoOverlappedException();
+        }
+        
+        RegistrationInfos.Add(new EventRegistrationInfo(startAt, endAt, Id));
+    }
+
+    public bool CanRegister(DateTime dateTime)
+    {
+        return GetCurrentStatus(dateTime) == EventStatus.Registration;
+    }
+
     public void SetEndAt(DateTime endAt)
     {
         if (endAt < StartAt.AddHours(1))
@@ -130,12 +157,15 @@ public class Event : AuditableAggregateRoot
         EndAt = Guard.Range(endAt, nameof(EndAt), StartAt);
     }
     
-    
     public EventStatus GetCurrentStatus(DateTime dateTime)
     {
         if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime)
         {
             return EventStatus.Happening;
+        }
+        else if (Status == EventStatus.Approved && StartAt >= dateTime && RegistrationInfos.Any(x => dateTime >= x.StartAt && dateTime <= x.EndAt))
+        {
+            return EventStatus.Registration;
         }
         else if (Status == EventStatus.Approved && StartAt >= dateTime)
         {
@@ -151,6 +181,16 @@ public class Event : AuditableAggregateRoot
         }
         
         return Status;
+    }
+
+    private bool CanUpdateRegistrationInfo()
+    {
+        if (RegistrationInfos.Any(x => x.StartAt <= DateTime.Now))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private Event()

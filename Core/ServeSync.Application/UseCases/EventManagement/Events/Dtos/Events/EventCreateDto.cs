@@ -42,6 +42,10 @@ public class EventCreateDto
     [Required]
     [MinLength(1)]
     public List<OrganizationInEventCreateDto> Organizations { get; set; } = null!;
+    
+    [Required]
+    [MinLength(1)]
+    public List<EventRegistrationCreateDto> RegistrationInfos { get; set; } = null!;
 }
 
 public class EventAttendanceInfoCreateDto
@@ -90,4 +94,10 @@ public class OrganizationRepInEventCreateDto
     [Required]
     [MinLength(5)]
     public string Role { get; set; } = null!;
+}
+
+public class EventRegistrationCreateDto
+{
+    public DateTime StartAt { get; set; }
+    public DateTime EndAt { get; set; }
 }

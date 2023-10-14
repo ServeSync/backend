@@ -9,6 +9,7 @@ using ServeSync.Domain.EventManagement.EventCategoryAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
+using ServeSync.Domain.SeedWorks.Exceptions;
 using ServeSync.Domain.SeedWorks.Repositories;
 
 namespace ServeSync.Application.Seeders;
@@ -146,8 +147,8 @@ public class EventManagementDataSeeder : IDataSeeder
         
         var eventOrganizations = await _eventOrganizationRepository.FindAllAsync();
         var eventActivities = await _eventActivityRepository.FindAllAsync();
-        
-        for (var i = 0; i < 50; i++)
+       
+        for (var i = 0; i < 100; i++)
         {
             try
             {
@@ -184,6 +185,11 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Date.Between(DateTime.Now, DateTime.Now.AddDays(10)),
                     faker.Date.Between(DateTime.Now.AddDays(10), DateTime.Now.AddDays(20)));
 
+                _eventDomainService.AddRegistrationInfo(
+                    @event,
+                    faker.Date.Between(DateTime.Now, DateTime.Now.AddDays(10)),
+                    faker.Date.Between(DateTime.Now, DateTime.Now.AddDays(10)));
+
                 var organization = faker.PickRandom(eventOrganizations);
                 
                 _eventDomainService.AddOrganization(
@@ -197,20 +203,23 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.PickRandom(organization.Contacts),
                     faker.Name.JobTitle());
 
+                await _eventRepository.InsertAsync(@event);
                 await _unitOfWork.CommitAsync();
 
                 _eventDomainService.SetRepresentativeOrganization(
                     @event,
                     faker.PickRandom(@event.Organizations).OrganizationId);
 
-                await _unitOfWork.CommitTransactionAsync(true);
-
-                _logger.LogInformation("Seeded event organizations successfully!");
+                _eventRepository.Update(@event);
+                await _unitOfWork.CommitTransactionAsync(false);
             }
             catch (Exception e)
             {
-                _logger.LogInformation("Seeded event organizations failed: {Message}", e.Message);
+                await _unitOfWork.RollbackTransactionAsync();
+                _logger.LogInformation("Seeded event failed: {Message}", e.Message);
             }
         }
+        
+        _logger.LogInformation("Seeded events successfully!");
     }
 }

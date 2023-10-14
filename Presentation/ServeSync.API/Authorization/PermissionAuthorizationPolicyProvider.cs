@@ -19,16 +19,24 @@ public class PermissionAuthorizationPolicyProvider : IAuthorizationPolicyProvide
 
     public Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
     {
-        if (!policyName.StartsWith(Permissions.Default, StringComparison.OrdinalIgnoreCase))
+        if (policyName.StartsWith(HasRoleAttribute.Prefix, StringComparison.OrdinalIgnoreCase))
         {
-            return _defaultPolicyProvider.GetPolicyAsync(policyName);
+            var policyBuilder = new AuthorizationPolicyBuilder()
+                                    .RequireAuthenticatedUser()
+                                    .AddRequirements(new RoleAuthorizationRequirement(policyName.Split(".").Last()));
+            
+            return Task.FromResult(policyBuilder.Build());
+        }
+        
+        if (policyName.StartsWith(Permissions.Default, StringComparison.OrdinalIgnoreCase))
+        {
+            var policyBuilder = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddRequirements(new PermissionAuthorizationRequirement(policyName));
+            
+            return Task.FromResult(policyBuilder.Build());
         }
 
-        var policyBuilder = new AuthorizationPolicyBuilder()
-                                .RequireAuthenticatedUser()
-                                .AddRequirements(new PermissionAuthorizationRequirement(policyName));
-            
-        return Task.FromResult(policyBuilder.Build());
-
+        return _defaultPolicyProvider.GetPolicyAsync(policyName);
     }
 }
