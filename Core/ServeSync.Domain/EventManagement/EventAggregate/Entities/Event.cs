@@ -143,6 +143,11 @@ public class Event : AuditableAggregateRoot
         RegistrationInfos.Add(new EventRegistrationInfo(startAt, endAt, Id));
     }
 
+    public bool CanRegister(DateTime dateTime)
+    {
+        return GetCurrentStatus(dateTime) == EventStatus.Registration;
+    }
+
     public void SetEndAt(DateTime endAt)
     {
         if (endAt < StartAt.AddHours(1))

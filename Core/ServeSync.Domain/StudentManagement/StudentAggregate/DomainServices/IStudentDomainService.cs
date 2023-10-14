@@ -39,4 +39,6 @@ public interface IStudentDomainService
     void Delete(Student student);
 
     Task SetIdentityAsync(Student student, string identityId);
+    
+    Task<Student> RegisterEvent(Student student, Guid eventRoleId, string? description = null);
 }

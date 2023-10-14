@@ -2,10 +2,12 @@
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.Entities;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
 
 namespace ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 
-public class Student : AggregateRoot
+public class Student : AuditableAggregateRoot
 {
     public string Code { get; private set; }
     public string FullName { get; private set; }
@@ -25,6 +27,8 @@ public class Student : AggregateRoot
     public EducationProgram? EducationProgram { get; private set; }
 
     public string IdentityId { get; private set; } = null!;
+    
+    public List<StudentEventRegister> EventRegisters { get; private set; }
 
     internal Student(
         string code,
@@ -52,6 +56,8 @@ public class Student : AggregateRoot
         EducationProgramId = Guard.NotNull(educationProgramId, nameof(EducationProgramId));
         HomeTown = homeTown;
         Address = address;
+
+        EventRegisters = new List<StudentEventRegister>();
         
         AddDomainEvent(new NewStudentCreatedDomainEvent(this));
     }
@@ -98,6 +104,35 @@ public class Student : AggregateRoot
         Code = Guard.NotNullOrEmpty(code, nameof(Code));
         EducationProgramId = Guard.NotNull(educationProgramId, nameof(EducationProgramId));
         HomeRoomId = Guard.NotNull(homeRoomId, nameof(HomeRoomId));
+    }
+    
+    internal void RegisterEvent(Guid eventRoleId, string? description = null)
+    {
+        if (EventRegisters.Any(x => x.EventRoleId == eventRoleId && x.Status == EventRegisterStatus.Pending))
+        {
+            throw new StudentRegisteredToEventRoleException(Id, eventRoleId);
+        }
+        
+        var eventRegister = new StudentEventRegister(description, eventRoleId, Id);
+        EventRegisters.Add(eventRegister);
+    }
+    
+    internal void RegisterEventWithApprove(Guid eventRoleId, string? description = null)
+    {
+        if (EventRegisters.Any(x => x.EventRoleId == eventRoleId && x.Status == EventRegisterStatus.Pending))
+        {
+            throw new StudentRegisteredToEventRoleException(Id, eventRoleId);
+        }
+        
+        var eventRegister = new StudentEventRegister(description, eventRoleId, Id);
+        eventRegister.Approve();
+        
+        EventRegisters.Add(eventRegister);
+    }
+    
+    internal bool IsApprovedToEventRole(Guid eventRoleId)
+    {
+        return EventRegisters.Any(x => x.EventRoleId == eventRoleId && x.Status == EventRegisterStatus.Approved);
     }
 
     private bool IsCodeChanged(string code)

@@ -5,5 +5,5 @@ namespace ServeSync.Domain.StudentManagement.StudentAggregate;
 
 public interface IStudentRepository : IRepository<Student>
 {
-    
+    Task<Student?> FindByIdentityAsync(string identityId);
 }
