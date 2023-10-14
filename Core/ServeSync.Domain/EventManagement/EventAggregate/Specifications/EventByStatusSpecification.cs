@@ -12,7 +12,6 @@ public class EventByStatusSpecification : Specification<Event, Guid>
     public EventByStatusSpecification(EventStatus status)
     {
         _status = status;
-        
         AddInclude(x => x.RegistrationInfos);
     }
     

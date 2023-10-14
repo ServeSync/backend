@@ -147,7 +147,7 @@ public class EventManagementDataSeeder : IDataSeeder
         
         var eventOrganizations = await _eventOrganizationRepository.FindAllAsync();
         var eventActivities = await _eventActivityRepository.FindAllAsync();
-        
+       
         for (var i = 0; i < 100; i++)
         {
             try
@@ -191,7 +191,7 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Date.Between(DateTime.Now, DateTime.Now.AddDays(10)));
 
                 var organization = faker.PickRandom(eventOrganizations);
-
+                
                 _eventDomainService.AddOrganization(
                     @event,
                     organization,
