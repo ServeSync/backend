@@ -71,7 +71,7 @@ public class EfCoreRepository<TAggregateRoot, TKey> : EfCoreReadOnlyRepository<T
 }
 
 public class EfCoreRepository<TAggregateRoot> : EfCoreRepository<TAggregateRoot, Guid>
-    where TAggregateRoot : AggregateRoot
+    where TAggregateRoot : class, IAggregateRoot
 {
     public EfCoreRepository(AppDbContext dbContext) : base(dbContext)
     {

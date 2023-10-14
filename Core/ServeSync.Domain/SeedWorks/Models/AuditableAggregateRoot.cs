@@ -2,7 +2,7 @@
 
 namespace ServeSync.Domain.SeedWorks.Models;
 
-public abstract class AuditableEntity<TKey> : Entity<TKey>, IAuditableEntity<TKey> where TKey : IEquatable<TKey>
+public abstract class AuditableAggregateRoot<TKey> : AggregateRoot<TKey>, IAuditableAggregateRoot<TKey> where TKey : IEquatable<TKey>
 {
     public DateTime Created { get; protected set; }
     public string? CreatedBy { get; protected set; }
@@ -22,7 +22,7 @@ public abstract class AuditableEntity<TKey> : Entity<TKey>, IAuditableEntity<TKe
     }
 }
 
-public abstract class AuditableEntity : AuditableEntity<Guid>, IAuditableEntity
+public abstract class AuditableAggregateRoot : AuditableAggregateRoot<Guid>, IAuditableAggregateRoot
 {
     
 }

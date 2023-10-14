@@ -2,6 +2,7 @@
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
@@ -65,8 +66,6 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
         await _unitOfWork.CommitAsync();
 
         _eventDomainService.SetRepresentativeOrganization(@event, request.Event.RepresentativeOrganizationId);
-
-        await _unitOfWork.CommitAsync();
 
         await _unitOfWork.CommitTransactionAsync(true);
 
