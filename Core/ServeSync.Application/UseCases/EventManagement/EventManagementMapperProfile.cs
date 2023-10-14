@@ -3,6 +3,7 @@ using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Application.UseCases.EventManagement.Events.Jobs;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities;
@@ -40,5 +41,8 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Organization!.ImageUrl));
 
         CreateMap<EventCollaborationRequest, EventCollaborationRequestDto>();
+
+        CreateMap<EventAttendanceInfo, AttendanceInfoGenerateQrCodeBackGroundJobDto>();
+
     }
 }
