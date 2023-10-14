@@ -5,10 +5,10 @@ namespace ServeSync.Application.UseCases.EventManagement.EventCollaborationReque
 
 public class CreateEventCollaborationCommand : ICommand<Guid>
 {
-    public EventCollaborationRequestDto EventCollaborationRequest { get; set;}
+    public EventCollaborationRequestCreateDto EventCollaborationCreateRequest { get; set;}
 
-    public CreateEventCollaborationCommand(EventCollaborationRequestDto eventCollaborationRequestDto)
+    public CreateEventCollaborationCommand(EventCollaborationRequestCreateDto eventCollaborationRequestCreateDto)
     {
-        EventCollaborationRequest = eventCollaborationRequestDto; 
+        EventCollaborationCreateRequest = eventCollaborationRequestCreateDto; 
     }    
 }

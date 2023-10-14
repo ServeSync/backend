@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
-using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects;
 
 namespace ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Dtos;
 
-public class EventCollaborationRequestDto
+public class EventCollaborationRequestCreateDto
 {
     [Required]
     [MinLength(10)]
@@ -40,7 +39,7 @@ public class EventCollaborationRequestDto
     [Required]
     public EventAddressDto Address { get; set; } = null!;
 
-    public EventOrganizationInfo EventOrganizationInfo { get; set; } = null!;
+    public EventOrganizationInfoDto EventOrganizationInfo { get; set; } = null!;
 
-    public EventOrganizationContactInfo EventOrganizationContactInfo { get; set; } = null!; 
+    public EventOrganizationContactInfoDto EventOrganizationContactInfo { get; set; } = null!; 
 }

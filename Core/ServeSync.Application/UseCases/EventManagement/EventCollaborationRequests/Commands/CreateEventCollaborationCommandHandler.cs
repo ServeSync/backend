@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Data;
-using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Commands;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
@@ -36,37 +35,37 @@ public class CreateEventCollaborationCommandHandler : ICommandHandler<CreateEven
     {
         await _unitOfWork.BeginTransactionAsync();
 
-        var eventCollaborationRequest = await _eventCollaborationRequestDomainService.CreateAsync(
-            request.EventCollaborationRequest.Name,
-            request.EventCollaborationRequest.Introduction,
-            request.EventCollaborationRequest.Description,
-            request.EventCollaborationRequest.Capacity,
-            request.EventCollaborationRequest.ImageUrl,
-            request.EventCollaborationRequest.StartAt,
-            request.EventCollaborationRequest.EndAt,
-            request.EventCollaborationRequest.EventType,
-            request.EventCollaborationRequest.ActivityId,
-            request.EventCollaborationRequest.Address.FullAddress,
-            request.EventCollaborationRequest.Address.Longitude,
-            request.EventCollaborationRequest.Address.Latitude,
-            request.EventCollaborationRequest.EventOrganizationInfo.Name,
-            request.EventCollaborationRequest.EventOrganizationInfo.Description,
-            request.EventCollaborationRequest.EventOrganizationInfo.Email,
-            request.EventCollaborationRequest.EventOrganizationInfo.PhoneNumber,
-            request.EventCollaborationRequest.EventOrganizationInfo.Address,
-            request.EventCollaborationRequest.EventOrganizationInfo.ImageUrl,
-            request.EventCollaborationRequest.EventOrganizationContactInfo.Name,
-            request.EventCollaborationRequest.EventOrganizationContactInfo.Email,
-            request.EventCollaborationRequest.EventOrganizationContactInfo.PhoneNumber,
-            request.EventCollaborationRequest.EventOrganizationContactInfo.Gender,
-            request.EventCollaborationRequest.EventOrganizationContactInfo.Address,
-            request.EventCollaborationRequest.EventOrganizationContactInfo.Birth,
-            request.EventCollaborationRequest.EventOrganizationContactInfo.Position,
-            request.EventCollaborationRequest.EventOrganizationContactInfo.ImageUrl);
+        var eventCollaborationCreateRequest = await _eventCollaborationRequestDomainService.CreateAsync(
+            request.EventCollaborationCreateRequest.Name,
+            request.EventCollaborationCreateRequest.Introduction,
+            request.EventCollaborationCreateRequest.Description,
+            request.EventCollaborationCreateRequest.Capacity,
+            request.EventCollaborationCreateRequest.ImageUrl,
+            request.EventCollaborationCreateRequest.StartAt,
+            request.EventCollaborationCreateRequest.EndAt,
+            request.EventCollaborationCreateRequest.EventType,
+            request.EventCollaborationCreateRequest.ActivityId,
+            request.EventCollaborationCreateRequest.Address.FullAddress,
+            request.EventCollaborationCreateRequest.Address.Longitude,
+            request.EventCollaborationCreateRequest.Address.Latitude,
+            request.EventCollaborationCreateRequest.EventOrganizationInfo.Name,
+            request.EventCollaborationCreateRequest.EventOrganizationInfo.Description,
+            request.EventCollaborationCreateRequest.EventOrganizationInfo.Email,
+            request.EventCollaborationCreateRequest.EventOrganizationInfo.PhoneNumber,
+            request.EventCollaborationCreateRequest.EventOrganizationInfo.Address,
+            request.EventCollaborationCreateRequest.EventOrganizationInfo.ImageUrl,
+            request.EventCollaborationCreateRequest.EventOrganizationContactInfo.Name,
+            request.EventCollaborationCreateRequest.EventOrganizationContactInfo.Email,
+            request.EventCollaborationCreateRequest.EventOrganizationContactInfo.PhoneNumber,
+            request.EventCollaborationCreateRequest.EventOrganizationContactInfo.Gender,
+            request.EventCollaborationCreateRequest.EventOrganizationContactInfo.Address,
+            request.EventCollaborationCreateRequest.EventOrganizationContactInfo.Birth,
+            request.EventCollaborationCreateRequest.EventOrganizationContactInfo.Position,
+            request.EventCollaborationCreateRequest.EventOrganizationContactInfo.ImageUrl);
         
         await _unitOfWork.CommitAsync();
-        _logger.LogInformation("Created new event collaboration request with id: {EventCollaborationRequestId}", eventCollaborationRequest.Id);
+        _logger.LogInformation("Created new event collaboration request with id: {EventCollaborationRequestId}", eventCollaborationCreateRequest.Id);
 
-        return eventCollaborationRequest.Id;
+        return eventCollaborationCreateRequest.Id;
     }
 }

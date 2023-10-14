@@ -24,7 +24,21 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateEventCommandHandler> _logger;
     
-    
+    public CreateEventCommandHandler(
+        IEventRepository eventRepository,
+        IBasicReadOnlyRepository<EventOrganization, Guid> eventOrganizationRepository,
+        IBasicReadOnlyRepository<EventOrganizationContact, Guid> eventOrganizationContactRepository,
+        IEventDomainService eventDomainService,
+        IUnitOfWork unitOfWork,
+        ILogger<CreateEventCommandHandler> logger)
+    {
+        _eventRepository = eventRepository;
+        _eventOrganizationRepository = eventOrganizationRepository;
+        _eventOrganizationContactRepository = eventOrganizationContactRepository;
+        _eventDomainService = eventDomainService;
+        _unitOfWork = unitOfWork;
+        _logger = logger;
+    }
     
     public async Task<Guid> Handle(CreateEventCommand request, CancellationToken cancellationToken)
     {

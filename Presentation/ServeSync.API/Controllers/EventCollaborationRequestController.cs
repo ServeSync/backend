@@ -7,7 +7,7 @@ using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.
 namespace ServeSync.API.Controllers;
 
 [ApiController]
-[Route("api/event-collaboration-request")]
+[Route("api/event-collaboration-requests")]
 public class EventCollaborationRequest : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -19,7 +19,7 @@ public class EventCollaborationRequest : ControllerBase
     
     [HttpPost]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateEvent([FromBody] EventCollaborationRequestDto dto)
+    public async Task<IActionResult> CreateEvent([FromBody] EventCollaborationRequestCreateDto dto)
     {
         var id = await _mediator.Send(new CreateEventCollaborationCommand(dto));
         return Ok(SimpleIdResponse<Guid>.Create(id));
