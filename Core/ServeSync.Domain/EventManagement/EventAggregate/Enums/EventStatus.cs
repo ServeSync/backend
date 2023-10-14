@@ -9,5 +9,6 @@ public enum EventStatus
     Happening,
     Pending,
     Rejected,
+    Registration,
     Upcoming
 }

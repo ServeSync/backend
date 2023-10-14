@@ -12,6 +12,8 @@ public class EventByStatusSpecification : Specification<Event, Guid>
     public EventByStatusSpecification(EventStatus status)
     {
         _status = status;
+        
+        AddInclude(x => x.RegistrationInfos);
     }
     
     public override Expression<Func<Event, bool>> ToExpression()
@@ -27,6 +29,14 @@ public class EventByStatusSpecification : Specification<Event, Guid>
         else if (_status == EventStatus.Done)
         {
             return x => x.Status == EventStatus.Approved && x.EndAt <= DateTime.Now;
+        }
+        else if (_status == EventStatus.Expired)
+        {
+            return x => x.Status == EventStatus.Pending && x.StartAt <= DateTime.Now;
+        }
+        else if (_status == EventStatus.Registration)
+        {
+            return x => x.Status == EventStatus.Approved && x.StartAt >= DateTime.Now && x.RegistrationInfos.Any(y => DateTime.Now >= y.StartAt && DateTime.Now <= y.EndAt);
         }
         else
         {
