@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos;
+namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 
 public class EventAddressDto
 {

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServeSync.Infrastructure.EfCore;
 
@@ -10,9 +11,11 @@ using ServeSync.Infrastructure.EfCore;
 namespace ServeSync.Infrastructure.EfCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231013162831_AddEventStatus")]
+    partial class AddEventStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,12 +133,6 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Property<Guid>("ActivityId")
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -149,12 +146,6 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.Property<string>("Introduction")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("LastModifiedBy")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
@@ -180,7 +171,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.HasIndex("RepresentativeOrganizationId")
                         .IsUnique();
 
-                    b.ToTable("Event", (string)null);
+                    b.ToTable("Event");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventAggregate.Entities.EventAttendanceInfo", b =>
@@ -206,7 +197,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("EventAttendanceInfo", (string)null);
+                    b.ToTable("EventAttendanceInfo");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventAggregate.Entities.EventRole", b =>
@@ -239,7 +230,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("EventRole", (string)null);
+                    b.ToTable("EventRole");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventAggregate.Entities.OrganizationInEvent", b =>
@@ -264,7 +255,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("OrganizationInEvent", (string)null);
+                    b.ToTable("OrganizationInEvent");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventAggregate.Entities.OrganizationRepInEvent", b =>
@@ -289,7 +280,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasIndex("OrganizationRepId");
 
-                    b.ToTable("OrganizationRepInEvent", (string)null);
+                    b.ToTable("OrganizationRepInEvent");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities.EventActivity", b =>
@@ -315,7 +306,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasIndex("EventCategoryId");
 
-                    b.ToTable("EventActivity", (string)null);
+                    b.ToTable("EventActivity");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities.EventCategory", b =>
@@ -330,7 +321,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventCategory", (string)null);
+                    b.ToTable("EventCategory");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities.EventCollaborationRequest", b =>
@@ -371,7 +362,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("EventCollaborationRequest", (string)null);
+                    b.ToTable("EventCollaborationRequest");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities.EventOrganization", b =>
@@ -404,7 +395,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventOrganization", (string)null);
+                    b.ToTable("EventOrganization");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities.EventOrganizationContact", b =>
@@ -451,7 +442,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasIndex("EventOrganizationId");
 
-                    b.ToTable("EventOrganizationContact", (string)null);
+                    b.ToTable("EventOrganizationContact");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.EducationProgramAggregate.Entities.EducationProgram", b =>
@@ -472,7 +463,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EducationProgram", (string)null);
+                    b.ToTable("EducationProgram");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.FacultyAggregate.Entities.Faculty", b =>
@@ -490,7 +481,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Faculty", (string)null);
+                    b.ToTable("Faculty");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.HomeRoomAggregate.Entities.HomeRoom", b =>
@@ -513,7 +504,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("HomeRoom", (string)null);
+                    b.ToTable("HomeRoom");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.Student", b =>
@@ -579,7 +570,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasIndex("HomeRoomId");
 
-                    b.ToTable("Student", (string)null);
+                    b.ToTable("Student");
                 });
 
             modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Entities.ApplicationPermission", b =>
@@ -601,7 +592,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("ApplicationPermission", (string)null);
+                    b.ToTable("ApplicationPermission");
                 });
 
             modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities.ApplicationRole", b =>
@@ -642,7 +633,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("RolePermission", (string)null);
+                    b.ToTable("RolePermission");
                 });
 
             modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.ApplicationUser", b =>
@@ -748,7 +739,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.HasIndex("Value")
                         .IsUnique();
 
-                    b.ToTable("RefreshToken", (string)null);
+                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -814,7 +805,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                         .WithOne()
                         .HasForeignKey("ServeSync.Domain.EventManagement.EventAggregate.Entities.Event", "RepresentativeOrganizationId");
 
-                    b.OwnsOne("ServeSync.Domain.EventManagement.EventAggregate.Entities.Event.Address#ServeSync.Domain.EventManagement.SharedKernel.ValueObjects.EventAddress", "Address", b1 =>
+                    b.OwnsOne("ServeSync.Domain.EventManagement.SharedKernel.ValueObjects.EventAddress", "Address", b1 =>
                         {
                             b1.Property<Guid>("EventId")
                                 .HasColumnType("char(36)");
@@ -831,7 +822,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                             b1.HasKey("EventId");
 
-                            b1.ToTable("Event", (string)null);
+                            b1.ToTable("Event");
 
                             b1.WithOwner()
                                 .HasForeignKey("EventId");
@@ -924,7 +915,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities.EventCollaborationRequest.Address#ServeSync.Domain.EventManagement.SharedKernel.ValueObjects.EventAddress", "Address", b1 =>
+                    b.OwnsOne("ServeSync.Domain.EventManagement.SharedKernel.ValueObjects.EventAddress", "Address", b1 =>
                         {
                             b1.Property<Guid>("EventCollaborationRequestId")
                                 .HasColumnType("char(36)");
@@ -941,48 +932,13 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                             b1.HasKey("EventCollaborationRequestId");
 
-                            b1.ToTable("EventCollaborationRequest", (string)null);
+                            b1.ToTable("EventCollaborationRequest");
 
                             b1.WithOwner()
                                 .HasForeignKey("EventCollaborationRequestId");
                         });
 
-                    b.OwnsOne("ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities.EventCollaborationRequest.Organization#ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects.EventOrganizationInfo", "Organization", b1 =>
-                        {
-                            b1.Property<Guid>("EventCollaborationRequestId")
-                                .HasColumnType("char(36)");
-
-                            b1.Property<string>("Address")
-                                .HasColumnType("longtext");
-
-                            b1.Property<string>("Description")
-                                .HasColumnType("longtext");
-
-                            b1.Property<string>("Email")
-                                .IsRequired()
-                                .HasColumnType("longtext");
-
-                            b1.Property<string>("ImageUrl")
-                                .IsRequired()
-                                .HasColumnType("longtext");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasColumnType("longtext");
-
-                            b1.Property<string>("PhoneNumber")
-                                .IsRequired()
-                                .HasColumnType("longtext");
-
-                            b1.HasKey("EventCollaborationRequestId");
-
-                            b1.ToTable("EventCollaborationRequest", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("EventCollaborationRequestId");
-                        });
-
-                    b.OwnsOne("ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities.EventCollaborationRequest.OrganizationContact#ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects.EventOrganizationContactInfo", "OrganizationContact", b1 =>
+                    b.OwnsOne("ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects.EventOrganizationContactInfo", "OrganizationContact", b1 =>
                         {
                             b1.Property<Guid>("EventCollaborationRequestId")
                                 .HasColumnType("char(36)");
@@ -1017,7 +973,42 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                             b1.HasKey("EventCollaborationRequestId");
 
-                            b1.ToTable("EventCollaborationRequest", (string)null);
+                            b1.ToTable("EventCollaborationRequest");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EventCollaborationRequestId");
+                        });
+
+                    b.OwnsOne("ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects.EventOrganizationInfo", "Organization", b1 =>
+                        {
+                            b1.Property<Guid>("EventCollaborationRequestId")
+                                .HasColumnType("char(36)");
+
+                            b1.Property<string>("Address")
+                                .HasColumnType("longtext");
+
+                            b1.Property<string>("Description")
+                                .HasColumnType("longtext");
+
+                            b1.Property<string>("Email")
+                                .IsRequired()
+                                .HasColumnType("longtext");
+
+                            b1.Property<string>("ImageUrl")
+                                .IsRequired()
+                                .HasColumnType("longtext");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasColumnType("longtext");
+
+                            b1.Property<string>("PhoneNumber")
+                                .IsRequired()
+                                .HasColumnType("longtext");
+
+                            b1.HasKey("EventCollaborationRequestId");
+
+                            b1.ToTable("EventCollaborationRequest");
 
                             b1.WithOwner()
                                 .HasForeignKey("EventCollaborationRequestId");

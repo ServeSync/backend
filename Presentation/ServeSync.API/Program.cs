@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Converters;
 using ServeSync.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +22,10 @@ builder.Services
     .AddCloudinary(builder.Configuration)
     .AddHangFireBackGroundJob(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options => options.SerializerSettings.Converters.Add(new StringEnumConverter()));
+
+builder.Services.AddSwaggerGenNewtonsoftSupport();
 
 builder.Services.Configure<RouteOptions>(options =>
 {

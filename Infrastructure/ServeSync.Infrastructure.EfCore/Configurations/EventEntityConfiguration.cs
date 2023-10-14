@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 
 namespace ServeSync.Infrastructure.EfCore.Configurations;
 
@@ -20,6 +21,9 @@ public class EventEntityConfiguration : IEntityTypeConfiguration<Event>
                .IsRequired();
 
         builder.Property(x => x.ImageUrl)
+               .IsRequired();
+
+        builder.Property(x => x.Status)
                .IsRequired();
 
         builder.Property(x => x.StartAt)

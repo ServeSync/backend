@@ -5,44 +5,48 @@ using ServeSync.Domain.SeedWorks.Models.Interfaces;
 
 namespace ServeSync.Infrastructure.EfCore.Common;
 
-public class AppQueryableBuilder<TAggregateRoot, TKey> 
-    where TAggregateRoot : class, IEntity<TKey>
+public class AppQueryableBuilder<TEntity, TKey> 
+    where TEntity : class, IEntity<TKey>
     where TKey : IEquatable<TKey>
 {
-    private IQueryable<TAggregateRoot> _queryable;
+    private IQueryable<TEntity> _queryable;
 
-    public AppQueryableBuilder(DbSet<TAggregateRoot> dbSet, bool tracking)
+    public AppQueryableBuilder(DbSet<TEntity> dbSet, bool tracking)
     {
         _queryable = tracking ? dbSet.AsQueryable() : dbSet.AsNoTracking();
     }
 
-    public AppQueryableBuilder(IQueryable<TAggregateRoot> queryable)
+    public AppQueryableBuilder(IQueryable<TEntity> queryable)
     {
         _queryable = queryable;
     }
 
-    public AppQueryableBuilder<TAggregateRoot, TKey> ApplyFilter(Expression<Func<TAggregateRoot, bool>> expression)
+    public AppQueryableBuilder<TEntity, TKey> ApplyFilter(Expression<Func<TEntity, bool>> expression)
     {
         _queryable = _queryable.Where(expression);
         return this;
     }
 
-    public AppQueryableBuilder<TAggregateRoot, TKey> ApplySorting(string? sorting)
+    public AppQueryableBuilder<TEntity, TKey> ApplySorting(string? sorting)
     {
         if (!string.IsNullOrWhiteSpace(sorting))
         {
-            _queryable = _queryable.OrderBy(sorting);
+            _queryable = _queryable.OrderBy($"{sorting}, {GetDefaultSorting()}");
+        }
+        else if (typeof(TEntity).IsAssignableTo(typeof(IAuditableEntity)))
+        {
+            _queryable = _queryable.OrderBy(GetDefaultSorting());    
         }
         return this;
     }
 
-    public AppQueryableBuilder<TAggregateRoot, TKey> IncludeProp(Expression<Func<TAggregateRoot, object>> includeProps)
+    public AppQueryableBuilder<TEntity, TKey> IncludeProp(Expression<Func<TEntity, object>> includeProps)
     {
         _queryable = _queryable.Include(includeProps);
         return this;
     }
     
-    public AppQueryableBuilder<TAggregateRoot, TKey> IncludeProp(IEnumerable<Expression<Func<TAggregateRoot, object>>> includeProps)
+    public AppQueryableBuilder<TEntity, TKey> IncludeProp(IEnumerable<Expression<Func<TEntity, object>>> includeProps)
     {
         foreach (var expression in includeProps)
         {
@@ -52,7 +56,7 @@ public class AppQueryableBuilder<TAggregateRoot, TKey>
         return this;
     }
 
-    public AppQueryableBuilder<TAggregateRoot, TKey> IncludeProp(string? includeProps)
+    public AppQueryableBuilder<TEntity, TKey> IncludeProp(string? includeProps)
     {
         if (!string.IsNullOrWhiteSpace(includeProps))
         {
@@ -65,7 +69,7 @@ public class AppQueryableBuilder<TAggregateRoot, TKey>
         return this;
     }
     
-    public AppQueryableBuilder<TAggregateRoot, TKey> IncludeProp(IEnumerable<string> includeProps)
+    public AppQueryableBuilder<TEntity, TKey> IncludeProp(IEnumerable<string> includeProps)
     {
         foreach (var prop in includeProps)
         {
@@ -75,8 +79,18 @@ public class AppQueryableBuilder<TAggregateRoot, TKey>
         return this;
     }
 
-    public IQueryable<TAggregateRoot> Build()
+    public IQueryable<TEntity> Build()
     {
         return _queryable;
+    }
+    
+    private static string GetDefaultSorting()
+    {
+        if (typeof(TEntity).IsAssignableTo(typeof(IHasAuditable)))
+        {
+            return $"{nameof(IAuditableEntity.Created)} desc";
+        }
+
+        return string.Empty;
     }
 }

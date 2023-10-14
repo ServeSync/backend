@@ -1,6 +1,6 @@
 ﻿namespace ServeSync.Domain.SeedWorks.Models.Interfaces;
 
-public interface IHasSoftDeleteEntity<out TKey> : IEntity<TKey> where TKey : IEquatable<TKey>
+public interface IHasSoftDelete
 {
     public bool IsDeleted { get; }
     public string? DeletedBy { get; }
