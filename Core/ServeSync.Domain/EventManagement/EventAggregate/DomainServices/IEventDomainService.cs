@@ -28,4 +28,6 @@ public interface IEventDomainService
     Event SetRepresentativeOrganization(Event @event, Guid organizationId);
     
     Event AddRepresentative(Event @event, EventOrganization organization, EventOrganizationContact representative, string role);
+    
+    Event AddRegistrationInfo(Event @event, DateTime startAt, DateTime endAt);
 }

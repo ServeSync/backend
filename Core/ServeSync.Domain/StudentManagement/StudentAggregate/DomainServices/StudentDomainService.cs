@@ -1,9 +1,14 @@
-﻿using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
+﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
+using ServeSync.Domain.EventManagement.EventAggregate.Specifications;
+using ServeSync.Domain.SeedWorks.Repositories;
+using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.Exceptions;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.Exceptions;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Specifications;
 
@@ -14,15 +19,21 @@ public class StudentDomainService : IStudentDomainService
     private readonly IStudentRepository _studentRepository;
     private readonly IHomeRoomRepository _homeRoomRepository;
     private readonly IEducationProgramRepository _educationProgramRepository;
+    private readonly IBasicReadOnlyRepository<EventRole, Guid> _eventRoleRepository;
+    private readonly IBasicReadOnlyRepository<StudentEventRegister, Guid> _studentEventRegisterRepository;
 
     public StudentDomainService(
         IStudentRepository studentRepository,
         IHomeRoomRepository homeRoomRepository,
-        IEducationProgramRepository educationProgramRepository)
+        IEducationProgramRepository educationProgramRepository,
+        IBasicReadOnlyRepository<EventRole, Guid> eventRoleRepository,
+        IBasicReadOnlyRepository<StudentEventRegister, Guid> studentEventRegisterRepository)
     {
         _studentRepository = studentRepository;
         _homeRoomRepository = homeRoomRepository;
         _educationProgramRepository = educationProgramRepository;
+        _eventRoleRepository = eventRoleRepository;
+        _studentEventRegisterRepository = studentEventRegisterRepository;
     }
     
     public async Task<Student> CreateAsync(
@@ -125,6 +136,43 @@ public class StudentDomainService : IStudentDomainService
         
         student.WithIdentity(identityId);
         _studentRepository.Update(student);
+    }
+
+    public async Task<Student> RegisterEvent(Student student, Guid eventRoleId, string? description = null)
+    {
+        var eventRole = await _eventRoleRepository.FindAsync(new EventRoleWithEventByIdSpecification(eventRoleId));
+        if (eventRole == null)
+        {
+            throw new EventRoleNotFoundException(eventRoleId);
+        }
+
+        if (!eventRole.Event!.CanRegister(DateTime.Now))
+        {
+            throw new NotInEventRegistrationTimeException(eventRole.EventId);
+        }
+
+        if (eventRole.Event.Roles.Any(x => student.IsApprovedToEventRole(x.Id)))
+        {
+            throw new StudentHasAlreadyApprovedToEventException(student.Id, eventRole.EventId);
+        }
+
+        var registeredStudentsCount = await _studentEventRegisterRepository.GetCountAsync(new RegisteredStudentInEventRoleSpecification(eventRoleId));
+        if (registeredStudentsCount >= eventRole.Quantity)
+        {
+            throw new EventRoleIsFullRegisteredException(eventRoleId);
+        }
+        
+        if (!eventRole.IsNeedApprove)
+        {
+            student.RegisterEventWithApprove(eventRoleId, description);    
+        }
+        else
+        {
+            student.RegisterEvent(eventRoleId, description);
+        }
+        
+        _studentRepository.Update(student);
+        return student;
     }
 
     private async Task CheckDuplicateCodeAsync(string code)

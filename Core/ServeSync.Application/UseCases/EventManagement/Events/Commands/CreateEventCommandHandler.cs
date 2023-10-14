@@ -3,6 +3,8 @@ using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Domain.EventManagement.EventAggregate;
+
 using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
@@ -13,6 +15,8 @@ namespace ServeSync.Application.UseCases.EventManagement.Events.Commands;
 
 public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Guid>
 {
+    private readonly IEventRepository _eventRepository;
+    
     private readonly IBasicReadOnlyRepository<EventOrganization, Guid> _eventOrganizationRepository;
     private readonly IBasicReadOnlyRepository<EventOrganizationContact, Guid> _eventOrganizationContactRepository;
     
@@ -21,12 +25,14 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
     private readonly ILogger<CreateEventCommandHandler> _logger;
     
     public CreateEventCommandHandler(
+        IEventRepository eventRepository,
         IBasicReadOnlyRepository<EventOrganization, Guid> eventOrganizationRepository,
         IBasicReadOnlyRepository<EventOrganizationContact, Guid> eventOrganizationContactRepository,
         IEventDomainService eventDomainService,
         IUnitOfWork unitOfWork,
         ILogger<CreateEventCommandHandler> logger)
     {
+        _eventRepository = eventRepository;
         _eventOrganizationRepository = eventOrganizationRepository;
         _eventOrganizationContactRepository = eventOrganizationContactRepository;
         _eventDomainService = eventDomainService;
@@ -61,12 +67,19 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
             _eventDomainService.AddRole(@event, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity);
         }
         
+        foreach (var registrationInfo in request.Event.RegistrationInfos)
+        {
+            _eventDomainService.AddRegistrationInfo(@event, registrationInfo.StartAt, registrationInfo.EndAt);
+        }
+        
         await AddOrganizationsAsync(@event, request.Event.Organizations);
         
+        await _eventRepository.InsertAsync(@event);
         await _unitOfWork.CommitAsync();
 
         _eventDomainService.SetRepresentativeOrganization(@event, request.Event.RepresentativeOrganizationId);
 
+        _eventRepository.Update(@event);
         await _unitOfWork.CommitTransactionAsync(true);
 
         _logger.LogInformation("Created new event with id: {EventId}", @event.Id);

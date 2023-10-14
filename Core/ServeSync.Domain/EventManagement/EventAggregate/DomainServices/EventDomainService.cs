@@ -48,8 +48,7 @@ public class EventDomainService : IEventDomainService
             fullAddress,
             longitude,
             latitude);
-
-        await _eventRepository.InsertAsync(@event);
+        
         return @event;
     }
 
@@ -89,6 +88,12 @@ public class EventDomainService : IEventDomainService
         }
         
         @event.AddOrganizationRepresentative(organization.Id, representative.Id, role);
+        return @event;
+    }
+
+    public Event AddRegistrationInfo(Event @event, DateTime startAt, DateTime endAt)
+    {
+        @event.AddRegistrationInfo(startAt, endAt);
         return @event;
     }
 

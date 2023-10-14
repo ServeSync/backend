@@ -233,6 +233,7 @@ public static class DependencyInjectionExtensions
 
         services.AddScoped<ICurrentUser, CurrentUser>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
         return services;
