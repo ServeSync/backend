@@ -20,8 +20,7 @@ public class BackGroundJobPublisher : IBackGroundJobPublisher
     {
         var scope = _serviceProvider.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-        mediator.Publish(job);
-        
         _logger.LogInformation("Job {JobName} published!", job.GetType().Name);
+        mediator.Publish(job);
     }
 }
