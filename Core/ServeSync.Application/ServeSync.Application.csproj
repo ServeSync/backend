@@ -8,6 +8,11 @@
 
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Hosting.Server.Abstractions" Version="2.2.0" />
+      <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
+      <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.4" />
+      <PackageReference Include="SkiaSharp" Version="2.*" />
+      <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.*" />
       <PackageReference Include="AutoMapper" Version="12.0.1" />
       <PackageReference Include="Bogus" Version="34.0.2" />
       <PackageReference Include="CsvHelper" Version="30.0.1" />
