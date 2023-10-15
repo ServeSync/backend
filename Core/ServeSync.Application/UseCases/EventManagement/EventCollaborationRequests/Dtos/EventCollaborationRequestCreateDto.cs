@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Shared;
 using ServeSync.Domain.EventManagement.EventAggregate.Enums;
-using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects;
 
 namespace ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Dtos;
 

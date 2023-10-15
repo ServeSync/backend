@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using ServeSync.Application.QueryObjects;
+using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRegistrationInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
@@ -45,8 +46,8 @@ public class EventQueries : IEventQueries
                     EndAt = row.EndAt,
                     Type = (EventType)row.Type,
                     Status = (EventStatus)row.Status,
-                    Capacity = (int)row.Capacity,
-                    Registered = (int)row.Registered,
+                    // Capacity = (int)row.Capacity,
+                    // Registered = (int)row.Registered,
                     Address = new EventAddressDto()
                     {
                         FullAddress = row.Address_FullAddress,
@@ -54,6 +55,11 @@ public class EventQueries : IEventQueries
                         Longitude = row.Address_longitude
                     },
                     RepresentativeOrganization = eventRepresentative,
+                    Activity = new BasicEventActivityDto()
+                    {
+                        Id = row.ActivityId,
+                        Name = row.ActivityName  
+                    },
                     Roles = new List<EventRoleDto>(),
                     Organizations = new List<OrganizationInEventDto>(),
                     AttendanceInfos = new List<EventAttendanceInfoDto>(),
@@ -105,12 +111,12 @@ public class EventQueries : IEventQueries
 
     private string GetQueryString()
     {
+        // -- (SELECT SUM(EventRole.Quantity) From EventRole Where EventId = Event.Id) As Capacity,
+        // -- (SELECT SUM(MyCount) FROM (SELECT COUNT(*) As MyCount FROM StudentEventRegister Where Status = 1 and EventRoleId IN (SELECT Id From EventRole Where EventId = Event.Id)) as temp) as Registered,
         // Todo: move to stored procedure
         return @$"
             SELECT 
-	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, 
-	            (SELECT SUM(EventRole.Quantity) From EventRole Where EventId = Event.Id) As Capacity,
-	            (SELECT SUM(MyCount) FROM (SELECT COUNT(*) As MyCount FROM StudentEventRegister Where Status = 1 and EventRoleId IN (SELECT Id From EventRole Where EventId = Event.Id)) as temp) as Registered,
+	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, Event.ActivityId, EventActivity.Name As ActivityName,
 	            EventRole.EventId As EventIdInRole, EventRole.Id, EventRole.Name, EventRole.Quantity, EventRole.Description, EventRole.IsNeedApprove, EventRole.Score, (SELECT COUNT(StudentEventRegister.Id) FROM StudentEventRegister Where EventRoleId = EventRole.Id and Status = @RegisterStatus) AS Registered,
                 RepresentativeOrganizationInEvent.EventId As EventIdInRepresentativeOrganization, RepresentativeOrganizationInEvent.Id, RepresentativeOrganizationInEvent.OrganizationId, RepresentativeOrganization.Name, RepresentativeOrganization.ImageUrl,
                 OrganizationInEvent.EventId As EventIdInOrganizationInEvent,OrganizationInEvent.Id, OrganizationInEvent.OrganizationId, EventOrganization.Name, OrganizationInEvent.Role, EventOrganization.Name, EventOrganization.ImageUrl,
@@ -118,6 +124,8 @@ public class EventQueries : IEventQueries
                 EventAttendanceInfo.EventId As EventIdInEventAttendanceInfo, EventAttendanceInfo.Id, EventAttendanceInfo.StartAt, EventAttendanceInfo.EndAt, EventAttendanceInfo.Code, EventAttendanceInfo.QrCodeUrl,
                 EventRegistrationInfo.EventId As EventIdInEventRegistrationInfo, EventRegistrationInfo.Id, EventRegistrationInfo.StartAt, EventRegistrationInfo.EndAt
             From Event
+            LEFT JOIN EventActivity
+            ON EventActivity.Id = Event.ActivityId
             LEFT JOIN OrganizationInEvent as RepresentativeOrganizationInEvent
             ON Event.RepresentativeOrganizationId = RepresentativeOrganizationInEvent.Id
             LEFT JOIN EventOrganization as RepresentativeOrganization
@@ -136,7 +144,6 @@ public class EventQueries : IEventQueries
             ON EventRegistrationInfo.EventId = Event.Id
             LEFT JOIN EventRole 
             On EventRole.EventId = Event.Id
-		
             WHERE Event.Id = @EventId
         ";
     }

@@ -1,4 +1,5 @@
-﻿using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
+﻿using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRegistrationInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.OrganizationInEvents;
@@ -28,6 +29,7 @@ public class FlatEventDto : BasicEventDto
     public int Registered { get; set; }
     public int Rating { get; set; }
 
+    public BasicEventActivityDto Activity { get; set; } = null!;
     public BasicOrganizationInEventDto RepresentativeOrganization { get; set; } = null!;
 }
 
