@@ -1,4 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRegistrationInfos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.OrganizationInEvents;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Shared;
 using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 
 namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
@@ -28,7 +33,7 @@ public class EventCreateDto
     public EventType Type { get; set; }
     public Guid ActivityId { get; set; }
     public Guid RepresentativeOrganizationId { get; set; }
-
+    
     public EventAddressDto Address { get; set; } = null!;
     
     [Required]
@@ -46,58 +51,4 @@ public class EventCreateDto
     [Required]
     [MinLength(1)]
     public List<EventRegistrationCreateDto> RegistrationInfos { get; set; } = null!;
-}
-
-public class EventAttendanceInfoCreateDto
-{
-    public DateTime StartAt { get; set; }
-    public DateTime EndAt { get; set; }
-}
-
-public class EventRoleCreateDto
-{
-    [Required]
-    [MinLength(5)]
-    public string Name { get; set; } = null!;
-    
-    [Required]
-    [MinLength(10)]
-    public string Description { get; set; } = null!;
-    
-    [Required]
-    public bool IsNeedApprove { get; set; }
-    
-    [Required]
-    public double Score { get; set; }
-    
-    [Required]
-    public int Quantity { get; set; }
-}
-
-public class OrganizationInEventCreateDto
-{
-    [Required]
-    public Guid OrganizationId { get; set; }
-    
-    [Required]
-    [MinLength(5)]
-    public string Role { get; set; } = null!;
-    
-    public List<OrganizationRepInEventCreateDto> OrganizationReps { get; set; } = null!;
-}
-
-public class OrganizationRepInEventCreateDto
-{
-    [Required]
-    public Guid OrganizationRepId { get; set; }
-    
-    [Required]
-    [MinLength(5)]
-    public string Role { get; set; } = null!;
-}
-
-public class EventRegistrationCreateDto
-{
-    public DateTime StartAt { get; set; }
-    public DateTime EndAt { get; set; }
 }

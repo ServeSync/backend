@@ -81,6 +81,17 @@ public class Event : AuditableAggregateRoot
         AttendanceInfos.Add(attendanceInfo);
     }
 
+    internal void SetAttendanceQrCodeUrl(Guid id, string qrCodeUrl)
+    {
+        var attendanceInfo = AttendanceInfos.FirstOrDefault(x => x.Id == id);
+        if (attendanceInfo == null)
+        {
+            throw new EventAttendanceInfoNotFoundException(id);
+        }
+        
+        attendanceInfo.SetQrCodeUrl(qrCodeUrl);
+    }
+
     internal void AddRole(string name, string description, bool isNeedApprove, double score, int quantity)
     {
         if (Roles.Any(x => x.Name == name))
@@ -147,6 +158,16 @@ public class Event : AuditableAggregateRoot
     {
         return GetCurrentStatus(dateTime) == EventStatus.Registration;
     }
+    
+    public bool CanAttendance(DateTime dateTime)
+    {
+        return GetCurrentStatus(dateTime) == EventStatus.Attendance;
+    }
+    
+    public bool ValidateCode(string token, DateTime dateTime)
+    {
+        return AttendanceInfos.Any(x => x.ValidateCode(token, dateTime));
+    }
 
     public void SetEndAt(DateTime endAt)
     {
@@ -159,7 +180,11 @@ public class Event : AuditableAggregateRoot
     
     public EventStatus GetCurrentStatus(DateTime dateTime)
     {
-        if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime)
+        if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime && AttendanceInfos.Any(x => x.CanAttendance(dateTime)))
+        {
+            return EventStatus.Attendance;
+        }
+        else if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime)
         {
             return EventStatus.Happening;
         }

@@ -30,6 +30,11 @@ public static class Permissions
         new(Students.Edit, "Chỉnh sửa sinh viên."),
         new(Students.ViewProfile, "Xem thông tin cá nhân của sinh viên."),
         new(Students.EditProfile, "Chỉnh sửa thông tin cá nhân của sinh viên."),
+        
+        new(Events.View, "Xem danh sách sự kiện."),
+        new(Events.Delete, "Xóa sự kiện."),
+        new(Events.Create, "Tạo sự kiện."),
+        new(Events.Edit, "Chỉnh sửa sự kiện.")
     };
 
     public static class Roles
@@ -92,6 +97,16 @@ public static class Permissions
         
         public const string ViewProfile = $"{Group}.ViewProfile";
         public const string EditProfile = $"{Group}.EditProfile";
+    }
+    
+    public static class Events
+    {
+        public const string Group = $"{Default}.Events";
+        
+        public const string View = $"{Group}.View";
+        public const string Create = $"{Group}.Create";
+        public const string Delete = $"{Group}.Delete";
+        public const string Edit = $"{Group}.Edit";
     }
 
     public static List<string> GeneratePermissionsForModule(string module)

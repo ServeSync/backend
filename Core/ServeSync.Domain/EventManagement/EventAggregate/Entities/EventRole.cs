@@ -1,4 +1,5 @@
 ﻿using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 
 namespace ServeSync.Domain.EventManagement.EventAggregate.Entities;
 
@@ -25,6 +26,5 @@ public class EventRole : Entity
 
     private EventRole()
     {
-        
     }
 }

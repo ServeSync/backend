@@ -19,6 +19,9 @@ public class EventAttendanceInfoEntityConfiguration : IEntityTypeConfiguration<E
         builder.Property(x => x.EndAt)
                .IsRequired();
 
+        builder.Property(x => x.QrCodeUrl)
+               .IsRequired(false);
+
         builder.HasOne(x => x.Event)
                .WithMany(x => x.AttendanceInfos)
                .HasForeignKey(x => x.EventId);

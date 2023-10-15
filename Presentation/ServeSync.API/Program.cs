@@ -20,6 +20,7 @@ builder.Services
     .AddDomainServices()
     .AddDataSeeders()
     .AddCloudinary(builder.Configuration)
+    .AddQueryObjects()
     .AddHangFireBackGroundJob(builder.Configuration);
 
 builder.Services.AddControllers()

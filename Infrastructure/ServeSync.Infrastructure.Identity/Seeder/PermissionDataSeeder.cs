@@ -32,6 +32,7 @@ public class PermissionDataSeeder : IDataSeeder
         await SyncPermissionAsync();
         await SeedPermissionForAdminRoleAsync();
         await SeedPermissionForStudentRoleAsync();
+        await SeedPermissionForStudentAffairRoleAsync();
     }
 
     private async Task SyncPermissionAsync()
@@ -81,6 +82,35 @@ public class PermissionDataSeeder : IDataSeeder
         }
 
         _roleRepository.Update(adminRole);
+        await _unitOfWork.CommitAsync();
+    }
+    
+    private async Task SeedPermissionForStudentAffairRoleAsync()
+    {
+        _logger.LogInformation("Begin seeding not granted permissions for student affair...");
+
+        var studentAffair = await _roleRepository.FindByNameAsync(AppRole.StudentAffair);
+        if (studentAffair == null)
+        {
+            _logger.LogWarning("Student affair role not found.");
+            return;
+        }
+        
+        var permissions = await _permissionRepository.FindAllAsync();
+        var notGrantedPermissions = permissions.ExceptBy(studentAffair.Permissions.Select(x => x.PermissionId), x => x.Id);
+
+        if (!notGrantedPermissions.Any())
+        {
+            _logger.LogInformation("Student affair has all permissions.");
+            return;   
+        }
+        
+        foreach (var permission in notGrantedPermissions)
+        {
+            studentAffair.GrantPermission(permission.Id);
+        }
+
+        _roleRepository.Update(studentAffair);
         await _unitOfWork.CommitAsync();
     }
 

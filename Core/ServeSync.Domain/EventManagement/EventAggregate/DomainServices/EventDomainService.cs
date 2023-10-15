@@ -97,6 +97,12 @@ public class EventDomainService : IEventDomainService
         return @event;
     }
 
+    public Event SetAttendanceQrCodeUrl(Event @event, Guid id, string qrCodeUrl)
+    {
+        @event.SetAttendanceQrCodeUrl(id, qrCodeUrl);
+        return @event;
+    }
+
     private async Task CheckEventActivityExistedAsync(Guid activityId)
     {
         if (!await _eventActivityRepository.IsExistingAsync(activityId))
