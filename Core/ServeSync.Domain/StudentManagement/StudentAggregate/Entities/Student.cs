@@ -130,6 +130,17 @@ public class Student : AuditableAggregateRoot
         EventRegisters.Add(eventRegister);
     }
     
+    internal void AttendEvent(Guid eventRoleId, Guid eventAttendanceInfoId)
+    {
+        var eventRegister = EventRegisters.FirstOrDefault(x => x.EventRoleId == eventRoleId);
+        if (eventRegister == null)
+        {
+            throw new StudentNotApprovedToEventException(Id, eventRoleId);
+        }
+        
+        eventRegister.Attendance(eventAttendanceInfoId);
+    }
+    
     internal bool IsApprovedToEventRole(Guid eventRoleId)
     {
         return EventRegisters.Any(x => x.EventRoleId == eventRoleId && x.Status == EventRegisterStatus.Approved);

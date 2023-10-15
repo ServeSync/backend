@@ -158,6 +158,16 @@ public class Event : AuditableAggregateRoot
     {
         return GetCurrentStatus(dateTime) == EventStatus.Registration;
     }
+    
+    public bool CanAttendance(DateTime dateTime)
+    {
+        return GetCurrentStatus(dateTime) == EventStatus.Attendance;
+    }
+    
+    public bool ValidateCode(string token, DateTime dateTime)
+    {
+        return AttendanceInfos.Any(x => x.ValidateCode(token, dateTime));
+    }
 
     public void SetEndAt(DateTime endAt)
     {
@@ -170,7 +180,11 @@ public class Event : AuditableAggregateRoot
     
     public EventStatus GetCurrentStatus(DateTime dateTime)
     {
-        if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime)
+        if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime && AttendanceInfos.Any(x => x.CanAttendance(dateTime)))
+        {
+            return EventStatus.Attendance;
+        }
+        else if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime)
         {
             return EventStatus.Happening;
         }

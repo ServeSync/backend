@@ -40,5 +40,7 @@ public interface IStudentDomainService
 
     Task SetIdentityAsync(Student student, string identityId);
     
-    Task<Student> RegisterEvent(Student student, Guid eventRoleId, string? description = null);
+    Task<Student> RegisterEventAsync(Student student, Guid eventRoleId, string? description, DateTime currentDateTime);
+    
+    Task<Student> AttendEventAsync(Student student, Guid eventId, string code, DateTime currentDateTime);
 }

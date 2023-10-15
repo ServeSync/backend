@@ -49,7 +49,8 @@ public class GenerateAttendanceQrCodeBackGroundJobHandler : IBackGroundJobHandle
         {
             var callBackUrlWithToken = QueryHelpers.AddQueryString(attendanceUrl, new Dictionary<string, string>()
             {
-                {"code", attendance.Code }
+                {"Code", attendance.Code },
+                {"EventId", job.EventId.ToString() }
             });
             
             var qrCode = QrCodeGenerator.GeneratePng(callBackUrlWithToken);

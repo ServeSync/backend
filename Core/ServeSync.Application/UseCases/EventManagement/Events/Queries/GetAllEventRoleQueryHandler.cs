@@ -36,11 +36,30 @@ public class GetAllEventRoleQueryHandler : IQueryHandler<GetAllEventRolesQuery, 
     private string GetQueryString()
     {
         return @"
-            SELECT EventRole.Id, EventRole.Name, EventRole.Description, EventRole.IsNeedApprove, EventRole.Score, EventRole.Quantity, Count(EventRole.Id) as Registered From EventRole
-            INNER JOIN StudentEventRegister
-            On EventRole.Id = StudentEventRegister.EventRoleId
-            WHERE EventRole.EventId = @EventId and StudentEventRegister.Status = @RegisterStatus
-            Group by EventRole.Id
+            SELECT
+                EventRole.Id,
+                EventRole.Name,
+                EventRole.Description,
+                EventRole.IsNeedApprove,
+                EventRole.Score,
+                EventRole.Quantity,
+                COUNT(StudentEventRegister.Id) AS Registered
+            FROM
+                EventRole
+            LEFT JOIN
+                (
+                    SELECT
+                        Id,
+                        EventRoleId
+                    FROM
+                        StudentEventRegister
+                    WHERE
+                        Status = @RegisterStatus
+                ) AS StudentEventRegister ON EventRole.Id = StudentEventRegister.EventRoleId
+            WHERE
+                EventRole.EventId = @EventId
+            GROUP BY
+                EventRole.Id;
         ";
     }
 }

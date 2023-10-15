@@ -10,6 +10,7 @@ public class StudentRepository : EfCoreRepository<Student>, IStudentRepository
     public StudentRepository(AppDbContext dbContext) : base(dbContext)
     {
         AddInclude(x => x.EventRegisters);
+        AddInclude("EventRegisters.StudentEventAttendance");
     }
 
     public Task<Student?> FindByIdentityAsync(string identityId)

@@ -32,6 +32,11 @@ public class CurrentUser : ICurrentUser
     {
         return IsInRoleAsync(AppRole.Student);
     }
+    
+    public Task<bool> IsStudentAffairAsync()
+    {
+        return IsInRoleAsync(AppRole.StudentAffair);
+    }
 
     public Task<bool> IsAdminAsync()
     {

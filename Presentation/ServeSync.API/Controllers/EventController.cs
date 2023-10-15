@@ -11,6 +11,7 @@ using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Queries;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
+using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 namespace ServeSync.API.Controllers;
 
@@ -66,5 +67,14 @@ public class EventController : ControllerBase
     {
         var eventAttendancesInfo = await _mediator.Send(new GetAllEventAttendanceInfosQuery(id));
         return Ok(eventAttendancesInfo);
+    }
+    
+    [HttpPost("{id:guid}/event-attendances")]
+    [HasRole(AppRole.Student)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> AddAttendanceInfoAsync([FromRoute] Guid id, [FromBody] StudentAttendEventDto dto)
+    {
+        await _mediator.Send(new AttendEventCommand(id, dto.Code));
+        return NoContent();
     }
 }

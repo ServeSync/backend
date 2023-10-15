@@ -10,4 +10,6 @@ public static class ErrorCodes
     public const string StudentIdentityNotFound = "Student:000006";
     public const string StudentRegisteredToEventRole = "Student:000007";
     public const string StudentHasAlreadyApprovedToEvent = "Student:000008";
+    public const string StudentAlreadyAttendance = "Student:000009";
+    public const string StudentNotApprovedToEvent = "Student:000010";
 }

@@ -39,7 +39,6 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Organization!.Name))
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Organization!.ImageUrl));
 
-        CreateMap<EventAttendanceInfo, EventAttendanceInfoDto>()
-            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => !src.CanAttendance(DateTime.Now) ? null : src.Code));
+        CreateMap<EventAttendanceInfo, EventAttendanceInfoDto>();
     }
 }

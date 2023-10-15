@@ -1,4 +1,5 @@
-﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
+﻿using ServeSync.Domain.EventManagement.EventAggregate;
+using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventAggregate.Specifications;
 using ServeSync.Domain.SeedWorks.Repositories;
@@ -8,7 +9,6 @@ using ServeSync.Domain.StudentManagement.HomeRoomAggregate;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.Exceptions;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
-using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Specifications;
 
@@ -19,6 +19,7 @@ public class StudentDomainService : IStudentDomainService
     private readonly IStudentRepository _studentRepository;
     private readonly IHomeRoomRepository _homeRoomRepository;
     private readonly IEducationProgramRepository _educationProgramRepository;
+    private readonly IEventRepository _eventRepository;
     private readonly IBasicReadOnlyRepository<EventRole, Guid> _eventRoleRepository;
     private readonly IBasicReadOnlyRepository<StudentEventRegister, Guid> _studentEventRegisterRepository;
 
@@ -26,12 +27,14 @@ public class StudentDomainService : IStudentDomainService
         IStudentRepository studentRepository,
         IHomeRoomRepository homeRoomRepository,
         IEducationProgramRepository educationProgramRepository,
+        IEventRepository eventRepository,
         IBasicReadOnlyRepository<EventRole, Guid> eventRoleRepository,
         IBasicReadOnlyRepository<StudentEventRegister, Guid> studentEventRegisterRepository)
     {
         _studentRepository = studentRepository;
         _homeRoomRepository = homeRoomRepository;
         _educationProgramRepository = educationProgramRepository;
+        _eventRepository = eventRepository;
         _eventRoleRepository = eventRoleRepository;
         _studentEventRegisterRepository = studentEventRegisterRepository;
     }
@@ -138,15 +141,15 @@ public class StudentDomainService : IStudentDomainService
         _studentRepository.Update(student);
     }
 
-    public async Task<Student> RegisterEvent(Student student, Guid eventRoleId, string? description = null)
+    public async Task<Student> RegisterEventAsync(Student student, Guid eventRoleId, string? description, DateTime currentDateTime)
     {
-        var eventRole = await _eventRoleRepository.FindAsync(new EventRoleByEventSpecification(eventRoleId));
+        var eventRole = await _eventRoleRepository.FindAsync(new EventRoleByIdSpecification(eventRoleId));
         if (eventRole == null)
         {
             throw new EventRoleNotFoundException(eventRoleId);
         }
 
-        if (!eventRole.Event!.CanRegister(DateTime.Now))
+        if (!eventRole.Event!.CanRegister(currentDateTime))
         {
             throw new NotInEventRegistrationTimeException(eventRole.EventId);
         }
@@ -172,6 +175,32 @@ public class StudentDomainService : IStudentDomainService
         }
         
         _studentRepository.Update(student);
+        return student;
+    }
+
+    public async Task<Student> AttendEventAsync(Student student, Guid eventId, string code, DateTime currentDateTime)
+    {
+        var @event = await _eventRepository.FindByIdAsync(eventId);
+        if (@event == null)
+        {
+            throw new EventNotFoundException(eventId);
+        }
+
+        if (!@event.Roles.Any(x => student.IsApprovedToEventRole(x.Id)))
+        {
+            throw new StudentNotApprovedToEventException(student.Id, eventId);
+        }
+        
+        if (!@event.ValidateCode(code, currentDateTime))
+        {
+            throw new InvalidEventAttendanceCodeException(code);
+        }
+        
+        var eventAttendanceId = @event.AttendanceInfos.First(x => x.ValidateCode(code, currentDateTime)).Id;
+        var eventRoleId = @event.Roles.First(x => student.IsApprovedToEventRole(x.Id)).Id;
+        
+        student.AttendEvent(eventRoleId, eventAttendanceId);
+
         return student;
     }
 

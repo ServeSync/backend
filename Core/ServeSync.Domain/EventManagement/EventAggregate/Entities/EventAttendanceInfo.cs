@@ -21,21 +21,12 @@ public class EventAttendanceInfo : Entity
         EventId = Guard.NotNull(eventId, nameof(EventId));
     }
     
-    public bool IsOverlapped(DateTime startAt, DateTime endAt)
+    internal bool IsOverlapped(DateTime startAt, DateTime endAt)
     {
         return (StartAt <= endAt && EndAt >= endAt) || (StartAt <= startAt && EndAt >= startAt);
     }
 
-    public void SetEndAt(DateTime endAt)
-    {
-        if (endAt < StartAt.AddMinutes(15))
-        {
-            throw new EventAttendanceInfoHeldShorterException();
-        }
-        EndAt = Guard.Range(endAt, nameof(EndAt), StartAt.AddMinutes(15));
-    }
-
-    public bool CanAttendance(DateTime dateTime)
+    internal bool CanAttendance(DateTime dateTime)
     {
         return StartAt <= dateTime && EndAt >= dateTime;
     }
@@ -43,6 +34,20 @@ public class EventAttendanceInfo : Entity
     internal void SetQrCodeUrl(string qrCodeUrl)
     {
         QrCodeUrl = Guard.NotNullOrWhiteSpace(qrCodeUrl, nameof(QrCodeUrl));
+    }
+    
+    internal bool ValidateCode(string code, DateTime dateTime)
+    {
+        return Code == code && CanAttendance(dateTime);
+    }
+    
+    private void SetEndAt(DateTime endAt)
+    {
+        if (endAt < StartAt.AddMinutes(15))
+        {
+            throw new EventAttendanceInfoHeldShorterException();
+        }
+        EndAt = Guard.Range(endAt, nameof(EndAt), StartAt.AddMinutes(15));
     }
 
     private EventAttendanceInfo()

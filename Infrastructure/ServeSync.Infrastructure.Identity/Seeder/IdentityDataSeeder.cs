@@ -34,12 +34,14 @@ public class IdentityDataSeeder : IDataSeeder
             if (!await _userManager.Users.AnyAsync())
             {
                 await SeedStudentRoleAsync();   
+                await SeedStudentAffairRoleAsync();
             }
             
             if (!await _userManager.Users.AnyAsync())
             {
                 await SeedDefaultAdminAccountAsync();
                 await SeedDefaultStudentAccountAsync();
+                await SeedDefaultStudentAffairAccountAsync();
             }
             
             _logger.LogInformation("Seed identity data successfully!");
@@ -111,9 +113,33 @@ public class IdentityDataSeeder : IDataSeeder
         };
     }
 
+    private async Task SeedDefaultStudentAffairAccountAsync()
+    {
+        var users = new List<ApplicationUser>()
+        {
+            new ApplicationUser("Nguyễn Thị Student Affair")
+            {
+                UserName = "student",
+                Email = "minishop.pbl3@gmail.com"
+            }
+        };
+
+        foreach (var user in users)
+        {
+            await _userManager.CreateAsync(user, "student123");
+            await _userManager.AddToRoleAsync(user, AppRole.StudentAffair);
+        }; 
+    }
+
     private Task SeedStudentRoleAsync()
     {
         var studentRole = new ApplicationRole(AppRole.Student);
         return _roleManager.CreateAsync(studentRole);
+    }
+    
+    private Task SeedStudentAffairRoleAsync()
+    {
+        var studentAffairRole = new ApplicationRole(AppRole.StudentAffair);
+        return _roleManager.CreateAsync(studentAffairRole);
     }
 }
