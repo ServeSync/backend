@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
+using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRegistrationInfos;
@@ -10,6 +11,8 @@ using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Shared;
 using ServeSync.Application.UseCases.EventManagement.Events.Jobs;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.EventManagement.SharedKernel.ValueObjects;
 
@@ -63,5 +66,12 @@ public class EventManagementMapperProfile : Profile
         CreateMap<EventRole, EventRoleDto>();
 
         CreateMap<EventRegistrationInfo, EventRegistrationDto>();
+        CreateMap<EventCollaborationRequest, EventCollaborationRequestCreateDto>();
+
+        CreateMap<EventOrganization, EventOrganizationInfoDto>();
+
+        CreateMap<EventOrganizationContact, EventOrganizationContactInfoDto>();
+
+        CreateMap<EventAttendanceInfo, AttendanceInfoGenerateQrCodeBackGroundJobDto>();
     }
 }
