@@ -1,6 +1,7 @@
 ﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.SeedWorks.Models;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
 
 namespace ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 
@@ -15,6 +16,8 @@ public class StudentEventRegister : AuditableEntity
     
     public Guid StudentId { get; private set; }
     public Student? Student { get; private set; }
+    
+    public StudentEventAttendance? StudentEventAttendance { get; private set; }
     
     internal StudentEventRegister(
         string? description,
@@ -36,6 +39,16 @@ public class StudentEventRegister : AuditableEntity
     {
         Status = EventRegisterStatus.Rejected;
         RejectReason = reason;
+    }
+    
+    internal void Attendance(Guid eventAttendanceInfoId)
+    {
+        if (StudentEventAttendance != null)
+        {
+            throw new StudentAlreadyAttendanceException(eventAttendanceInfoId);
+        }
+        
+        StudentEventAttendance = new StudentEventAttendance(Id, eventAttendanceInfoId);
     }
 
     private StudentEventRegister()

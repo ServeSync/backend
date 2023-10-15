@@ -10,6 +10,7 @@ public interface ICurrentUser
     Task<bool> IsInRoleAsync(string role);
     Task<bool> IsStudentAsync();
     Task<bool> IsAdminAsync();
+    Task<bool> IsStudentAffairAsync();
     
     string? GetClaim(string claimType);
 }

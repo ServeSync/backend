@@ -25,6 +25,7 @@ public class EventRegistrationInfo : Entity
             throw new EventRegistrationHeldShorterException();
         }
         EndAt = Guard.Range(endAt, nameof(EndAt), StartAt.AddMinutes(15));
+        EndAt = endAt;
     }
     
     public bool IsOverlapped(DateTime startAt, DateTime endAt)

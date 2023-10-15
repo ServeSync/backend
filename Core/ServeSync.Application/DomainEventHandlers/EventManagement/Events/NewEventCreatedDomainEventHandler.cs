@@ -33,8 +33,7 @@ public class NewEventCreatedDomainEventHandler : IDomainEventHandler<NewEventCre
 
     private void GenerateQrCode(Event @event)
     {
-        var job = new GenerateAttendanceQrCodeBackGroundJob(
-            _mapper.Map<IEnumerable<AttendanceInfoGenerateQrCodeBackGroundJobDto>>(@event.AttendanceInfos));
+        var job = new GenerateAttendanceQrCodeBackGroundJob(@event.Id);
         _backGroundJobManager.Fire(job);
     }
 }

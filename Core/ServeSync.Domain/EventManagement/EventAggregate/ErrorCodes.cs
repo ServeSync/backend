@@ -4,10 +4,14 @@ public static class ErrorCodes
 {
     public const string EventHeldShorter = "Event:000001";
     public const string NotInEventRegistrationTime = "Event:000002";
+    public const string EventNotFound = "Event:000003";
+    public const string NotInEventAttendanceTime = "Event:000004";
     
     public const string EventAttendanceInfoOverlapped = "EventAttendanceInfo:000001";
     public const string EventAttendanceInfoHeldShorter = "EventAttendanceInfo:000002";
     public const string EventAttendanceInfoOutOfEventTime = "EventAttendanceInfo:000003";
+    public const string EventAttendanceInfoNotFound = "EventAttendanceInfo:000004";
+    public const string InvalidEventAttendanceCode = "EventAttendanceInfo:000005";
     
     public const string EventRoleHasAlreadyExist = "EventRole:000001";
     public const string EventRoleNotFound = "EventRole:000002";

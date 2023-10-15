@@ -199,6 +199,9 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("QrCodeUrl")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("StartAt")
                         .HasColumnType("datetime(6)");
 
@@ -617,6 +620,31 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.HasIndex("HomeRoomId");
 
                     b.ToTable("Student");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.StudentEventAttendance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("AttendanceAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("EventAttendanceInfoId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("StudentEventRegisterId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventAttendanceInfoId");
+
+                    b.HasIndex("StudentEventRegisterId")
+                        .IsUnique();
+
+                    b.ToTable("StudentEventAttendance");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.StudentEventRegister", b =>
@@ -1166,6 +1194,25 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Navigation("HomeRoom");
                 });
 
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.StudentEventAttendance", b =>
+                {
+                    b.HasOne("ServeSync.Domain.EventManagement.EventAggregate.Entities.EventAttendanceInfo", "EventAttendanceInfo")
+                        .WithMany()
+                        .HasForeignKey("EventAttendanceInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.StudentEventRegister", "StudentEventRegister")
+                        .WithOne("StudentEventAttendance")
+                        .HasForeignKey("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.StudentEventAttendance", "StudentEventRegisterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EventAttendanceInfo");
+
+                    b.Navigation("StudentEventRegister");
+                });
+
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.StudentEventRegister", b =>
                 {
                     b.HasOne("ServeSync.Domain.EventManagement.EventAggregate.Entities.EventRole", "EventRole")
@@ -1240,6 +1287,11 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.Student", b =>
                 {
                     b.Navigation("EventRegisters");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.StudentEventRegister", b =>
+                {
+                    b.Navigation("StudentEventAttendance");
                 });
 
             modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities.ApplicationRole", b =>

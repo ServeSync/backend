@@ -10,5 +10,8 @@ public class EventRepository : EfCoreRepository<Event>, IEventRepository
     {
         AddInclude(x => x.Organizations);
         AddInclude(x => x.AttendanceInfos);
+        AddInclude(x => x.Roles);
+        AddInclude(x => x.RegistrationInfos);
+        AddInclude("Organizations.Representatives");
     }
 }

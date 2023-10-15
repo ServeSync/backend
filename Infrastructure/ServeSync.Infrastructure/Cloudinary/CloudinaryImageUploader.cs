@@ -30,22 +30,28 @@ public class CloudinaryImageUploader : IImageUploader
             Folder = "ServeSync"
         };
 
-        try
+        var policy = Policy.Handle<Exception>()
+            .WaitAndRetryAsync(5,retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                (ex, time) =>
+                {
+                    _logger.LogError("Upload file {name} to cloudinary failed: {error}", name, ex.Message);
+                }
+            );
+
+        var errorMessage = string.Empty;
+        var result = await policy.ExecuteAsync(async () =>
         {
             var result = await _cloudinary.UploadAsync(uploadParams);
             if (result.Error == null)
             {
                 return UploaderResult.Success(result.Url.ToString());
             }
-    
-            _logger.LogError("Upload file {name} to cloudinary failed: {error}", name, result.Error.Message);
-            return UploaderResult.Failed(result.Error.Message);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("Upload file {name} to cloudinary failed: {error}", name, e.Message);
-            return UploaderResult.Failed("Could not connect to server!");
-        }
+
+            errorMessage = result.Error.Message;
+            throw new Exception(result.Error.Message);
+        });
+
+        return result.IsSuccess ? result : UploaderResult.Failed(errorMessage);
     }
     
     public void PushUpload(string name, Stream stream)

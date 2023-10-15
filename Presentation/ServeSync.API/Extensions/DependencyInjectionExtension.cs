@@ -42,6 +42,7 @@ using ServeSync.Application.Identity;
 using ServeSync.Application.ImageUploader;
 using ServeSync.Application.MailSender;
 using ServeSync.Application.MailSender.Interfaces;
+using ServeSync.Application.QueryObjects;
 using ServeSync.Application.Seeders;
 using ServeSync.Application.SeedWorks.Behavior;
 using ServeSync.Application.SeedWorks.Schedulers;
@@ -63,6 +64,8 @@ using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
 using ServeSync.Infrastructure.Caching;
 using ServeSync.Infrastructure.Cloudinary;
+using ServeSync.Infrastructure.Dappers;
+using ServeSync.Infrastructure.Dappers.QueryObjects;
 using ServeSync.Infrastructure.HangFire;
 using ServeSync.Infrastructure.Identity.Caching;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
@@ -150,7 +153,8 @@ public static class DependencyInjectionExtensions
             options.EnableSensitiveDataLogging(env.IsDevelopment());
             options.UseMySQL(configuration.GetConnectionString("Default"));
         });
-        
+
+        services.AddTransient<ISqlQuery, DapperSqlQuery>();
         return services;
     }
     
@@ -386,6 +390,13 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IBackGroundJobManager, HangFireBackGroundJobManager>();
         services.AddScoped<IBackGroundJobPublisher, BackGroundJobPublisher>();
         services.AddHangfireServer();
+        
+        return services;
+    }
+    
+    public static IServiceCollection AddQueryObjects(this IServiceCollection services)
+    {
+        services.AddTransient<IEventQueries, EventQueries>();
         
         return services;
     }

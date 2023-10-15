@@ -38,7 +38,7 @@ public class RegisterEventCommandHandler : ICommandHandler<RegisterEventCommand>
             throw new StudentNotFoundException(_currentUser.Id);
         }
 
-        await _studentDomainService.RegisterEvent(student, request.EventRoleId, request.Description);
+        await _studentDomainService.RegisterEventAsync(student, request.EventRoleId, request.Description, DateTime.Now);
         await _unitOfWork.CommitAsync();
         
         _logger.LogInformation("Student {StudentId} registered event role {EventRoleId}", _currentUser.Id, request.EventRoleId);

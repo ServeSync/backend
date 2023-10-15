@@ -57,7 +57,7 @@ public class HangFireBackGroundJobManager : IBackGroundJobManager
         return _backgroundJobClient.Schedule<T>(factory, new DateTimeOffset(dateTime));
     }
     
-    public string FireAt<T>(IBackGroundJob job, DateTime dateTime)
+    public string FireAt(IBackGroundJob job, DateTime dateTime)
     {
         return _backgroundJobClient.Schedule<IBackGroundJobPublisher>(x => x.Publish(job), new DateTimeOffset(dateTime));
     }
