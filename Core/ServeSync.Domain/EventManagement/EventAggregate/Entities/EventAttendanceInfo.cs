@@ -6,6 +6,7 @@ namespace ServeSync.Domain.EventManagement.EventAggregate.Entities;
 public class EventAttendanceInfo : Entity
 {
     public string Code { get; private set; }
+    public string QrCodeUrl { get; private set; }
     public DateTime StartAt { get; private set; }
     public DateTime EndAt { get; private set; }
     
@@ -32,6 +33,16 @@ public class EventAttendanceInfo : Entity
             throw new EventAttendanceInfoHeldShorterException();
         }
         EndAt = Guard.Range(endAt, nameof(EndAt), StartAt.AddMinutes(15));
+    }
+
+    public bool CanAttendance(DateTime dateTime)
+    {
+        return StartAt <= dateTime && EndAt >= dateTime;
+    }
+    
+    internal void SetQrCodeUrl(string qrCodeUrl)
+    {
+        QrCodeUrl = Guard.NotNullOrWhiteSpace(qrCodeUrl, nameof(QrCodeUrl));
     }
 
     private EventAttendanceInfo()

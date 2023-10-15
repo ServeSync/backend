@@ -28,7 +28,7 @@ public class EventCreateDto
     public EventType Type { get; set; }
     public Guid ActivityId { get; set; }
     public Guid RepresentativeOrganizationId { get; set; }
-
+    
     public EventAddressDto Address { get; set; } = null!;
     
     [Required]

@@ -4,11 +4,11 @@ using ServeSync.Domain.SeedWorks.Specifications;
 
 namespace ServeSync.Domain.EventManagement.EventAggregate.Specifications;
 
-public class EventRoleWithEventByIdSpecification : Specification<EventRole, Guid>
+public class EventRoleByEventSpecification : Specification<EventRole, Guid>
 {
     private readonly Guid _eventRoleId;
     
-    public EventRoleWithEventByIdSpecification(Guid eventRoleId) : base(true)
+    public EventRoleByEventSpecification(Guid eventRoleId) : base(true)
     {
         _eventRoleId = eventRoleId;
         AddInclude(x => x.Event!);

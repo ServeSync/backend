@@ -6,6 +6,8 @@ using ServeSync.API.Dtos.Shared;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Commands;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Queries;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
@@ -48,5 +50,21 @@ public class EventController : ControllerBase
     {
         await _mediator.Send(new RegisterEventCommand(dto.EventRoleId, dto.Description));
         return NoContent();
+    }
+
+    [HttpGet("{id:guid}/roles")]
+    [ProducesResponseType(typeof(IEnumerable<EventRoleDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllEventRolesAsync([FromRoute] Guid id)
+    {
+        var eventRoles = await _mediator.Send(new GetAllEventRolesQuery(id));
+        return Ok(eventRoles);
+    }
+    
+    [HttpGet("{id:guid}/event-attendances")]
+    [ProducesResponseType(typeof(PagedResultDto<EventAttendanceInfoDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllEventAttendancesInfoAsync([FromRoute] Guid id)
+    {
+        var eventAttendancesInfo = await _mediator.Send(new GetAllEventAttendanceInfosQuery(id));
+        return Ok(eventAttendancesInfo);
     }
 }

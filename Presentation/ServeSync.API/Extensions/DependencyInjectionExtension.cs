@@ -63,6 +63,7 @@ using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
 using ServeSync.Infrastructure.Caching;
 using ServeSync.Infrastructure.Cloudinary;
+using ServeSync.Infrastructure.Dappers;
 using ServeSync.Infrastructure.HangFire;
 using ServeSync.Infrastructure.Identity.Caching;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
@@ -150,7 +151,8 @@ public static class DependencyInjectionExtensions
             options.EnableSensitiveDataLogging(env.IsDevelopment());
             options.UseMySQL(configuration.GetConnectionString("Default"));
         });
-        
+
+        services.AddTransient<ISqlQuery, DapperSqlQuery>();
         return services;
     }
     

@@ -81,6 +81,17 @@ public class Event : AuditableAggregateRoot
         AttendanceInfos.Add(attendanceInfo);
     }
 
+    internal void SetAttendanceQrCodeUrl(Guid id, string qrCodeUrl)
+    {
+        var attendanceInfo = AttendanceInfos.FirstOrDefault(x => x.Id == id);
+        if (attendanceInfo == null)
+        {
+            throw new EventAttendanceInfoNotFoundException(id);
+        }
+        
+        attendanceInfo.SetQrCodeUrl(qrCodeUrl);
+    }
+
     internal void AddRole(string name, string description, bool isNeedApprove, double score, int quantity)
     {
         if (Roles.Any(x => x.Name == name))

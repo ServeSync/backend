@@ -140,7 +140,7 @@ public class StudentDomainService : IStudentDomainService
 
     public async Task<Student> RegisterEvent(Student student, Guid eventRoleId, string? description = null)
     {
-        var eventRole = await _eventRoleRepository.FindAsync(new EventRoleWithEventByIdSpecification(eventRoleId));
+        var eventRole = await _eventRoleRepository.FindAsync(new EventRoleByEventSpecification(eventRoleId));
         if (eventRole == null)
         {
             throw new EventRoleNotFoundException(eventRoleId);

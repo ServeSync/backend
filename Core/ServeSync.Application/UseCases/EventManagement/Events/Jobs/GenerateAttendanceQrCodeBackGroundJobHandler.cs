@@ -1,45 +1,64 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ServeSync.Application.Common.Helpers;
 using ServeSync.Application.ImageUploader;
+using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Application.SeedWorks.Schedulers;
+using ServeSync.Domain.EventManagement.EventAggregate;
+using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
 
 namespace ServeSync.Application.UseCases.EventManagement.Events.Jobs;
 
 public class GenerateAttendanceQrCodeBackGroundJobHandler : IBackGroundJobHandler<GenerateAttendanceQrCodeBackGroundJob>
 {
-    private readonly IServer _server;
+    private readonly IEventDomainService _eventDomainService;
+    private readonly IEventRepository _eventRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IImageUploader _imageUploader;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<GenerateAttendanceQrCodeBackGroundJob> _logger;
     
     public GenerateAttendanceQrCodeBackGroundJobHandler(
-        IServer server,
+        IEventDomainService eventDomainService,
+        IEventRepository eventRepository,
+        IUnitOfWork unitOfWork,
+        IConfiguration configuration,
         IImageUploader imageUploader,
         ILogger<GenerateAttendanceQrCodeBackGroundJob> logger)
     {
-        _server = server;
+        _eventDomainService = eventDomainService;
+        _eventRepository = eventRepository;
+        _unitOfWork = unitOfWork;
+        _configuration = configuration;
         _imageUploader = imageUploader;
         _logger = logger;
     }
     
-    public Task Handle(GenerateAttendanceQrCodeBackGroundJob job, CancellationToken cancellationToken)
+    public async Task Handle(GenerateAttendanceQrCodeBackGroundJob job, CancellationToken cancellationToken)
     {
-        var baseUrl = _server.Features.Get<IServerAddressesFeature>().Addresses.First();
-        foreach (var attendance in job.AttendanceInfos)
+        var @event = await _eventRepository.FindByIdAsync(job.EventId);
+        if (@event == null)
         {
-            var attendanceUrl = $"{baseUrl}/api/event-attendances/{attendance.Id}";
-            
+            _logger.LogError("Event with id {EventId} not found", job.EventId);
+            return;
+        }
+        
+        var attendanceUrl = _configuration["Urls:Web:AttendanceUrl"];
+        foreach (var attendance in @event.AttendanceInfos)
+        {
             var callBackUrlWithToken = QueryHelpers.AddQueryString(attendanceUrl, new Dictionary<string, string>()
             {
                 {"code", attendance.Code }
             });
             
             var qrCode = QrCodeGenerator.GeneratePng(callBackUrlWithToken);
-            _imageUploader.PushUpload($"event-attendances-{attendance.Id}", qrCode);
-        }
+            var imageUrl = await _imageUploader.UploadAsync($"event-attendances-{attendance.Id}", qrCode);
 
-        return Task.CompletedTask;
+            _eventDomainService.SetAttendanceQrCodeUrl(@event, attendance.Id, imageUrl.Url!);
+        }
+        
+        _eventRepository.Update(@event);
+        await _unitOfWork.CommitAsync();
     }
 }

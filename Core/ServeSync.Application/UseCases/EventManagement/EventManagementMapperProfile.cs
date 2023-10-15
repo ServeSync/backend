@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Jobs;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
@@ -38,6 +39,7 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Organization!.Name))
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Organization!.ImageUrl));
 
-        CreateMap<EventAttendanceInfo, AttendanceInfoGenerateQrCodeBackGroundJobDto>();
+        CreateMap<EventAttendanceInfo, EventAttendanceInfoDto>()
+            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => !src.CanAttendance(DateTime.Now) ? null : src.Code));
     }
 }

@@ -20,7 +20,7 @@ public interface IBackGroundJobManager
     
     string FireAt<T>(Expression<Action<T>> factory, DateTime dateTime);
     
-    string FireAt<T>(IBackGroundJob job, DateTime dateTime);
+    string FireAt(IBackGroundJob job, DateTime dateTime);
     
     bool Remove(string jobId);
 }
