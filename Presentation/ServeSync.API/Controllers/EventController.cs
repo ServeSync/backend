@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Dtos.Events;
@@ -27,6 +28,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet]
+    [HasPermission(Permissions.Events.View)]
     [ProducesResponseType(typeof(PagedResultDto<FlatEventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventsAsync([FromQuery] EventFilterRequestDto dto)
     {
@@ -36,7 +38,17 @@ public class EventController : ControllerBase
         return Ok(events);
     }
     
+    [HttpGet("{id:guid}")]
+    [HasPermission(Permissions.Events.View)]
+    [ProducesResponseType(typeof(EventDetailDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEventByIdAsync([FromRoute] Guid id)
+    {
+        var @event = await _mediator.Send(new GetEventByIdQuery(id));
+        return Ok(@event);
+    }
+    
     [HttpPost]
+    [HasPermission(Permissions.Events.Create)]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateEvent([FromBody] EventCreateDto dto)
     {
@@ -54,6 +66,7 @@ public class EventController : ControllerBase
     }
 
     [HttpGet("{id:guid}/roles")]
+    [HasPermission(Permissions.Events.View)]
     [ProducesResponseType(typeof(IEnumerable<EventRoleDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventRolesAsync([FromRoute] Guid id)
     {
@@ -62,6 +75,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("{id:guid}/event-attendances")]
+    [HasPermission(Permissions.Events.View)]
     [ProducesResponseType(typeof(PagedResultDto<EventAttendanceInfoDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventAttendancesInfoAsync([FromRoute] Guid id)
     {
@@ -72,7 +86,7 @@ public class EventController : ControllerBase
     [HttpPost("{id:guid}/event-attendances")]
     [HasRole(AppRole.Student)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> AddAttendanceInfoAsync([FromRoute] Guid id, [FromBody] StudentAttendEventDto dto)
+    public async Task<IActionResult> AttendEventAsync([FromRoute] Guid id, [FromBody] StudentAttendEventDto dto)
     {
         await _mediator.Send(new AttendEventCommand(id, dto.Code));
         return NoContent();

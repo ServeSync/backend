@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using ServeSync.Application.SeedWorks.Data;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 
 namespace ServeSync.Infrastructure.Dappers;
 

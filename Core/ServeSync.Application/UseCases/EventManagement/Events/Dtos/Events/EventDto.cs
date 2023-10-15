@@ -1,4 +1,9 @@
-﻿using ServeSync.Domain.EventManagement.EventAggregate.Enums;
+﻿using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRegistrationInfos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.OrganizationInEvents;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Shared;
+using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 
 namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 
@@ -23,12 +28,43 @@ public class FlatEventDto : BasicEventDto
     public int Registered { get; set; }
     public int Rating { get; set; }
 
-    public OrganizationInEventDto RepresentativeOrganization { get; set; } = null!;
+    public BasicOrganizationInEventDto RepresentativeOrganization { get; set; } = null!;
 }
 
-public class OrganizationInEventDto
+public class EventDetailDto : FlatEventDto
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; } = null!;
-    public string ImageUrl { get; set; } = null!;
+    public List<EventRoleDto> Roles { get; set; } = null!;
+    public List<OrganizationInEventDto> Organizations { get; set; } = null!;
+    public List<EventRegistrationDto> RegistrationInfos { get; set; } = null!;
+    public List<EventAttendanceInfoDto> AttendanceInfos { get; set; } = null!;
+    
+    public EventStatus GetCurrentStatus(DateTime dateTime)
+    {
+        if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime && AttendanceInfos.Any(x => x.StartAt <= dateTime && x.EndAt >= dateTime))
+        {
+            return EventStatus.Attendance;
+        }
+        else if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime)
+        {
+            return EventStatus.Happening;
+        }
+        else if (Status == EventStatus.Approved && StartAt >= dateTime && RegistrationInfos.Any(x => dateTime >= x.StartAt && dateTime <= x.EndAt))
+        {
+            return EventStatus.Registration;
+        }
+        else if (Status == EventStatus.Approved && StartAt >= dateTime)
+        {
+            return EventStatus.Upcoming;
+        }
+        else if (Status == EventStatus.Approved && EndAt <= dateTime)
+        {
+            return EventStatus.Done;
+        }
+        else if (Status == EventStatus.Pending && StartAt <= dateTime)
+        {
+            return EventStatus.Expired;
+        }
+        
+        return Status;
+    }
 }

@@ -1,6 +1,6 @@
 ﻿namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 
-public class EventRoleDto
+public class BasicEventRoleDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;
@@ -8,5 +8,9 @@ public class EventRoleDto
     public bool IsNeedApprove { get; set; }
     public double Score { get; set; }
     public int Quantity { get; set; }
+}
+
+public class EventRoleDto : BasicEventRoleDto
+{
     public int Registered { get; set; }
 }

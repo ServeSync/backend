@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Data;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.OrganizationInEvents;
 using ServeSync.Domain.EventManagement.EventAggregate;
-
 using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
