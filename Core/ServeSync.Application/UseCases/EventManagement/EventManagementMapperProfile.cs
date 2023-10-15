@@ -22,6 +22,7 @@ public class EventManagementMapperProfile : Profile
 {
     public EventManagementMapperProfile()
     {
+        CreateMap<EventActivity, BasicEventActivityDto>();
         CreateMap<EventActivity, EventActivityDto>();
 
         CreateMap<EventOrganization, EventOrganizationDto>();
@@ -63,15 +64,7 @@ public class EventManagementMapperProfile : Profile
         CreateMap<EventAttendanceInfo, EventAttendanceInfoDto>();
 
         CreateMap<EventRole, EventRoleDto>();
-        CreateMap<EventRole, EventRoleDto>();
 
         CreateMap<EventRegistrationInfo, EventRegistrationDto>();
-        CreateMap<EventCollaborationRequest, EventCollaborationRequestCreateDto>();
-
-        CreateMap<EventOrganization, EventOrganizationInfoDto>();
-
-        CreateMap<EventOrganizationContact, EventOrganizationContactInfoDto>();
-
-        CreateMap<EventAttendanceInfo, AttendanceInfoGenerateQrCodeBackGroundJobDto>();
     }
 }

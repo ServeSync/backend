@@ -12,6 +12,7 @@ public class FilterEventSpecification : PagingAndSortingSpecification<Event, Gui
     {
         _search = search;
         
+        AddInclude(x => x.Activity!);
         AddInclude(x => x.Roles);
         AddInclude(x => x.RepresentativeOrganization!);
         AddInclude("RepresentativeOrganization.Organization");
