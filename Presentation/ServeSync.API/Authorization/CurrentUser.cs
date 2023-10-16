@@ -24,8 +24,13 @@ public class CurrentUser : ICurrentUser
 
     public async Task<bool> IsInRoleAsync(string role)
     {
-        var roles = await _mediator.Send(new GetAllRoleForUserQuery(Id));
-        return roles.Contains(role);
+        if (IsAuthenticated)
+        {
+            var roles = await _mediator.Send(new GetAllRoleForUserQuery(Id));
+            return roles.Contains(role);    
+        }
+
+        return false;
     }
 
     public Task<bool> IsStudentAsync()

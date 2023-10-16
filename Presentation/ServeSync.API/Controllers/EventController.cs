@@ -28,7 +28,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet]
-    [HasPermission(Permissions.Events.View)]
+    // [HasPermission(Permissions.Events.View)]
     [ProducesResponseType(typeof(PagedResultDto<FlatEventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventsAsync([FromQuery] EventFilterRequestDto dto)
     {
@@ -39,7 +39,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("{id:guid}")]
-    [HasPermission(Permissions.Events.View)]
+    // [HasPermission(Permissions.Events.View)]
     [ProducesResponseType(typeof(EventDetailDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventByIdAsync([FromRoute] Guid id)
     {
@@ -66,7 +66,7 @@ public class EventController : ControllerBase
     }
 
     [HttpGet("{id:guid}/roles")]
-    [HasPermission(Permissions.Events.View)]
+    // [HasPermission(Permissions.Events.View)]
     [ProducesResponseType(typeof(IEnumerable<EventRoleDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventRolesAsync([FromRoute] Guid id)
     {
@@ -75,7 +75,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("{id:guid}/event-attendances")]
-    [HasPermission(Permissions.Events.View)]
+    // [HasPermission(Permissions.Events.View)]
     [ProducesResponseType(typeof(PagedResultDto<EventAttendanceInfoDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventAttendancesInfoAsync([FromRoute] Guid id)
     {
