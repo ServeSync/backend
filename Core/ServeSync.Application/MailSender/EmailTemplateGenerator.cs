@@ -19,6 +19,13 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
         return template.Replace("{{CallBackUrl}}", callBackUrl);
     }
 
+    public string GetCancelEvent(string eventName)
+    {
+        var template = GetTemplate("CancelEvent");
+
+        return template.Replace("{{EventName}}", eventName);
+    }
+
     private string GetTemplate(string templateName)
     {
         var pathToFile = GetTemplatePath(templateName);

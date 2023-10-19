@@ -3,4 +3,6 @@
 public interface IEmailTemplateGenerator
 {
     string GetForForgetPassword(string callBackUrl);
+
+    string GetCancelEvent(string eventName);
 }

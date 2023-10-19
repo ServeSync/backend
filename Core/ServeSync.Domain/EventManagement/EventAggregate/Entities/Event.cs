@@ -154,6 +154,19 @@ public class Event : AuditableAggregateRoot
         RegistrationInfos.Add(new EventRegistrationInfo(startAt, endAt, Id));
     }
 
+    internal void Cancel(DateTime dateTime)
+    {
+        if (Status == EventStatus.Approved && StartAt > dateTime)
+        {
+            Status = EventStatus.Cancelled;
+            AddDomainEvent(new EventCancelledDomainEvent(this));
+        }
+        else
+        {
+            throw new EventCanNotBeCancelledException();
+        }
+    }
+
     public bool CanRegister(DateTime dateTime)
     {
         return GetCurrentStatus(dateTime) == EventStatus.Registration;
