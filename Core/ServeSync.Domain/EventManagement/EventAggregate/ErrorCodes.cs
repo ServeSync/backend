@@ -6,6 +6,7 @@ public static class ErrorCodes
     public const string NotInEventRegistrationTime = "Event:000002";
     public const string EventNotFound = "Event:000003";
     public const string NotInEventAttendanceTime = "Event:000004";
+    public const string EventCanNotBeCancelled = "Event:000005";
     
     public const string EventAttendanceInfoOverlapped = "EventAttendanceInfo:000001";
     public const string EventAttendanceInfoHeldShorter = "EventAttendanceInfo:000002";
