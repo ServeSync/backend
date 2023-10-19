@@ -1,5 +1,6 @@
 ﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventAggregate.Enums;
+using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
@@ -109,5 +110,12 @@ public class EventDomainService : IEventDomainService
         {
             throw new EventActivityNotFoundException(activityId);
         }
+    }
+
+    public Event CancelEvent(Event @event, DateTime dateTime)
+    {
+        @event.Cancel(dateTime);
+        
+        return @event;
     }
 }

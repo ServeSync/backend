@@ -82,13 +82,22 @@ public class EventController : ControllerBase
         var eventAttendancesInfo = await _mediator.Send(new GetAllEventAttendanceInfosQuery(id));
         return Ok(eventAttendancesInfo);
     }
-    
+
     [HttpPost("{id:guid}/event-attendances")]
     [HasRole(AppRole.Student)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AttendEventAsync([FromRoute] Guid id, [FromBody] StudentAttendEventDto dto)
     {
         await _mediator.Send(new AttendEventCommand(id, dto.Code));
+        return NoContent();
+    }
+
+    [HttpPost("{id:guid}/cancel")]
+    [HasRole(AppRole.Admin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> CancelEvent(Guid id)
+    {
+        await _mediator.Send(new CancelEventCommand(id));
         return NoContent();
     }
 }

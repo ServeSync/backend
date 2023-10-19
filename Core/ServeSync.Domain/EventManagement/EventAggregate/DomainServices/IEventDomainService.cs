@@ -32,4 +32,6 @@ public interface IEventDomainService
     Event AddRegistrationInfo(Event @event, DateTime startAt, DateTime endAt);
     
     Event SetAttendanceQrCodeUrl(Event @event, Guid id, string qrCodeUrl);
+
+    Event CancelEvent(Event @event, DateTime dateTime);
 }
