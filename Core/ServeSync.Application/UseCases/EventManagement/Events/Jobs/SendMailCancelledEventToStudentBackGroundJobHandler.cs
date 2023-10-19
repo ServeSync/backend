@@ -1,12 +1,7 @@
-﻿using System.Net;
-using System.Net.Mail;
-using Microsoft.Extensions.Logging;
-using ServeSync.Application.Common.Settings;
+﻿using Microsoft.Extensions.Logging;
 using ServeSync.Application.MailSender;
 using ServeSync.Application.MailSender.Interfaces;
-using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Schedulers;
-using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
 
 namespace ServeSync.Application.UseCases.EventManagement.Events.Jobs;
 
@@ -17,7 +12,6 @@ public class SendMailCancelledEventToStudentBackGroundJobHandler : IBackGroundJo
     private readonly ILogger<SendMailCancelledEventToStudentBackGroundJob> _logger;
 
     public SendMailCancelledEventToStudentBackGroundJobHandler(
-        IEventDomainService eventDomainService,
         IEmailSender emailSender,
         IEmailTemplateGenerator emailTemplateGenerator,
         ILogger<SendMailCancelledEventToStudentBackGroundJob> logger)
@@ -29,16 +23,15 @@ public class SendMailCancelledEventToStudentBackGroundJobHandler : IBackGroundJo
 
     public async Task Handle(SendMailCancelledEventToStudentBackGroundJob job, CancellationToken cancellationToken)
     {
-        foreach (var e in job.Emails)
+        foreach (var email in job.Emails)
         {
-            _emailSender.Push(new EmailMessage()
+            await _emailSender.SendAsync(new EmailMessage()
             {
-                ToAddress = e,
+                ToAddress = email,
                 Subject = "[ServeSync] Thông báo hủy bỏ sự kiện",
                 Body = _emailTemplateGenerator.GetCancelEvent(job.EventName)
-            });
-            _logger.LogInformation("Send mail to {Email} about cancel event {EventName}", e, job.EventName);
+            }); 
+            _logger.LogInformation("Send mail to {Email} about cancel event {EventName}", email, job.EventName);
         }
-        await Task.CompletedTask;
     }
 }
