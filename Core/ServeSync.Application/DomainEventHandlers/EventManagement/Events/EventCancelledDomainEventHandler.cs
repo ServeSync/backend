@@ -4,6 +4,7 @@ using ServeSync.Application.SeedWorks.Schedulers;
 using ServeSync.Application.UseCases.EventManagement.Events.Jobs;
 using ServeSync.Domain.EventManagement.EventAggregate;
 using ServeSync.Domain.EventManagement.EventAggregate.DomainEvents;
+using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.SeedWorks.Events;
 
 namespace ServeSync.Application.DomainEventHandlers.EventManagement.Events;
@@ -23,8 +24,13 @@ public class EventCancelledDomainEventHandler : IDomainEventHandler<EventCancell
     
     public async Task Handle(EventCancelledDomainEvent @event, CancellationToken cancellationToken)
     {
-        var registeredStudent = await _eventRepository.GetRegisteredStudentAsync(@event.Event.Id);
+        await SendMailToStudent(@event.Event);
+    }
+    
+    private async Task SendMailToStudent(Event @event)
+    {
+        var registeredStudent = await _eventRepository.GetRegisteredStudentAsync(@event.Id);
         var emails = registeredStudent.Select(s => s.Email).ToList();
-        _backGroundJobManager.Fire(new SendMailCancelledEventToStudentBackGroundJob(@event.Event.Name, emails));
+        _backGroundJobManager.Fire(new SendMailCancelledEventToStudentBackGroundJob(@event.Name, emails));
     }
 }

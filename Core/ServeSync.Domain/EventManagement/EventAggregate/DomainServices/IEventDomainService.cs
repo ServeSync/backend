@@ -29,7 +29,7 @@ public interface IEventDomainService
     
     Event AddRepresentative(Event @event, EventOrganization organization, EventOrganizationContact representative, string role);
     
-    Event AddRegistrationInfo(Event @event, DateTime startAt, DateTime endAt);
+    Event AddRegistrationInfo(Event @event, DateTime startAt, DateTime endAt, DateTime dateTime);
     
     Event SetAttendanceQrCodeUrl(Event @event, Guid id, string qrCodeUrl);
 

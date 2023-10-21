@@ -8,6 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MongoDB.Bson" Version="2.22.0" />
+        <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.5.0" />
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
         <PackageReference Include="Hangfire.AspNetCore" Version="1.8.5" />
@@ -26,20 +28,16 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Core\ServeSync.Application\ServeSync.Application.csproj" />
       <ProjectReference Include="..\..\Infrastructure\ServeSync.Infrastructure.EfCore\ServeSync.Infrastructure.EfCore.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\ServeSync.Infrastructure.MongoDb\ServeSync.Infrastructure.MongoDb.csproj" />
       <ProjectReference Include="..\..\Infrastructure\ServeSync.Infrastructure\ServeSync.Infrastructure.csproj" />
-
     </ItemGroup>
-
+    
     <ItemGroup>
-        <Content Include="..\..\.dockerignore">
-            <Link>.dockerignore</Link>
-        </Content>
-
-
-
-
-
+      <Content Include="..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
+
 
 
 

@@ -11,6 +11,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
 using MySqlConnector;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.ExceptionHandlers;
@@ -43,6 +47,8 @@ using ServeSync.Application.ImageUploader;
 using ServeSync.Application.MailSender;
 using ServeSync.Application.MailSender.Interfaces;
 using ServeSync.Application.QueryObjects;
+using ServeSync.Application.ReadModels.Abstracts;
+using ServeSync.Application.ReadModels.Events;
 using ServeSync.Application.Seeders;
 using ServeSync.Application.SeedWorks.Behavior;
 using ServeSync.Application.SeedWorks.Schedulers;
@@ -71,6 +77,9 @@ using ServeSync.Infrastructure.Identity.Caching;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.Services;
+using ServeSync.Infrastructure.MongoDb;
+using ServeSync.Infrastructure.MongoDb.Repositories;
+using ServeSync.Infrastructure.MongoDb.Settings;
 
 namespace ServeSync.API.Extensions;
 
@@ -82,8 +91,6 @@ public static class DependencyInjectionExtensions
         
         services.AddScoped<IExceptionHandler, ExceptionHandler>();
         services.AddScoped<ITokenProvider, JwtTokenProvider>();
-        services.AddScoped<IDataSeeder, IdentityDataSeeder>();
-        services.AddScoped<IDataSeeder, PermissionDataSeeder>();
         
         return services;
     }
@@ -342,6 +349,8 @@ public static class DependencyInjectionExtensions
 
     public static IServiceCollection AddDataSeeders(this IServiceCollection services)
     {
+        services.AddScoped<IDataSeeder, IdentityDataSeeder>();
+        services.AddScoped<IDataSeeder, PermissionDataSeeder>();
         services.AddScoped<IDataSeeder, StudentManagementDataSeeder>();
         services.AddScoped<IDataSeeder, EventManagementDataSeeder>();
         
@@ -401,6 +410,28 @@ public static class DependencyInjectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddMongoDB(this IServiceCollection services, IConfiguration configuration)
+    {
+        BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+        BsonSerializer.RegisterSerializer(new DateTimeSerializer(DateTimeKind.Local));
+ 
+        services.AddSingleton(provider =>
+        {
+            var mongoDbSettings = configuration.GetSection("MongoDb").Get<MongoDbSetting>() ?? throw new Exception("MongoDb setting is not provided!");
+            var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
+            return mongoClient.GetDatabase("ServeSync");
+        });
+
+        services.AddMongoRepository<EventReadModel, Guid>("Events");
+        services.AddSingleton<IEventReadModelRepository>(provider =>
+        {
+            var database = provider.GetRequiredService<IMongoDatabase>();
+            return new EventReadModelRepository(database, "Events");
+        });
+        
+        return services;
+    }
+
     private static void InitHangFireDb(IConfiguration configuration)
     {
         using var connection = new MySqlConnection(configuration.GetConnectionString("HangFireMaster"));
@@ -410,5 +441,15 @@ public static class DependencyInjectionExtensions
         
         using var command = new MySqlCommand($"CREATE DATABASE IF NOT EXISTS {dbName};", connection);
         command.ExecuteNonQuery();
+    }
+    
+    private static IServiceCollection AddMongoRepository<T, TKey>(this IServiceCollection services, string collectionName) where T : BaseReadModel<TKey> where TKey : IEquatable<TKey>
+    {
+        services.AddSingleton<IReadModelRepository<T, TKey>>(provider =>
+        {
+            var database = provider.GetRequiredService<IMongoDatabase>();
+            return new MongoDbRepository<T, TKey>(database, collectionName);
+        });
+        return services;
     }
 }

@@ -79,6 +79,7 @@ public class Event : AuditableAggregateRoot
         }
         
         AttendanceInfos.Add(attendanceInfo);
+        AddDomainEvent(new EventUpdatedDomainEvent(Id));
     }
 
     internal void SetAttendanceQrCodeUrl(Guid id, string qrCodeUrl)
@@ -90,6 +91,7 @@ public class Event : AuditableAggregateRoot
         }
         
         attendanceInfo.SetQrCodeUrl(qrCodeUrl);
+        AddDomainEvent(new EventUpdatedDomainEvent(Id));
     }
 
     internal void AddRole(string name, string description, bool isNeedApprove, double score, int quantity)
@@ -100,6 +102,7 @@ public class Event : AuditableAggregateRoot
         }
         
         Roles.Add(new EventRole(name, description, isNeedApprove, score, quantity, Id));
+        AddDomainEvent(new EventUpdatedDomainEvent(Id));
     }
     
     internal void AddOrganization(Guid organizationId, string role)
@@ -110,6 +113,7 @@ public class Event : AuditableAggregateRoot
         }
         
         Organizations.Add(new OrganizationInEvent(organizationId, role, Id));
+        AddDomainEvent(new EventUpdatedDomainEvent(Id));
     }
 
     internal void AddOrganizationRepresentative(Guid organizationId, Guid representativeId, string role)
@@ -121,6 +125,7 @@ public class Event : AuditableAggregateRoot
         }
         
         organizationInEvent.AddRepresentative(representativeId, role);
+        AddDomainEvent(new EventUpdatedDomainEvent(Id));
     }
 
     internal void SetRepresentativeOrganization(Guid representativeOrganizationId)
@@ -132,11 +137,12 @@ public class Event : AuditableAggregateRoot
         }
         
         RepresentativeOrganizationId = Guard.NotNull(organizationInEvent.Id, nameof(RepresentativeOrganizationId));
+        AddDomainEvent(new EventUpdatedDomainEvent(Id));
     }
 
-    internal void AddRegistrationInfo(DateTime startAt, DateTime endAt)
+    internal void AddRegistrationInfo(DateTime startAt, DateTime endAt, DateTime dateTime)
     {
-        if (!CanUpdateRegistrationInfo())
+        if (!CanUpdateRegistrationInfo(dateTime))
         {
             throw new EventRegistrationInfoCannotBeUpdatedException(Id);    
         }
@@ -152,6 +158,7 @@ public class Event : AuditableAggregateRoot
         }
         
         RegistrationInfos.Add(new EventRegistrationInfo(startAt, endAt, Id));
+        AddDomainEvent(new EventUpdatedDomainEvent(Id));
     }
 
     internal void Cancel(DateTime dateTime)
@@ -160,11 +167,18 @@ public class Event : AuditableAggregateRoot
         {
             Status = EventStatus.Cancelled;
             AddDomainEvent(new EventCancelledDomainEvent(this));
+            AddDomainEvent(new EventUpdatedDomainEvent(Id));
         }
         else
         {
             throw new EventCanNotBeCancelledException();
         }
+    }
+
+    public void Approve()
+    {
+        Status = EventStatus.Approved;
+        AddDomainEvent(new EventUpdatedDomainEvent(Id));
     }
 
     public bool CanRegister(DateTime dateTime)
@@ -221,9 +235,9 @@ public class Event : AuditableAggregateRoot
         return Status;
     }
 
-    private bool CanUpdateRegistrationInfo()
+    private bool CanUpdateRegistrationInfo(DateTime dateTime)
     {
-        if (RegistrationInfos.Any(x => x.StartAt <= DateTime.Now))
+        if (RegistrationInfos.Any(x => x.StartAt <= dateTime))
         {
             return false;
         }

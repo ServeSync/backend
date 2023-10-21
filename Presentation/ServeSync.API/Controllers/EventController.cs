@@ -76,7 +76,7 @@ public class EventController : ControllerBase
     
     [HttpGet("{id:guid}/event-attendances")]
     // [HasPermission(Permissions.Events.View)]
-    [ProducesResponseType(typeof(PagedResultDto<EventAttendanceInfoDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<EventAttendanceInfoDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventAttendancesInfoAsync([FromRoute] Guid id)
     {
         var eventAttendancesInfo = await _mediator.Send(new GetAllEventAttendanceInfosQuery(id));

@@ -11,6 +11,7 @@ COPY ["Core/ServeSync.Domain/ServeSync.Domain.csproj", "Core/ServeSync.Domain/"]
 COPY ["Infrastructure/ServeSync.Infrastructure.EfCore/ServeSync.Infrastructure.EfCore.csproj", "Infrastructure/ServeSync.Infrastructure.EfCore/"]
 COPY ["Infrastructure/ServeSync.Infrastructure.Identity/ServeSync.Infrastructure.Identity.csproj", "Infrastructure/ServeSync.Infrastructure.Identity/"]
 COPY ["Infrastructure/ServeSync.Infrastructure/ServeSync.Infrastructure.csproj", "Infrastructure/ServeSync.Infrastructure/"]
+COPY ["Infrastructure/ServeSync.Infrastructure.MongoDb/ServeSync.Infrastructure.MongoDb.csproj", "Infrastructure/ServeSync.Infrastructure.MongoDb/"]
 RUN dotnet restore "Presentation/ServeSync.API/ServeSync.API.csproj"
 COPY . .
 WORKDIR "/src/Presentation/ServeSync.API"
