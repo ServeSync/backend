@@ -1,5 +1,9 @@
-﻿using ServeSync.Application.SeedWorks.Cqrs;
+﻿using AutoMapper;
+using ServeSync.Application.ReadModels.Abstracts;
+using ServeSync.Application.ReadModels.Events;
+using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Data;
+using ServeSync.Application.SeedWorks.Sessions;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
@@ -10,56 +14,37 @@ namespace ServeSync.Application.UseCases.EventManagement.Events.Queries;
 
 public class GetAllEventRoleQueryHandler : IQueryHandler<GetAllEventRolesQuery, IEnumerable<EventRoleDto>>
 {
-    private readonly IBasicReadOnlyRepository<Event, Guid> _eventRepository;
-    private readonly ISqlQuery _sqlQuery;
+    private readonly ICurrentUser _currentUser;
+    private readonly IEventReadModelRepository _eventReadModelRepository;
+    private readonly IMapper _mapper;
     
     public GetAllEventRoleQueryHandler(
-        IBasicReadOnlyRepository<Event, Guid> eventRepository,
-        ISqlQuery sqlQuery)
+        ICurrentUser currentUser,
+        IEventReadModelRepository eventReadModelRepository,
+        IMapper mapper)
     {
-        _eventRepository = eventRepository;
-        _sqlQuery = sqlQuery;
+        _currentUser = currentUser;
+        _eventReadModelRepository = eventReadModelRepository;
+        _mapper = mapper;
     }
     
     public async Task<IEnumerable<EventRoleDto>> Handle(GetAllEventRolesQuery request, CancellationToken cancellationToken)
     {
-        if (!await _eventRepository.IsExistingAsync(request.EventId))
+        var eventRoles = await _eventReadModelRepository.GetEventRolesAsync(request.EventId);
+        if (eventRoles == null)
         {
             throw new EventNotFoundException(request.EventId);
         }
-        
-        return await _sqlQuery.QueryListAsync<EventRoleDto>(
-            GetQueryString(), 
-            new { EventId = request.EventId, RegisterStatus = EventRegisterStatus.Approved });
-    }
 
-    private string GetQueryString()
-    {
-        return @"
-            SELECT
-                EventRole.Id,
-                EventRole.Name,
-                EventRole.Description,
-                EventRole.IsNeedApprove,
-                EventRole.Score,
-                EventRole.Quantity,
-                COUNT(StudentEventRegister.Id) AS Registered
-            FROM
-                EventRole
-            LEFT JOIN
-                (
-                    SELECT
-                        Id,
-                        EventRoleId
-                    FROM
-                        StudentEventRegister
-                    WHERE
-                        Status = @RegisterStatus
-                ) AS StudentEventRegister ON EventRole.Id = StudentEventRegister.EventRoleId
-            WHERE
-                EventRole.EventId = @EventId
-            GROUP BY
-                EventRole.Id;
-        ";
+        var eventRoleDtos = _mapper.Map<List<EventRoleDto>>(eventRoles);
+        if (_currentUser.IsAuthenticated)
+        {
+            eventRoleDtos.ForEach(x =>
+            {
+                x.IsRegistered = eventRoles.Any(y => y.RegisteredStudents.Any(z => z.IdentityId == _currentUser.Id && z.Status == EventRegisterStatus.Approved));
+            });
+        }
+
+        return eventRoleDtos;
     }
 }

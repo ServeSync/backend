@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServeSync.Infrastructure.Id
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServeSync.Infrastructure", "Infrastructure\ServeSync.Infrastructure\ServeSync.Infrastructure.csproj", "{78BE950F-96EE-4ACB-A828-B632071C7211}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServeSync.Infrastructure.MongoDb", "Infrastructure\ServeSync.Infrastructure.MongoDb\ServeSync.Infrastructure.MongoDb.csproj", "{24810CAC-4E7B-47CF-BA60-DD2027E8C135}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,7 @@ Global
 		{40C134FC-B3DB-4C93-A75A-31AF931EA236} = {6E05D748-2774-4913-9BEE-64F065038DA7}
 		{65A00606-43CE-43CB-97F3-68C8DBC39D71} = {6E05D748-2774-4913-9BEE-64F065038DA7}
 		{78BE950F-96EE-4ACB-A828-B632071C7211} = {6E05D748-2774-4913-9BEE-64F065038DA7}
+		{24810CAC-4E7B-47CF-BA60-DD2027E8C135} = {6E05D748-2774-4913-9BEE-64F065038DA7}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{764D2922-0773-411A-AB73-6A1B8EB36858}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -61,5 +64,9 @@ Global
 		{78BE950F-96EE-4ACB-A828-B632071C7211}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78BE950F-96EE-4ACB-A828-B632071C7211}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78BE950F-96EE-4ACB-A828-B632071C7211}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24810CAC-4E7B-47CF-BA60-DD2027E8C135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24810CAC-4E7B-47CF-BA60-DD2027E8C135}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24810CAC-4E7B-47CF-BA60-DD2027E8C135}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24810CAC-4E7B-47CF-BA60-DD2027E8C135}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

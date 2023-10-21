@@ -24,10 +24,16 @@
         - Cloudinary__ApiSecret=tmDw4SrmffqZp2hA2tiDDZgemTU
         - ForgetPasswordSetting__AllowedClients__0=http://localhost:4200
         - ForgetPasswordSetting__AllowedClients__1=http://localhost:4300
+        - MongoDb__Host=mongoDb
+        - MongoDb__Port=27017
+        - MongoDb__UserName=root
+        - MongoDb__Password=pbl62023
+        - TZ=SE Asia Standard Time
     restart: always
     depends_on:
       - db
       - redis
+      
   db:
     image: mysql
     user: root
@@ -36,7 +42,19 @@
     ports:
       - "33306:3306"
     volumes:
-      - servesync:/var/lib/mysql
+      - servesync_db:/var/lib/mysql
+    restart: always
+    
+  mongoDb:
+    image: mongo
+    ports:
+      - "27018:27017"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pbl62023
+    volumes:
+      - servesync_mongo:/data/db
   
   redis:
     image: redis
@@ -44,4 +62,5 @@
       - "6379:6379"
 
 volumes:
-  servesync:
+  servesync_db:
+  servesync_mongo:

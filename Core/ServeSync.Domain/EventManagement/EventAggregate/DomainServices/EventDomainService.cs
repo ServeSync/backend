@@ -92,9 +92,9 @@ public class EventDomainService : IEventDomainService
         return @event;
     }
 
-    public Event AddRegistrationInfo(Event @event, DateTime startAt, DateTime endAt)
+    public Event AddRegistrationInfo(Event @event, DateTime startAt, DateTime endAt, DateTime currentDateTime)
     {
-        @event.AddRegistrationInfo(startAt, endAt);
+        @event.AddRegistrationInfo(startAt, endAt, currentDateTime);
         return @event;
     }
 

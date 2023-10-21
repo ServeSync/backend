@@ -13,6 +13,7 @@ public class EventRoleByIdSpecification : Specification<EventRole, Guid>
         _eventRoleId = eventRoleId;
         AddInclude(x => x.Event!);
         AddInclude("Event.RegistrationInfos");
+        AddInclude("Event.AttendanceInfos");
         AddInclude("Event.Roles");
     }
     

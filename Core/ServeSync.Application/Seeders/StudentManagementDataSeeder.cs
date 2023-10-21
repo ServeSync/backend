@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Bogus;
+using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.DomainServices;
@@ -172,56 +173,53 @@ public class StudentManagementDataSeeder : IDataSeeder
 
     private async Task SeedStudentsAsync()
     {
-        // if (await _studentRepository.AnyAsync())
-        // {
-        //     _logger.LogInformation("Student data has been seeded!");
-        //     return;
-        // }
-        //
-        // _logger.LogInformation("Seeding student data...");
-        //
-        // try
-        // {
-        //     var homerooms = await _homeRoomRepository.FindAllAsync();
-        //     var educationPrograms = await _educationProgramRepository.FindAllAsync();
-        //
-        //     await _unitOfWork.BeginTransactionAsync();
-        //     
-        //     foreach (var homeroom in homerooms)
-        //     {
-        //         for (var i = 0; i < 10; i++)
-        //         {
-        //             var faker = new Faker();
-        //             
-        //             var fullName = faker.Person.FullName;
-        //             var email = $"{faker.Random.AlphaNumeric(9)}@gmail.com";
-        //             var code = faker.Random.AlphaNumeric(8);
-        //             
-        //             await _studentDomainService.CreateAsync(
-        //                 code,
-        //                 fullName,
-        //                 faker.Random.Bool(),
-        //                 faker.Person.DateOfBirth,
-        //                 faker.Person.Avatar,
-        //                 faker.Random.AlphaNumeric(8),
-        //                 email,
-        //                 faker.Person.Phone,
-        //                 homeroom.Id,
-        //                 educationPrograms[faker.Random.Int(0, educationPrograms.Count - 1)].Id,
-        //                 faker.Address.City(),
-        //                 faker.Address.FullAddress());
-        //         }
-        //     }
-        //     
-        //     await _unitOfWork.CommitTransactionAsync(false);
-        //
-        //     _logger.LogInformation("Seeded students data successfully!");
-        // }
-        // catch (Exception e)
-        // {
-        //     await _unitOfWork.CommitTransactionAsync(true);
-        //     _logger.LogError("Seeding students data failed: {Message}", e.Message);
-        // }
+        if (await _studentRepository.AnyAsync())
+        {
+            _logger.LogInformation("Student data has been seeded!");
+            return;
+        }
+        
+        _logger.LogInformation("Seeding student data...");
+        
+        try
+        {
+            var homerooms = await _homeRoomRepository.FindAllAsync();
+            var educationPrograms = await _educationProgramRepository.FindAllAsync();
+        
+            await _unitOfWork.BeginTransactionAsync();
+            
+            for (var i = 0;i < 20;i++)
+            {
+                var faker = new Faker();
+                    
+                var fullName = faker.Person.FullName;
+                var email = $"{faker.Random.AlphaNumeric(9)}@gmail.com";
+                var code = faker.Random.AlphaNumeric(8);
+                    
+                await _studentDomainService.CreateAsync(
+                    code,
+                    fullName,
+                    faker.Random.Bool(),
+                    faker.Person.DateOfBirth,
+                    faker.Person.Avatar,
+                    faker.Random.AlphaNumeric(8),
+                    email,
+                    faker.Person.Phone,
+                    faker.PickRandom(homerooms).Id,
+                    educationPrograms[faker.Random.Int(0, educationPrograms.Count - 1)].Id,
+                    faker.Address.City(),
+                    faker.Address.FullAddress());
+            }
+            
+            await _unitOfWork.CommitTransactionAsync(false);
+        
+            _logger.LogInformation("Seeded students data successfully!");
+        }
+        catch (Exception e)
+        {
+            await _unitOfWork.CommitTransactionAsync(true);
+            _logger.LogError("Seeding students data failed: {Message}", e.Message);
+        }
     }
 
     private IDictionary<string, string[]> GetHomeRooms()
