@@ -67,7 +67,7 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
         
         foreach (var registrationInfo in request.Event.RegistrationInfos)
         {
-            _eventDomainService.AddRegistrationInfo(@event, registrationInfo.StartAt, registrationInfo.EndAt);
+            _eventDomainService.AddRegistrationInfo(@event, registrationInfo.StartAt, registrationInfo.EndAt, DateTime.Now);
         }
         
         await AddOrganizationsAsync(@event, request.Event.Organizations);

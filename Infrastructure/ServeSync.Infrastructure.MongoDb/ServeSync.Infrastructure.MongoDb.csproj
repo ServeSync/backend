@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Core\ServeSync.Application\ServeSync.Application.csproj" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
+    </ItemGroup>
+
+
+
+</Project>

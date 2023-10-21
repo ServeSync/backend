@@ -28,13 +28,15 @@ public class FlatEventDto : BasicEventDto
     public int Capacity { get; set; }
     public int Registered { get; set; }
     public int Rating { get; set; }
-
+    
     public BasicEventActivityDto Activity { get; set; } = null!;
     public BasicOrganizationInEventDto RepresentativeOrganization { get; set; } = null!;
 }
 
 public class EventDetailDto : FlatEventDto
 {
+    public bool IsRegistered { get; set; }
+    public bool IsAttendance { get; set; }
     public List<EventRoleDto> Roles { get; set; } = null!;
     public List<OrganizationInEventDto> Organizations { get; set; } = null!;
     public List<EventRegistrationDto> RegistrationInfos { get; set; } = null!;

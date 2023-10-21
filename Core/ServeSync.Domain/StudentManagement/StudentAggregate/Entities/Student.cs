@@ -115,6 +115,8 @@ public class Student : AuditableAggregateRoot
         
         var eventRegister = new StudentEventRegister(description, eventRoleId, Id);
         EventRegisters.Add(eventRegister);
+        
+        AddDomainEvent(new StudentRegisteredToEventRoleDomainEvent(this, eventRoleId));
     }
     
     internal void RegisterEventWithApprove(Guid eventRoleId, string? description = null)

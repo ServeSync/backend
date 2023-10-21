@@ -1,4 +1,5 @@
-﻿using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
+﻿using ServeSync.Domain.EventManagement.EventAggregate.DomainEvents;
+using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventAggregate.Entities;
