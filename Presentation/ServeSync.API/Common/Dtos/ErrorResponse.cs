@@ -1,4 +1,4 @@
-﻿namespace ServeSync.API.Dtos.Shared;
+﻿namespace ServeSync.API.Common.Dtos;
 
 public class ErrorResponse
 {

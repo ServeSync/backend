@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
-using ServeSync.API.Dtos.HomeRooms;
 using ServeSync.Application.UseCases.StudentManagement.HomeRooms.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.HomeRooms.Queries;
 using ServeSync.Infrastructure.Identity.Commons.Constants;

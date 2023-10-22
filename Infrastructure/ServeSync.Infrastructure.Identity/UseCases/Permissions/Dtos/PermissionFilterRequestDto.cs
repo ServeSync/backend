@@ -1,4 +1,4 @@
-﻿namespace ServeSync.API.Dtos.Permissions;
+﻿namespace ServeSync.Infrastructure.Identity.UseCases.Permissions.Dtos;
 
 public class PermissionFilterRequestDto
 {

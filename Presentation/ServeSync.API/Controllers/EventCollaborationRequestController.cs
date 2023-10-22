@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using ServeSync.API.Dtos.Shared;
+using ServeSync.API.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Commands;
 using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Dtos;
 

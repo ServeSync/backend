@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
-using ServeSync.API.Dtos.Permissions;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Dtos;

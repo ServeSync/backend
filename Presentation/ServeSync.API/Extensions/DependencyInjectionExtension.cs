@@ -388,7 +388,7 @@ public static class DependencyInjectionExtensions
                 .UseStorage(
                     new MySqlStorage(configuration.GetConnectionString("HangFire"), new MySqlStorageOptions()
                     {
-                        QueuePollInterval = TimeSpan.FromSeconds(10),
+                        QueuePollInterval = TimeSpan.FromSeconds(3),
                         JobExpirationCheckInterval = TimeSpan.FromHours(1),
                         CountersAggregateInterval = TimeSpan.FromMinutes(5),
                         TransactionTimeout = TimeSpan.FromMinutes(1),

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using ServeSync.API.Dtos.EventCategories;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventCategories.Queries;

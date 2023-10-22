@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ServeSync.API.Common.Validations;
 
-namespace ServeSync.API.Dtos.Students;
+namespace ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 
 public class StudentEditProfileDto
 {

@@ -1,4 +1,4 @@
-﻿namespace ServeSync.API.Dtos.Events;
+﻿namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 
 public class EventRegisterDto
 {

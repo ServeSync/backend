@@ -1,11 +1,10 @@
 ﻿using System.Text.Json.Serialization;
-using ServeSync.API.Common.Validations;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.Common.Validations;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventAggregate.Enums;
-using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 
-namespace ServeSync.API.Dtos.Events;
+namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 
 public class EventFilterRequestDto : PagingAndSortingRequestDto
 {

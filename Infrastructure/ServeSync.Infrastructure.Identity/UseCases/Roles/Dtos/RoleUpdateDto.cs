@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ServeSync.API.Dtos.Roles;
+namespace ServeSync.Infrastructure.Identity.UseCases.Roles.Dtos;
 
-public class UpdateRoleDto
+public class RoleUpdateDto
 {
     [Required]
     public string Name { get; set; }
