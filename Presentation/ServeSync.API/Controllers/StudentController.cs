@@ -1,8 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
-using ServeSync.API.Dtos.Shared;
-using ServeSync.API.Dtos.Students;
+using ServeSync.API.Common.Dtos;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
@@ -38,7 +37,7 @@ public class StudentController : ControllerBase
     [HttpPost]
     [HasPermission(Permissions.Students.Create)]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status201Created)]
-    public async Task<IActionResult> CreateStudentAsync(CreateStudentDto dto)
+    public async Task<IActionResult> CreateStudentAsync(StudentCreateDto dto)
     {
         var command = new CreateStudentCommand(
             dto.Code, dto.FullName, dto.Gender, dto.Birth, dto.Email, dto.Phone,

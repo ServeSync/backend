@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
-using ServeSync.API.Dtos.EventOrganizations;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Queries;

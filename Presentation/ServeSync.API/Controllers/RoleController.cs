@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
-using ServeSync.API.Dtos.Permissions;
-using ServeSync.API.Dtos.Roles;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Commands;
@@ -47,7 +45,7 @@ public class RoleController : ControllerBase
     [HttpPost]
     [HasPermission(Permissions.Roles.Create)]
     [ProducesResponseType(typeof(RoleDto), StatusCodes.Status201Created)]
-    public async Task<IActionResult> CreateRoleAsync(CreateRoleDto dto)
+    public async Task<IActionResult> CreateRoleAsync(RoleCreateDto dto)
     {
         var role = await _mediator.Send(new CreateRoleCommand(dto.Name));
         return CreatedAtAction(nameof(GetRoleByIdAsync), new { id = role.Id }, role);
@@ -56,7 +54,7 @@ public class RoleController : ControllerBase
     [HttpPut("{id}")]
     [HasPermission(Permissions.Roles.Edit)]
     [ProducesResponseType(typeof(RoleDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateRoleAsync(string id, UpdateRoleDto dto)
+    public async Task<IActionResult> UpdateRoleAsync(string id, RoleUpdateDto dto)
     {
         var role = await _mediator.Send(new UpdateRoleCommand(id, dto.Name));
         return Ok(role);

@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ServeSync.API.Common.Validations;
+using ServeSync.Application.Common.Validations;
 
-namespace ServeSync.API.Dtos.Students;
+namespace ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 
-public class CreateStudentDto
+public class StudentCreateDto
 {
     [MinLength(9)]
     [MaxLength(9)]

@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using ServeSync.API.Dtos.Shared;
+using ServeSync.API.Common.Dtos;
 using ServeSync.Domain.SeedWorks.Exceptions;
 using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 

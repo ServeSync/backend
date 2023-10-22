@@ -1,8 +1,8 @@
-﻿using ServeSync.API.Common.Validations;
-using ServeSync.Application.Common.Dtos;
+﻿using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.Common.Validations;
 using ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities;
 
-namespace ServeSync.API.Dtos.Roles;
+namespace ServeSync.Infrastructure.Identity.UseCases.Roles.Dtos;
 
 public class RoleFilterAndPagingRequestDto : PagingAndSortingRequestDto
 {

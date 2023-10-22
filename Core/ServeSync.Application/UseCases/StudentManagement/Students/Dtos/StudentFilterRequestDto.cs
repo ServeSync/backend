@@ -1,11 +1,11 @@
-﻿using ServeSync.API.Common.Validations;
-using ServeSync.Application.Common.Dtos;
+﻿using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.Common.Validations;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.Entities;
 using ServeSync.Domain.StudentManagement.FacultyAggregate.Entities;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 
-namespace ServeSync.API.Dtos.Students;
+namespace ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 
 public class StudentFilterRequestDto : PagingAndSortingRequestDto
 {

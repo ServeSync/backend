@@ -1,4 +1,4 @@
-﻿namespace ServeSync.API.Dtos.HomeRooms;
+﻿namespace ServeSync.Application.UseCases.StudentManagement.HomeRooms.Dtos;
 
 public class HomeRoomFilterRequestDto
 {

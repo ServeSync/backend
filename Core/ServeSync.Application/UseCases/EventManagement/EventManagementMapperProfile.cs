@@ -25,7 +25,6 @@ public class EventManagementMapperProfile : Profile
     {
         CreateMap<EventActivity, BasicEventActivityDto>();
         CreateMap<EventActivity, EventActivityDto>();
-        CreateMap<EventActivity, EventActivityReadModel>();
 
         CreateMap<EventOrganization, EventOrganizationDto>();
 
@@ -34,7 +33,6 @@ public class EventManagementMapperProfile : Profile
         CreateMap<EventOrganizationContact, EventOrganizationContactDto>();
 
         CreateMap<EventAddress, EventAddressDto>();
-        CreateMap<EventAddress, EventAddressReadModel>();
         
         CreateMap<Event, BasicEventDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetCurrentStatus(DateTime.Now)));
@@ -48,11 +46,6 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.Capacity, opt => opt.MapFrom(src => src.Roles.Sum(x => x.Quantity)))
             .ForMember(dest => dest.Registered, opt => opt.MapFrom(src => 0))
             .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => 0));
-        CreateMap<Event, EventReadModel>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetCurrentStatus(DateTime.Now)))
-            .ForMember(dest => dest.Capacity, opt => opt.MapFrom(src => src.Roles.Sum(x => x.Quantity)))
-            .ForMember(dest => dest.Registered, opt => opt.MapFrom(src => 0))
-            .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => 0));
         
         CreateMap<OrganizationInEvent, BasicOrganizationInEventDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrganizationId))
@@ -62,29 +55,17 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrganizationId))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Organization!.Name))
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Organization!.ImageUrl));
-        CreateMap<OrganizationInEvent, EventOrganizationInEventReadModel>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrganizationId))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Organization!.Name))
-            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Organization!.ImageUrl));
         
         CreateMap<OrganizationRepInEvent, BasicRepresentativeInEventDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrganizationRepId))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.OrganizationRep!.Name))
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.OrganizationRep!.ImageUrl))
             .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.OrganizationRep!.Position));
-        CreateMap<OrganizationRepInEvent, EventOrganizationRepresentativeInEventReadModel>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrganizationRepId))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.OrganizationRep!.Name))
-            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.OrganizationRep!.ImageUrl))
-            .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.OrganizationRep!.Position));
         
         CreateMap<EventAttendanceInfo, EventAttendanceInfoDto>();
-        CreateMap<EventAttendanceInfo, EventAttendanceInfoReadModel>();
 
         CreateMap<EventRole, EventRoleDto>();
-        CreateMap<EventRole, EventRoleReadModel>();
 
         CreateMap<EventRegistrationInfo, EventRegistrationDto>();
-        CreateMap<EventRegistrationInfo, EventRegistrationInfoReadModel>();
     }
 }

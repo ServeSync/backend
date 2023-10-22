@@ -1,6 +1,6 @@
 using ServeSync.Application.Common.Dtos;
 
-namespace ServeSync.API.Dtos.EventOrganizations;
+namespace ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
 
 public class EventOrganizationFilterRequestDto : PagingAndSortingRequestDto
 {

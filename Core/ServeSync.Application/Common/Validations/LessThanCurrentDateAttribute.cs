@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ServeSync.API.Common.Validations;
+namespace ServeSync.Application.Common.Validations;
 
 public class LessThanCurrentDateAttribute : ValidationAttribute
 {

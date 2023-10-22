@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
-using ServeSync.API.Dtos.Students;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Queries;
