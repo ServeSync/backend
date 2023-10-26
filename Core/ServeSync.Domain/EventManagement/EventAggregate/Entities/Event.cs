@@ -180,6 +180,11 @@ public class Event : AuditableAggregateRoot
         Status = EventStatus.Approved;
         AddDomainEvent(new EventUpdatedDomainEvent(Id));
     }
+    
+    public bool IsInAttendArea(double longitude, double latitude)
+    {
+        return Address.DistanceTo(new EventAddress(Address.FullAddress, longitude, latitude)) <= 200;
+    }
 
     public bool CanRegister(DateTime dateTime)
     {

@@ -162,7 +162,7 @@ public class EventManagementDataSeeder : IDataSeeder
         var eventOrganizations = await _eventOrganizationRepository.FindAllAsync();
         var eventActivities = await _eventActivityRepository.FindAllAsync();
        
-        for (var i = 0; i < 30; i++)
+        for (var i = 0; i < 100; i++)
         {
             try
             {

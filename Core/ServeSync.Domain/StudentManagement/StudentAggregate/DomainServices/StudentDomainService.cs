@@ -178,7 +178,13 @@ public class StudentDomainService : IStudentDomainService
         return student;
     }
 
-    public async Task<Student> AttendEventAsync(Student student, Guid eventId, string code, DateTime currentDateTime)
+    public async Task<Student> AttendEventAsync(
+        Student student, 
+        Guid eventId, 
+        string code, 
+        DateTime currentDateTime,
+        double longitude,
+        double latitude)
     {
         var @event = await _eventRepository.FindByIdAsync(eventId);
         if (@event == null)
@@ -189,6 +195,11 @@ public class StudentDomainService : IStudentDomainService
         if (!@event.Roles.Any(x => student.IsApprovedToEventRole(x.Id)))
         {
             throw new StudentNotApprovedToEventException(student.Id, eventId);
+        }
+        
+        if (!@event.IsInAttendArea(longitude, latitude))
+        {
+            throw new StudentNotInAttendEventAreaException(student.Id, eventId);
         }
         
         if (!@event.ValidateCode(code, currentDateTime))

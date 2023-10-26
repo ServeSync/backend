@@ -87,7 +87,7 @@ public class EventController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AttendEventAsync([FromRoute] Guid id, [FromBody] StudentAttendEventDto dto)
     {
-        await _mediator.Send(new AttendEventCommand(id, dto.Code));
+        await _mediator.Send(new AttendEventCommand(id, dto.Code, dto.Longitude, dto.Latitude));
         return NoContent();
     }
 
