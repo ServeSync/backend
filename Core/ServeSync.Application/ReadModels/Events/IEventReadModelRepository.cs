@@ -7,4 +7,6 @@ public interface IEventReadModelRepository : IReadModelRepository<EventReadModel
     Task<EventRoleReadModel?> GetEventRoleByIdAsync(Guid eventRoleId);
     
     Task<List<EventRoleReadModel>?> GetEventRolesAsync(Guid eventId);
+    
+    Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventRoleAsync(Guid eventId, int page, int size); 
 }
