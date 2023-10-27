@@ -7,6 +7,7 @@ using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.OrganizationInEvents;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Shared;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.StudentInEvents;
 
 namespace ServeSync.Application.ReadModels.Mappers;
 
@@ -18,7 +19,10 @@ public class EventReadModelMapper : Profile
         CreateMap<EventRoleReadModel, EventRoleDto>();
         CreateMap<EventRegistrationInfoReadModel, EventRegistrationDto>();
         CreateMap<RegisteredStudentInEventRoleReadModel, RegisteredStudentInEventRoleDto>();
-        CreateMap<RegisteredStudentInEventReadModel, RegisteredStudentInEventDto>();
+        CreateMap<RegisteredStudentInEventReadModel, RegisteredStudentInEventDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.StudentId));
+        CreateMap<AttendanceStudentInEventRoleReadModel, AttendanceStudentInEventDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.StudentId));
         CreateMap<EventAttendanceInfoReadModel, EventAttendanceInfoDto>();
         CreateMap<EventActivityReadModel, BasicEventActivityDto>();
         CreateMap<BasicEventOrganizationInEventReadModel, BasicOrganizationInEventDto>();

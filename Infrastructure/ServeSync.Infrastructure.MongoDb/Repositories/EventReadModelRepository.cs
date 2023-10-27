@@ -1,5 +1,4 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using ServeSync.Application.ReadModels.Events;
 
@@ -30,7 +29,7 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
         return @event?.Roles;
     }
 
-    public async Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventRoleAsync(Guid eventId, int page, int size)
+    public async Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventAsync(Guid eventId, int page, int size)
     {
         var registeredStudents = (await Collection.AsQueryable()
             .FirstOrDefaultAsync(x => x.Id == eventId))
@@ -40,6 +39,8 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
                 Id = registeredStudent.Id,
                 StudentId = registeredStudent.StudentId,
                 Name = registeredStudent.Name,
+                Email = registeredStudent.Email,
+                Phone = registeredStudent.Phone,
                 Status = registeredStudent.Status,
                 ImageUrl = registeredStudent.ImageUrl,
                 RegisteredAt = registeredStudent.RegisteredAt,
@@ -57,5 +58,35 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             .Count();
 
         return (registeredStudents, total);
+    }
+
+    public async Task<(List<AttendanceStudentInEventRoleReadModel>?, int?)> GetPagedAttendanceStudentsInEventAsync(Guid eventId, int page, int size)
+    {
+        var attendanceStudents = (await Collection.AsQueryable()
+            .FirstOrDefaultAsync(x => x.Id == eventId))
+            ?.AttendanceInfos
+            .SelectMany(x => x.AttendanceStudents, (attendanceInfo, attendanceStudent) => new AttendanceStudentInEventRoleReadModel()
+            {
+                    Id = attendanceStudent.Id,
+                    StudentId = attendanceStudent.StudentId,
+                    Name = attendanceStudent.Name,
+                    Email = attendanceStudent.Email,
+                    Phone = attendanceStudent.Phone,
+                    ImageUrl = attendanceStudent.ImageUrl,
+                    AttendanceAt = attendanceStudent.AttendanceAt,
+                    Role = attendanceStudent.Role
+            })
+            .OrderBy(x => x.AttendanceAt)
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToList();;
+        
+        var total = (await Collection.AsQueryable()
+            .FirstOrDefaultAsync(x => x.Id == eventId))
+            ?.AttendanceInfos
+            .SelectMany(x => x.AttendanceStudents)
+            .Count();
+
+        return (attendanceStudents, total);
     }
 }

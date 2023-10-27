@@ -210,7 +210,9 @@ public class EventQueries : IEventQueries
                         Name = row.StudentEventRegisterFullName,
                         ImageUrl = row.StudentEventRegisterImageUrl,
                         RegisteredAt = row.StudentEventRegisterCreated,
-                        IdentityId = row.StudentEventRegisterIdentityId
+                        IdentityId = row.StudentEventRegisterIdentityId,
+                        Email = row.StudentEventRegisterEmail,
+                        Phone = row.StudentEventRegisterPhone
                     });
                 }
 
@@ -225,7 +227,10 @@ public class EventQueries : IEventQueries
                         Name = row.StudentEventRegisterFullName,
                         ImageUrl = row.StudentEventRegisterImageUrl,
                         AttendanceAt = row.StudentEventAttendanceAttendanceAt,
-                        IdentityId = row.StudentEventRegisterIdentityId
+                        IdentityId = row.StudentEventRegisterIdentityId,
+                        Email = row.StudentEventRegisterEmail,
+                        Phone = row.StudentEventRegisterPhone,
+                        Role = row.EventRoleName
                     });
                 }
 
@@ -244,7 +249,7 @@ public class EventQueries : IEventQueries
             SELECT 
 	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, Event.ActivityId, EventActivity.Name As ActivityName, EventActivity.MinScore As ActivityMinScore, EventActivity.MaxScore As ActivityMaxScore, EventActivity.EventCategoryId As ActivityCategoryId,
 	            EventRole.EventId As EventIdInRole, EventRole.Id As EventRoleId, EventRole.Name as EventRoleName, EventRole.Quantity as EventRoleQuantity, EventRole.Description as EventRoleDescription, EventRole.IsNeedApprove as EventRoleIsNeedApprove, EventRole.Score as EventRoleScore, 
-                StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.Id As StudentEventRegisterId, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId,
+                StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.Id As StudentEventRegisterId, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId, Student.Email as StudentEventRegisterEmail, Student.Phone as StudentEventRegisterPhone,
 	            StudentEventAttendance.EventAttendanceInfoId as StudentEventAttendanceInEventAttendanceInfoId, StudentEventAttendance.Id As StudentEventAttendanceId, StudentEventAttendance.AttendanceAt as StudentEventAttendanceAttendanceAt,
                 RepresentativeOrganizationInEvent.EventId As EventIdInRepresentativeOrganization, RepresentativeOrganizationInEvent.Id, RepresentativeOrganizationInEvent.OrganizationId, RepresentativeOrganization.Name, RepresentativeOrganization.ImageUrl,
                 OrganizationInEvent.EventId As EventIdInOrganizationInEvent, OrganizationInEvent.Id, OrganizationInEvent.OrganizationId, EventOrganization.Name, OrganizationInEvent.Role, EventOrganization.Name, EventOrganization.ImageUrl,

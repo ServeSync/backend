@@ -9,6 +9,7 @@ using ServeSync.Application.UseCases.EventManagement.Events.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.StudentInEvents;
 using ServeSync.Application.UseCases.EventManagement.Events.Queries;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
@@ -68,8 +69,16 @@ public class EventController : ControllerBase
     [ProducesResponseType(typeof(PagedResultDto<RegisteredStudentInEventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRegisteredStudentsAsync(Guid id, [FromQuery] RegisteredStudentFilterRequestDto dto)
     {
-        var registeredStudents = await _mediator.Send(new GetAllRegisteredStudentQuery(id, dto.Page, dto.Size));
+        var registeredStudents = await _mediator.Send(new GetAllRegisteredStudentsQuery(id, dto.Page, dto.Size));
         return Ok(registeredStudents);
+    }
+    
+    [HttpGet("{id:guid}/attendance-students")]
+    [ProducesResponseType(typeof(PagedResultDto<AttendanceStudentInEventDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAttendanceStudentsAsync(Guid id, [FromQuery] AttendanceStudentFilterRequestDto dto)
+    {
+        var attendanceStudents = await _mediator.Send(new GetAllAttendanceStudentsQuery(id, dto.Page, dto.Size));
+        return Ok(attendanceStudents);
     }
 
     [HttpGet("{id:guid}/roles")]
