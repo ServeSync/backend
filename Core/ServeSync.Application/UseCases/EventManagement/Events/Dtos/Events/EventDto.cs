@@ -56,6 +56,10 @@ public class EventDetailDto : FlatEventDto
         {
             return EventStatus.Registration;
         }
+        else if (Status == EventStatus.Approved && StartAt >= dateTime && RegistrationInfos.All(x => dateTime >= x.EndAt))
+        {
+            return EventStatus.ClosedRegistration;
+        }
         else if (Status == EventStatus.Approved && StartAt >= dateTime)
         {
             return EventStatus.Upcoming;

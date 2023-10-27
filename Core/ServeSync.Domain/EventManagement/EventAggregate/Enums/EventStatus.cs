@@ -11,5 +11,6 @@ public enum EventStatus
     Rejected,
     Registration,
     Attendance,
-    Upcoming
+    Upcoming,
+    ClosedRegistration
 }
