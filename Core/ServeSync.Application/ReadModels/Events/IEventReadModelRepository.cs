@@ -8,5 +8,7 @@ public interface IEventReadModelRepository : IReadModelRepository<EventReadModel
     
     Task<List<EventRoleReadModel>?> GetEventRolesAsync(Guid eventId);
     
-    Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventRoleAsync(Guid eventId, int page, int size); 
+    Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventAsync(Guid eventId, int page, int size); 
+    
+    Task<(List<AttendanceStudentInEventRoleReadModel>?, int?)> GetPagedAttendanceStudentsInEventAsync(Guid eventId, int page, int size);
 }

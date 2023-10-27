@@ -18,6 +18,8 @@ public class RegisteredStudentInEventRoleReadModel : BaseReadModel<Guid>
 {
     public Guid StudentId { get; set; }
     public string Name { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string Phone { get; set; } = null!;
     public EventRegisterStatus Status { get; set; }
     public string ImageUrl { get; set; } = null!;
     public DateTime RegisteredAt { get; set; }

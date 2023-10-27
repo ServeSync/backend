@@ -16,6 +16,9 @@ public class AttendanceStudentInEventRoleReadModel : BaseReadModel<Guid>
 {
     public Guid StudentId { get; set; }
     public string Name { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string Phone { get; set; } = null!;
+    public string Role { get; set; } = null!;
     public string ImageUrl { get; set; } = null!;
     public DateTime AttendanceAt { get; set; }
     public string IdentityId { get; set; } = null!;
