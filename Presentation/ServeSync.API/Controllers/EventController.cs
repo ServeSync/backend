@@ -63,6 +63,14 @@ public class EventController : ControllerBase
         await _mediator.Send(new RegisterEventCommand(dto.EventRoleId, dto.Description));
         return NoContent();
     }
+    
+    [HttpGet("{id:guid}/registered-students")]
+    [ProducesResponseType(typeof(PagedResultDto<RegisteredStudentInEventDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRegisteredStudentsAsync(Guid id, [FromQuery] RegisteredStudentFilterRequestDto dto)
+    {
+        var registeredStudents = await _mediator.Send(new GetAllRegisteredStudentQuery(id, dto.Page, dto.Size));
+        return Ok(registeredStudents);
+    }
 
     [HttpGet("{id:guid}/roles")]
     // [HasPermission(Permissions.Events.View)]

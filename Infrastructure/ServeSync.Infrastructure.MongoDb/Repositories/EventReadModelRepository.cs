@@ -1,4 +1,6 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using ServeSync.Application.ReadModels.Events;
 
 namespace ServeSync.Infrastructure.MongoDb.Repositories;
@@ -26,5 +28,34 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
         var @event = await Collection.Find(filter).Project<EventReadModel>(projection).FirstOrDefaultAsync();
 
         return @event?.Roles;
+    }
+
+    public async Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventRoleAsync(Guid eventId, int page, int size)
+    {
+        var registeredStudents = (await Collection.AsQueryable()
+            .FirstOrDefaultAsync(x => x.Id == eventId))
+            ?.Roles
+            .SelectMany(x => x.RegisteredStudents, (role, registeredStudent) => new RegisteredStudentInEventReadModel()
+            {
+                Id = registeredStudent.Id,
+                StudentId = registeredStudent.StudentId,
+                Name = registeredStudent.Name,
+                Status = registeredStudent.Status,
+                ImageUrl = registeredStudent.ImageUrl,
+                RegisteredAt = registeredStudent.RegisteredAt,
+                Role = role.Name
+            })
+            .OrderBy(x => x.RegisteredAt)
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToList();
+
+        var total = (await Collection.AsQueryable()
+            .FirstOrDefaultAsync(x => x.Id == eventId))
+            ?.Roles
+            .SelectMany(x => x.RegisteredStudents)
+            .Count();
+
+        return (registeredStudents, total);
     }
 }

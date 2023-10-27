@@ -204,7 +204,8 @@ public class EventQueries : IEventQueries
                     var tempEventRole = @event.Roles.First(x => x.Id == row.EventRoleId);
                     tempEventRole.RegisteredStudents.Add(new RegisteredStudentInEventRoleReadModel()
                     {
-                        Id  = row.StudentEventRegisterStudentId,
+                        Id  = row.StudentEventRegisterId,
+                        StudentId = row.StudentEventRegisterStudentId,
                         Status = (EventRegisterStatus)row.StudentEventRegisterStatus,
                         Name = row.StudentEventRegisterFullName,
                         ImageUrl = row.StudentEventRegisterImageUrl,
@@ -219,7 +220,8 @@ public class EventQueries : IEventQueries
                     tempEventAttendanceInfo.AttendanceStudents = tempEventAttendanceInfo.AttendanceStudents ?? new List<AttendanceStudentInEventRoleReadModel>();
                     tempEventAttendanceInfo.AttendanceStudents.Add(new AttendanceStudentInEventRoleReadModel()
                     {
-                        Id = row.StudentEventAttendanceInEventAttendanceInfoId,
+                        Id = row.StudentEventAttendanceId,
+                        StudentId = row.StudentEventRegisterStudentId, 
                         Name = row.StudentEventRegisterFullName,
                         ImageUrl = row.StudentEventRegisterImageUrl,
                         AttendanceAt = row.StudentEventAttendanceAttendanceAt,
@@ -242,8 +244,8 @@ public class EventQueries : IEventQueries
             SELECT 
 	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, Event.ActivityId, EventActivity.Name As ActivityName, EventActivity.MinScore As ActivityMinScore, EventActivity.MaxScore As ActivityMaxScore, EventActivity.EventCategoryId As ActivityCategoryId,
 	            EventRole.EventId As EventIdInRole, EventRole.Id As EventRoleId, EventRole.Name as EventRoleName, EventRole.Quantity as EventRoleQuantity, EventRole.Description as EventRoleDescription, EventRole.IsNeedApprove as EventRoleIsNeedApprove, EventRole.Score as EventRoleScore, 
-                StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId,
-	            StudentEventAttendance.EventAttendanceInfoId as StudentEventAttendanceInEventAttendanceInfoId, StudentEventAttendance.AttendanceAt as StudentEventAttendanceAttendanceAt,
+                StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.Id As StudentEventRegisterId, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId,
+	            StudentEventAttendance.EventAttendanceInfoId as StudentEventAttendanceInEventAttendanceInfoId, StudentEventAttendance.Id As StudentEventAttendanceId, StudentEventAttendance.AttendanceAt as StudentEventAttendanceAttendanceAt,
                 RepresentativeOrganizationInEvent.EventId As EventIdInRepresentativeOrganization, RepresentativeOrganizationInEvent.Id, RepresentativeOrganizationInEvent.OrganizationId, RepresentativeOrganization.Name, RepresentativeOrganization.ImageUrl,
                 OrganizationInEvent.EventId As EventIdInOrganizationInEvent, OrganizationInEvent.Id, OrganizationInEvent.OrganizationId, EventOrganization.Name, OrganizationInEvent.Role, EventOrganization.Name, EventOrganization.ImageUrl,
                 OrganizationRepInEvent.OrganizationInEventId As OrganizationInEventIdInOrganizationRepInEvent, OrganizationRepInEvent.Id, OrganizationRepInEvent.OrganizationRepId, EventOrganizationContact.Name, EventOrganizationContact.ImageUrl, OrganizationRepInEvent.Role, EventOrganizationContact.Position,
