@@ -56,6 +56,7 @@ public class StudentEventRegister : AuditableEntity
         }
         
         StudentEventAttendance = new StudentEventAttendance(Id, eventAttendanceInfoId);
+        AddDomainEvent(new StudentAttendedToEventDomainEvent(Student!, EventRoleId));
     }
 
     private StudentEventRegister()

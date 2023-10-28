@@ -5,8 +5,7 @@ namespace ServeSync.Application.DomainEventHandlers.StudentManagement;
 
 public class StudentAttendedToEventDomainEventHandler : IDomainEventHandler<StudentAttendedToEventDomainEvent>
 {
-    public StudentAttendedToEventDomainEventHandler(
-       )
+    public StudentAttendedToEventDomainEventHandler()
     {
     }
     

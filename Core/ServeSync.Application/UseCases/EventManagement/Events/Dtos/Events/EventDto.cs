@@ -96,3 +96,10 @@ public class EventDetailDto : FlatEventDto
         return Status;
     }
 }
+
+public class StudentAttendanceEventDto : FlatEventDto
+{
+    public string Role { get; set; } = null!;
+    public double Score { get; set; }
+    public DateTime AttendanceAt { get; set; }
+}

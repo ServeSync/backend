@@ -79,7 +79,7 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             .OrderBy(x => x.AttendanceAt)
             .Skip((page - 1) * size)
             .Take(size)
-            .ToList();;
+            .ToList();
         
         var total = (await Collection.AsQueryable()
             .FirstOrDefaultAsync(x => x.Id == eventId))
@@ -88,5 +88,23 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             .Count();
 
         return (attendanceStudents, total);
+    }
+
+    public Task<(List<EventReadModel>, int)> GetAttendanceEventsOfStudentAsync(Guid studentId, int page, int size)
+    {
+        var attendanceEvents = Collection.AsQueryable()
+            .Where(x =>
+                x.AttendanceInfos.Any(y => 
+                    y.AttendanceStudents.Any(z => z.StudentId == studentId)))
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToList();
+        
+        var total = Collection
+            .AsQueryable()
+            .Count(x => x.AttendanceInfos.Any(y => 
+                y.AttendanceStudents.Any(z => z.StudentId == studentId)));
+
+        return Task.FromResult((attendanceEvents, total));
     }
 }

@@ -30,7 +30,8 @@ public class EventManagementDataSeeder : IDataSeeder
     private readonly IEventRepository _eventRepository;
     private readonly IStudentRepository _studentRepository;
     private readonly IBasicReadOnlyRepository<StudentEventRegister, Guid> _studentEventRegisterRepository;
-    private readonly IBasicReadOnlyRepository<EventActivity, Guid> _eventActivityRepository; 
+    private readonly IBasicReadOnlyRepository<EventActivity, Guid> _eventActivityRepository;
+    private readonly IBasicReadOnlyRepository<StudentEventAttendance, Guid> _studentAttendanceRepository;
     
     private readonly ILogger<StudentManagementDataSeeder> _logger;
     private readonly IUnitOfWork _unitOfWork;
@@ -46,6 +47,7 @@ public class EventManagementDataSeeder : IDataSeeder
         IStudentRepository studentRepository,
         IBasicReadOnlyRepository<StudentEventRegister, Guid> studentEventRegisterRepository,
         IBasicReadOnlyRepository<EventActivity, Guid> eventActivityRepository,
+        IBasicReadOnlyRepository<StudentEventAttendance, Guid> studentAttendanceRepository,
         ILogger<StudentManagementDataSeeder> logger, 
         IUnitOfWork unitOfWork)
     {
@@ -59,6 +61,7 @@ public class EventManagementDataSeeder : IDataSeeder
         _studentRepository = studentRepository;
         _studentEventRegisterRepository = studentEventRegisterRepository;
         _eventActivityRepository = eventActivityRepository;
+        _studentAttendanceRepository = studentAttendanceRepository;
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
@@ -69,6 +72,7 @@ public class EventManagementDataSeeder : IDataSeeder
         await SeedEventOrganizationsAsync();
         await SeedEventsAsync();
         await SeedRegisterEventAsync();
+        await SeedAttendanceEventsForStudentAsync();
     }
 
     private async Task SeedEventCategoriesAsync()
@@ -294,5 +298,71 @@ public class EventManagementDataSeeder : IDataSeeder
         }
         
         _logger.LogInformation("Seeded student event registrations success!");
+    }
+
+    private async Task SeedAttendanceEventsForStudentAsync()
+    {
+        if (await _studentAttendanceRepository.AnyAsync())
+        {
+            _logger.LogInformation("Student event attendances already seeded.");
+            return;
+        }
+        
+        var policy = Policy.Handle<Exception>()
+            .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                (ex, time) =>
+                {
+                    _logger.LogWarning(ex, "Couldn't seed student event registration table after {TimeOut}s", $"{time.TotalSeconds:n1}");
+                }
+            );
+        
+        policy.Execute(() =>
+        {
+            if (!_eventRepository.AnyAsync().Result)
+            {
+                throw new Exception("Events not seeded yet.");
+            }
+        
+            if (!_studentRepository.AnyAsync().Result)
+            {
+                throw new Exception("Students not seeded yet.");
+            }
+
+            if (!_studentEventRegisterRepository.AnyAsync().Result)
+            {
+                throw new Exception("Student event registrations not seeded yet.");
+            }
+        });
+        
+        var events = await _eventRepository.FindAllAsync();
+        var students = await _studentRepository.FindAllAsync();
+        foreach (var @event in events)
+        {
+            var faker = new Faker();
+            for (var i = 0; i < 10; i++)
+            {
+                try
+                {
+                    var student = faker.PickRandom(students);
+                    var attendance = faker.PickRandom(@event.AttendanceInfos);
+                    await _studentDomainService.AttendEventAsync(
+                        student,
+                        @event.Id,
+                        attendance.Code,
+                        attendance.StartAt.AddMinutes(1),
+                        @event.Address.Longitude,
+                        @event.Address.Latitude);
+
+                    _studentRepository.Update(student);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogInformation("Seeded student event attendances failed: {Message}", e.Message);
+                }
+            }
+        }
+        
+        await _unitOfWork.CommitAsync();
+        _logger.LogInformation("Seeded student event attendances successfully!");
     }
 }
