@@ -11,6 +11,7 @@ using ServeSync.Infrastructure.Identity.Models.UserAggregate;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Exceptions;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
+using ServeSync.Infrastructure.Identity.UseCases.Auth.Enums;
 
 namespace ServeSync.Infrastructure.Identity.UseCases.Auth.Commands;
 
@@ -38,7 +39,7 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
     
     public async Task<AuthCredentialDto> Handle(SignInCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.FindByUserNameOrEmailAsync(request.UserNameOrEmail, request.UserNameOrEmail);
+        var user = await GetUserByPortalAsync(request.UserNameOrEmail, request.LoginPortal);
         if (user == null)
         {
             throw new UserNameOrEmailNotFoundException(request.UserNameOrEmail);
@@ -68,6 +69,24 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
         }
 
         throw new InvalidCredentialException();
+    }
+    
+    private Task<ApplicationUser?> GetUserByPortalAsync(string userNameOrEmail, LoginPortal loginPortal)
+    {
+        if (loginPortal == LoginPortal.Admin)
+        {
+            return _userRepository.FindByUserNameOrEmailAndRoles(userNameOrEmail, userNameOrEmail, new List<string>()
+            {
+                AppRole.Admin,
+                AppRole.StudentAffair,
+                AppRole.EventOrganizer
+            });
+        }
+        
+        return _userRepository.FindByUserNameOrEmailAndRoles(userNameOrEmail, userNameOrEmail, new List<string>()
+        {
+            AppRole.Student
+        });
     }
     
     private IEnumerable<Claim> GetUserAuthenticateClaimsAsync(ApplicationUser user)
