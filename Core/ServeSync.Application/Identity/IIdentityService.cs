@@ -10,9 +10,9 @@ public interface IIdentityService
 
     Task<bool> HasPermissionAsync(string userId, string permission);
 
-    Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone = null);
+    Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone = null, Guid? externalId = null);
 
-    Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone = null);
+    Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string avatarUrl, string email, string password, Guid studentId, string? phone = null);
 
     Task<IdentityResult<bool>> UpdateAsync(string userId, string fullname, string email, string avatarUrl);
     

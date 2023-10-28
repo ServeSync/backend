@@ -13,5 +13,8 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>
 
         builder.Property(x => x.AvatarUrl)
                .IsRequired();
+
+        builder.Property(x => x.ExternalId)
+               .IsRequired(false);
     }
 }
