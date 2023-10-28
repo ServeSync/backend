@@ -47,7 +47,7 @@ public class EventByStatusSpecification : Specification<Event, Guid>
         }
         else if (_status == EventStatus.ClosedRegistration)
         {
-            return x => x.Status == EventStatus.Approved && x.RegistrationInfos.All(y => _dateTime >= y.EndAt);
+            return x => x.Status == EventStatus.Approved && x.StartAt >= _dateTime && x.RegistrationInfos.All(y => _dateTime >= y.EndAt);
         }
 
         return x => x.Status == _status;

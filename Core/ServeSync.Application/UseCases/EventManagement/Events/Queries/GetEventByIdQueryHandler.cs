@@ -54,7 +54,9 @@ public class GetEventByIdQueryHandler : IQueryHandler<GetEventByIdQuery, EventDe
             });
         }
 
-        eventDetailDto.Status = eventDetailDto.GetCurrentStatus(DateTime.Now);
+        var currentTime = DateTime.Now;
+        eventDetailDto.CalculatedStatus = eventDetailDto.GetCurrentStatus(currentTime);
+        eventDetailDto.Status = eventDetailDto.GetStatus(currentTime);
         return eventDetailDto;
     }
 }
