@@ -20,6 +20,7 @@ public class BasicEventDto
     
     public EventType Type { get; set; }
     public EventStatus Status { get; set; }
+    public EventStatus CalculatedStatus { get; set; }
     public EventAddressDto Address { get; set; } = null!;
 }
 
@@ -41,6 +42,25 @@ public class EventDetailDto : FlatEventDto
     public List<OrganizationInEventDto> Organizations { get; set; } = null!;
     public List<EventRegistrationDto> RegistrationInfos { get; set; } = null!;
     public List<EventAttendanceInfoDto> AttendanceInfos { get; set; } = null!;
+
+    public EventStatus GetStatus(DateTime dateTime)
+    {
+        var currentStatus = GetCurrentStatus(dateTime);
+        if (currentStatus == EventStatus.Pending || currentStatus == EventStatus.Expired)
+        {
+            return EventStatus.Pending;
+        }
+        else if (currentStatus == EventStatus.Happening || currentStatus == EventStatus.Attendance)
+        {
+            return EventStatus.Happening;
+        }
+        else if (currentStatus == EventStatus.Upcoming || currentStatus == EventStatus.Registration || currentStatus == EventStatus.ClosedRegistration)
+        {
+            return EventStatus.Upcoming;
+        }
+
+        return currentStatus;
+    }
     
     public EventStatus GetCurrentStatus(DateTime dateTime)
     {

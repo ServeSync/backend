@@ -210,6 +210,25 @@ public class Event : AuditableAggregateRoot
         EndAt = Guard.Range(endAt, nameof(EndAt), StartAt);
     }
     
+    public EventStatus GetStatus(DateTime dateTime)
+    {
+        var currentStatus = GetCurrentStatus(dateTime);
+        if (currentStatus == EventStatus.Pending || currentStatus == EventStatus.Expired)
+        {
+            return EventStatus.Pending;
+        }
+        else if (currentStatus == EventStatus.Happening || currentStatus == EventStatus.Attendance)
+        {
+            return EventStatus.Happening;
+        }
+        else if (currentStatus == EventStatus.Upcoming || currentStatus == EventStatus.Registration || currentStatus == EventStatus.ClosedRegistration)
+        {
+            return EventStatus.Upcoming;
+        }
+
+        return currentStatus;
+    }
+    
     public EventStatus GetCurrentStatus(DateTime dateTime)
     {
         if (Status == EventStatus.Approved && StartAt <= dateTime && EndAt >= dateTime && AttendanceInfos.Any(x => x.CanAttendance(dateTime)))
