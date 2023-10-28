@@ -8,13 +8,14 @@ public partial class ApplicationUser : IdentityUser
 {
     public string FullName { get; private set; }
     public string AvatarUrl { get; private set; }
+    public Guid? ExternalId { get; private set; }
     public List<RefreshToken> RefreshToken { get; set; }
 
-    public ApplicationUser(string fullname, string avatarUrl = null)
+    public ApplicationUser(string fullname, string? avatarUrl = null, Guid? externalId = null)
     {
         FullName = Guard.NotNullOrEmpty(fullname, nameof(FullName));
         AvatarUrl = string.IsNullOrWhiteSpace(avatarUrl) ? "https://static.thenounproject.com/png/5034901-200.png" : avatarUrl;
-        RefreshToken = new List<RefreshToken>();
+        ExternalId = externalId;
     }
 
     public void UpdateFullName(string fullName)

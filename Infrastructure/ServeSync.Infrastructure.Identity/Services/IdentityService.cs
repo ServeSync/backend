@@ -48,9 +48,9 @@ public class IdentityService : IIdentityService
         return permissions.Contains(permission);
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone)
+    public async Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone, Guid? externalId)
     {
-        var user = new ApplicationUser(fullname, avatarUrl)
+        var user = new ApplicationUser(fullname, avatarUrl, externalId)
         {
             UserName = username,
             Email = email,
@@ -67,9 +67,9 @@ public class IdentityService : IIdentityService
         return IdentityResult<IdentityUserDto>.Failed(error.Code, error.Description);
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone = null)
+    public async Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string avatarUrl, string email, string password, Guid studentId, string? phone = null)
     {
-        var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone);
+        var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone, studentId);
         if (createIdentityUserResult.IsSuccess)
         {
             var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data.Id, AppRole.Student);

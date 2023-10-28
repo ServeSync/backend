@@ -48,7 +48,7 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
         var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, true);
         if (result.Succeeded)
         {
-            var accessToken = _tokenProvider.GenerateAccessToken(GetUserAuthenticateClaimsAsync(user));
+            var accessToken = _tokenProvider.GenerateAccessToken(GetUserAuthenticateClaimsAsync(user, request.LoginPortal));
             var credential = new AuthCredentialDto()
             {
                 AccessToken = accessToken.Value,
@@ -89,7 +89,7 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
         });
     }
     
-    private IEnumerable<Claim> GetUserAuthenticateClaimsAsync(ApplicationUser user)
+    private IEnumerable<Claim> GetUserAuthenticateClaimsAsync(ApplicationUser user, LoginPortal loginPortal)
     {
         var claims = new List<Claim>()
         {
@@ -97,6 +97,11 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
             new (AppClaim.UserName, user.UserName),
             new (AppClaim.Email, user.Email)
         };
+
+        if (loginPortal == LoginPortal.Student)
+        {
+            claims.Add(new Claim(AppClaim.StudentId, user.ExternalId!.ToString()));
+        }
         
         return claims;
     }
