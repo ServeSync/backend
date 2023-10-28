@@ -132,6 +132,17 @@ public class Student : AuditableAggregateRoot
         EventRegisters.Add(eventRegister);
     }
     
+    internal void ApproveEventRegister(Guid eventRegisterId)
+    {
+        var eventRegister = EventRegisters.FirstOrDefault(x => x.Id == eventRegisterId);
+        if (eventRegister == null)
+        {
+            throw new StudentEventRegisterNotFoundException(eventRegisterId);
+        }
+        
+        eventRegister.Approve();
+    }
+    
     internal void AttendEvent(Guid eventRoleId, Guid eventAttendanceInfoId)
     {
         var eventRegister = EventRegisters.FirstOrDefault(x => x.EventRoleId == eventRoleId);

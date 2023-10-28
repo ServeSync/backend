@@ -88,4 +88,12 @@ public class StudentController : ControllerBase
         await _mediator.Send(new DeleteStudentCommand(id));
         return Ok();
     }
+    
+    [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/approve")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ApproveStudentEventRegisterAsync(Guid id, Guid eventRegisterId)
+    {
+        await _mediator.Send(new ApproveEventRegisterCommand(id, eventRegisterId));
+        return NoContent();
+    }
 }

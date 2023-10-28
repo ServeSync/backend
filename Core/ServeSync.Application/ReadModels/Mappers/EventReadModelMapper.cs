@@ -19,10 +19,8 @@ public class EventReadModelMapper : Profile
         CreateMap<EventRoleReadModel, EventRoleDto>();
         CreateMap<EventRegistrationInfoReadModel, EventRegistrationDto>();
         CreateMap<RegisteredStudentInEventRoleReadModel, RegisteredStudentInEventRoleDto>();
-        CreateMap<RegisteredStudentInEventReadModel, RegisteredStudentInEventDto>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.StudentId));
-        CreateMap<AttendanceStudentInEventRoleReadModel, AttendanceStudentInEventDto>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(x => x.StudentId));
+        CreateMap<RegisteredStudentInEventReadModel, RegisteredStudentInEventDto>();
+        CreateMap<AttendanceStudentInEventRoleReadModel, AttendanceStudentInEventDto>();
         CreateMap<EventAttendanceInfoReadModel, EventAttendanceInfoDto>();
         CreateMap<EventActivityReadModel, BasicEventActivityDto>();
         CreateMap<BasicEventOrganizationInEventReadModel, BasicOrganizationInEventDto>();
