@@ -26,6 +26,11 @@ public class SyncEventReadModelBackGroundJobHandler : IBackGroundJobHandler<Sync
     
     public async Task Handle(SyncEventReadModelBackGroundJob notification, CancellationToken cancellationToken)
     {
+        if (notification.EventId == Guid.Empty)
+        {
+            return;
+        }
+        
         var policy = Policy.Handle<Exception>()
             .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                 (ex, time) =>

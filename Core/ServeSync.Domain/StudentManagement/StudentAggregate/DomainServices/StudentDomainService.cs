@@ -1,5 +1,6 @@
 ﻿using ServeSync.Domain.EventManagement.EventAggregate;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventAggregate.Specifications;
 using ServeSync.Domain.SeedWorks.Repositories;
@@ -212,6 +213,29 @@ public class StudentDomainService : IStudentDomainService
         
         student.AttendEvent(eventRoleId, eventAttendanceId);
 
+        return student;
+    }
+
+    public async Task<Student> ApproveEventRegisterAsync(Student student, Guid eventRegisterId, DateTime currentDateTime)
+    {
+        var eventRegister = student.EventRegisters.FirstOrDefault(x => x.Id == eventRegisterId);
+        if (eventRegister == null)
+        {
+            throw new StudentEventRegisterNotFoundException(eventRegisterId);
+        }
+
+        var @event = await _eventRepository.FindAsync(new EventByRoleSpecification(eventRegister.EventRoleId));
+        if (@event!.StartAt <= currentDateTime || @event.Status != EventStatus.Approved)
+        {
+            throw new EventHasAlreadyStartedException(@event.Id);
+        }
+        
+        if (student.IsApprovedToEventRole(eventRegister.EventRoleId))
+        {
+            throw new StudentHasAlreadyApprovedToEventException(student.Id, @event.Id);
+        }
+            
+        student.ApproveEventRegister(eventRegisterId);
         return student;
     }
 
