@@ -27,5 +27,6 @@ public class EventReadModelMapper : Profile
         CreateMap<EventOrganizationInEventReadModel, OrganizationInEventDto>();
         CreateMap<EventOrganizationRepresentativeInEventReadModel, BasicRepresentativeInEventDto>();
         CreateMap<EventAddressReadModel, EventAddressDto>();
+        CreateMap<EventReadModel, StudentAttendanceEventDto>();
     }
 }

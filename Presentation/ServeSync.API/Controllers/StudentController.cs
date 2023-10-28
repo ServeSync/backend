@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Application.UseCases.EventManagement.Events.Queries;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Queries;
@@ -95,5 +97,13 @@ public class StudentController : ControllerBase
     {
         await _mediator.Send(new ApproveEventRegisterCommand(id, eventRegisterId));
         return NoContent();
+    }
+
+    [HttpGet("{id:guid}/attendance-events")]
+    [ProducesResponseType(typeof(PagedResultDto<StudentAttendanceEventDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAttendanceEventsOfStudentAsync(Guid id, [FromQuery] PagingRequestDto dto)
+    {
+        var events = await _mediator.Send(new GetAllAttendanceEventsOfStudentQuery(id, dto.Page, dto.Size));
+        return Ok(events);
     }
 }
