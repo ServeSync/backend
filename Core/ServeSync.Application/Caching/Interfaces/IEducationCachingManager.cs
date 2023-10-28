@@ -8,5 +8,7 @@ public interface IEducationCachingManager
     
     Task<IList<EducationProgramDto>?> GetAsync();
 
+    Task<EducationProgramDto?> GetByIdAsync(Guid id);
+
     Task<IList<EducationProgramDto>> GetOrAddAsync();
 }

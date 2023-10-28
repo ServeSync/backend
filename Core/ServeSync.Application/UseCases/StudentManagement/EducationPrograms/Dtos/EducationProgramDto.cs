@@ -7,3 +7,9 @@ public class EducationProgramDto
     public int RequiredActivityScore { get; set; }
     public int RequiredCredit { get; set; }
 }
+
+public class StudentEducationProgramDto : EducationProgramDto
+{
+    public double GainScore { get; set; }
+    public int NumberOfEvents { get; set; }
+}

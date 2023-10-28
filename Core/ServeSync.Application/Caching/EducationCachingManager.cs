@@ -36,6 +36,11 @@ public class EducationCachingManager : CachingManager<EducationProgram>, IEducat
         return _cacheService.GetRecordAsync<IList<EducationProgramDto>?>(ResourceName);
     }
 
+    public async Task<EducationProgramDto?> GetByIdAsync(Guid id)
+    {
+        return (await GetOrAddAsync()).FirstOrDefault(x => x.Id == id);
+    }
+
     public async Task<IList<EducationProgramDto>> GetOrAddAsync()
     {
         var educationPrograms = await GetAsync();

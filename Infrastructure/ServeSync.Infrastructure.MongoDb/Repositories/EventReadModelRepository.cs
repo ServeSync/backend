@@ -107,4 +107,25 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
 
         return Task.FromResult((attendanceEvents, total));
     }
+
+    public Task<int> GetCountNumberOfAttendedEventsOfStudentAsync(Guid studentId)
+    {
+        return Task.FromResult(
+            Collection
+            .AsQueryable()
+            .Count(x => x.AttendanceInfos.Any(y => 
+                y.AttendanceStudents.Any(z => z.StudentId == studentId))));
+    }
+
+    public Task<double> GetSumScoreOfAttendedEventsOfStudentAsync(Guid studentId)
+    {
+        return Collection.AsQueryable()
+            .Where(x =>
+                x.AttendanceInfos.Any(y =>
+                    y.AttendanceStudents.Any(z => z.StudentId == studentId)))
+            .SumAsync(x => x.Roles
+                .First(y => y.RegisteredStudents.Any(z => z.StudentId == studentId))
+                .Score)
+            ;
+    }
 }

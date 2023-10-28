@@ -5,6 +5,8 @@ using ServeSync.API.Common.Dtos;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Queries;
+using ServeSync.Application.UseCases.StudentManagement.EducationPrograms.Dtos;
+using ServeSync.Application.UseCases.StudentManagement.EducationPrograms.Queries;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Queries;
@@ -105,5 +107,13 @@ public class StudentController : ControllerBase
     {
         var events = await _mediator.Send(new GetAllAttendanceEventsOfStudentQuery(id, dto.Page, dto.Size));
         return Ok(events);
+    }
+    
+    [HttpGet("{id:guid}/education-program")]
+    [ProducesResponseType(typeof(StudentEducationProgramDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStudentEducationProgramAsync(Guid id)
+    {
+        var program = await _mediator.Send(new GetEducationProgramByStudentQuery(id));
+        return Ok(program);
     }
 }
