@@ -252,26 +252,15 @@ public class EventManagementDataSeeder : IDataSeeder
             return;
         }
         
-        var policy = Policy.Handle<Exception>()
-            .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                (ex, time) =>
-                {
-                    _logger.LogWarning(ex, "Couldn't seed student event registration table after {TimeOut}s", $"{time.TotalSeconds:n1}");
-                }
-            );
-        
-        policy.Execute(() =>
+        if (!await _eventRepository.AnyAsync())
         {
-            if (!_eventRepository.AnyAsync().Result)
-            {
-                throw new Exception("Events not seeded yet.");
-            }
+            throw new Exception("Events not seeded yet.");
+        }
         
-            if (!_studentRepository.AnyAsync().Result)
-            {
-                throw new Exception("Students not seeded yet.");
-            }
-        });
+        if (!await _studentRepository.AnyAsync())
+        {
+            throw new Exception("Students not seeded yet.");
+        }
         
         var events = await _eventRepository.FindAllAsync();
         var students = await _studentRepository.FindAllAsync();
@@ -285,17 +274,17 @@ public class EventManagementDataSeeder : IDataSeeder
                     await _studentDomainService.RegisterEventAsync(
                         faker.PickRandom(students),
                         faker.PickRandom(@event.Roles).Id,
-                        faker.Lorem.Sentence(),
+                        faker.Lorem.Paragraph(),
                         faker.PickRandom(@event.RegistrationInfos).StartAt.AddMinutes(1));    
                 }
-
-                await _unitOfWork.CommitAsync();
             }
             catch (Exception e)
             {
                 _logger.LogInformation("Seeded student event registrations failed: {Message}", e.Message);
             }
         }
+        
+        await _unitOfWork.CommitAsync();
         
         _logger.LogInformation("Seeded student event registrations success!");
     }
@@ -308,31 +297,20 @@ public class EventManagementDataSeeder : IDataSeeder
             return;
         }
         
-        var policy = Policy.Handle<Exception>()
-            .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                (ex, time) =>
-                {
-                    _logger.LogWarning(ex, "Couldn't seed student event registration table after {TimeOut}s", $"{time.TotalSeconds:n1}");
-                }
-            );
-        
-        policy.Execute(() =>
+        if (!await _eventRepository.AnyAsync())
         {
-            if (!_eventRepository.AnyAsync().Result)
-            {
-                throw new Exception("Events not seeded yet.");
-            }
+            throw new Exception("Events not seeded yet.");
+        }
         
-            if (!_studentRepository.AnyAsync().Result)
-            {
-                throw new Exception("Students not seeded yet.");
-            }
+        if (!await _studentRepository.AnyAsync())
+        {
+            throw new Exception("Students not seeded yet.");
+        }
 
-            if (!_studentEventRegisterRepository.AnyAsync().Result)
-            {
-                throw new Exception("Student event registrations not seeded yet.");
-            }
-        });
+        if (!await _studentEventRegisterRepository.AnyAsync())
+        {
+            throw new Exception("Student event registrations not seeded yet.");
+        }
         
         var events = await _eventRepository.FindAllAsync();
         var students = await _studentRepository.FindAllAsync();

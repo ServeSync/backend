@@ -5,12 +5,12 @@ namespace ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 
 public class StudentEventRegisterApprovedDomainEvent : IDomainEvent
 {
-    public Student Student { get; set; } 
+    public Guid StudentId { get; set; } 
     public Guid EventRoleId { get; set; }
 
-    public StudentEventRegisterApprovedDomainEvent(Student student, Guid eventRoleId)
+    public StudentEventRegisterApprovedDomainEvent(Guid studentId, Guid eventRoleId)
     {
-        Student = student;
+        StudentId = studentId;
         EventRoleId = eventRoleId;
     }
 }
