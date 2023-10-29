@@ -36,6 +36,7 @@ public class FlatEventDto : BasicEventDto
 
 public class EventDetailDto : FlatEventDto
 {
+    public string Description { get; set; } = null!;
     public bool IsRegistered { get; set; }
     public bool IsAttendance { get; set; }
     public List<EventRoleDto> Roles { get; set; } = null!;

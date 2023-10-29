@@ -39,7 +39,7 @@ public class StudentEventRegister : AuditableEntity
         }
 
         Status = EventRegisterStatus.Approved;
-        AddDomainEvent(new StudentEventRegisterApprovedDomainEvent(Student!, EventRoleId));
+        AddDomainEvent(new StudentEventRegisterApprovedDomainEvent(StudentId, EventRoleId));
     }
     
     internal void Reject(string reason)
