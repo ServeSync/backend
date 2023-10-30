@@ -116,4 +116,13 @@ public class EventController : ControllerBase
         await _mediator.Send(new CancelEventCommand(id));
         return NoContent();
     }
+    
+    [HttpPost("{id:guid}/approve")]
+    [HasPermission(Permissions.Events.Edit)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ApproveEvent(Guid id)
+    {
+        await _mediator.Send(new ApproveEventCommand(id));
+        return NoContent();
+    }
 }

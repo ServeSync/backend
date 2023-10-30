@@ -7,18 +7,18 @@ using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 
 namespace ServeSync.Application.UseCases.EventManagement.Events.Commands;
 
-public class CancelEventCommandHandler : ICommandHandler<CancelEventCommand, Guid>
+public class ApproveEventCommandHandler : ICommandHandler<ApproveEventCommand, Guid>
 {
     private readonly IEventRepository _eventRepository;
     private readonly IEventDomainService _eventDomainService;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<CancelEventCommandHandler> _logger;
+    private readonly ILogger<ApproveEventCommandHandler> _logger;
 
-    public CancelEventCommandHandler(
+    public ApproveEventCommandHandler(
         IEventRepository eventRepository,
         IEventDomainService eventDomainService,
         IUnitOfWork unitOfWork,
-        ILogger<CancelEventCommandHandler> logger)
+        ILogger<ApproveEventCommandHandler> logger)
     {
         _eventRepository = eventRepository;
         _eventDomainService = eventDomainService;
@@ -26,7 +26,7 @@ public class CancelEventCommandHandler : ICommandHandler<CancelEventCommand, Gui
         _logger = logger;
     }
 
-    public async Task<Guid> Handle(CancelEventCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(ApproveEventCommand request, CancellationToken cancellationToken)
     {
         var @event = await _eventRepository.FindByIdAsync(request.EventId);
         if (@event == null)
@@ -34,10 +34,9 @@ public class CancelEventCommandHandler : ICommandHandler<CancelEventCommand, Gui
             throw new EventNotFoundException(request.EventId);
         }
         
-        _eventDomainService.CancelEvent(@event, DateTime.Now);
+        _eventDomainService.ApproveEvent(@event, DateTime.Now);
         await _unitOfWork.CommitAsync();
-        
-        _logger.LogInformation("Event with id {EventID} was cancelled!", request.EventId);
+        _logger.LogInformation("Event with id {EventID} was approved!", request.EventId);
 
         return @event.Id;
     }

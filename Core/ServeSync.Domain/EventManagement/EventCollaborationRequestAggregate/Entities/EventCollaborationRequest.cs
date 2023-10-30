@@ -58,7 +58,7 @@ public class EventCollaborationRequest : AggregateRoot
         Capacity = Guard.Range(capacity, nameof(Capacity), 0);
         ImageUrl = Guard.NotNullOrWhiteSpace(imageUrl, nameof(ImageUrl));
         StartAt = Guard.NotNull(startAt, nameof(StartAt));
-        EndAt = Guard.Range(endAt, nameof(EndAt), startAt);
+        SetEndAt(endAt);
         Type = Guard.NotNull(eventType, nameof(EventType));
         ActivityId = Guard.NotNull(activityId, nameof(ActivityId));
         Address = new EventAddress(fullAddress, longitude, latitude);
