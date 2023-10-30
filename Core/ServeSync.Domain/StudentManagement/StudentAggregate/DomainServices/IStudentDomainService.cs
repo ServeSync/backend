@@ -45,4 +45,6 @@ public interface IStudentDomainService
     Task<Student> AttendEventAsync(Student student, Guid eventId, string code, DateTime currentDateTime, double longitude, double latitude);
     
     Task<Student> ApproveEventRegisterAsync(Student student, Guid eventRegisterId, DateTime currentDateTime);
+    
+    Task<Student> RejectEventRegisterAsync(Student student, Guid eventRegisterId, string reason, DateTime currentDateTime);
 }

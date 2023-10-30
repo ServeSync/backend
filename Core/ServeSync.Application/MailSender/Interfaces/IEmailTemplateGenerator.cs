@@ -6,5 +6,7 @@ public interface IEmailTemplateGenerator
 
     string GetCancelEvent(string eventName);
     
-    string GetApproveEventRegister(string studentName, string eventName, string eventRole, DateTime eventDate, string eventAddress);
+    string GetApproveEventRegistration(string studentName, string eventName, string eventRole, DateTime eventDate, string eventAddress);
+    
+    string GetRejectEventRegistration(string studentName, string eventName, string eventRole, string rejectReason);
 }

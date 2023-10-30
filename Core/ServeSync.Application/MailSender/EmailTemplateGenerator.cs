@@ -26,19 +26,30 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
         return template.Replace("{{EventName}}", eventName);
     }
 
-    public string GetApproveEventRegister(
+    public string GetApproveEventRegistration(
         string studentName, 
         string eventName, 
         string eventRole, 
         DateTime eventDate,
         string eventAddress)
     {
-        var template = GetTemplate("ApproveEvent")
+        var template = GetTemplate("ApproveEventRegistration")
             .Replace("{{StudentName}}", studentName)
             .Replace("{{EventName}}", eventName)
             .Replace("{{Role}}", eventRole)
             .Replace("{{EventDate}}", eventDate.ToString("hh:mm dd/MM/yyyy"))
             .Replace("{{EventAddress}}", eventAddress);
+
+        return template;
+    }
+
+    public string GetRejectEventRegistration(string studentName, string eventName, string eventRole, string rejectReason)
+    {
+        var template = GetTemplate("RejectEventRegistration")
+            .Replace("{{StudentName}}", studentName)
+            .Replace("{{EventName}}", eventName)
+            .Replace("{{EventRole}}", eventRole)
+            .Replace("{{RejectReason}}", rejectReason);
 
         return template;
     }

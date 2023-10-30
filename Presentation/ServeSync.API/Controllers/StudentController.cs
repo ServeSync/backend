@@ -100,6 +100,14 @@ public class StudentController : ControllerBase
         await _mediator.Send(new ApproveEventRegisterCommand(id, eventRegisterId));
         return NoContent();
     }
+    
+    [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/reject")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> RejectStudentEventRegisterAsync(Guid id, Guid eventRegisterId, [FromBody] RejectStudentEventRegistrationDto dto)
+    {
+        await _mediator.Send(new RejectEventRegisterCommand(id, eventRegisterId, dto.RejectReason));
+        return NoContent();
+    }
 
     [HttpGet("{id:guid}/attendance-events")]
     [ProducesResponseType(typeof(PagedResultDto<StudentAttendanceEventDto>), StatusCodes.Status200OK)]

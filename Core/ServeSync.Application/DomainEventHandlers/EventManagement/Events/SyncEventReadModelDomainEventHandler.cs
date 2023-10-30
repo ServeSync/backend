@@ -14,6 +14,7 @@ public class SyncEventReadModelDomainEventHandler :
     IDomainEventHandler<EventUpdatedDomainEvent>, 
     IDomainEventHandler<NewEventCreatedDomainEvent>,
     IDomainEventHandler<StudentEventRegisterApprovedDomainEvent>,
+    IDomainEventHandler<StudentEventRegisterRejectedDomainEvent>,
     IDomainEventHandler<StudentAttendedToEventDomainEvent>,
     IDomainEventHandler<StudentRegisteredToEventRoleDomainEvent>
 {
@@ -44,6 +45,11 @@ public class SyncEventReadModelDomainEventHandler :
     }
 
     public async Task Handle(StudentEventRegisterApprovedDomainEvent notification, CancellationToken cancellationToken)
+    {
+        await SyncEventDataByEventRoleIdAsync(notification.EventRoleId);
+    }
+    
+    public async Task Handle(StudentEventRegisterRejectedDomainEvent notification, CancellationToken cancellationToken)
     {
         await SyncEventDataByEventRoleIdAsync(notification.EventRoleId);
     }

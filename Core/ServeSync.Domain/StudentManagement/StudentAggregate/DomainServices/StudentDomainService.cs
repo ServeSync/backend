@@ -160,10 +160,10 @@ public class StudentDomainService : IStudentDomainService
             throw new StudentHasAlreadyApprovedToEventException(student.Id, eventRole.EventId);
         }
 
-        var registeredStudentsCount = await _studentEventRegisterRepository.GetCountAsync(new RegisteredStudentInEventRoleSpecification(eventRoleId));
-        if (registeredStudentsCount >= eventRole.Quantity)
+        var approvedStudentCount = await _studentEventRegisterRepository.GetCountAsync(new ApprovedStudentInEventRoleSpecification(eventRoleId));
+        if (approvedStudentCount >= eventRole.Quantity)
         {
-            throw new EventRoleIsFullRegisteredException(eventRoleId);
+            throw new EventRoleIsFullApprovedException(eventRoleId);
         }
         
         if (!eventRole.IsNeedApprove)
@@ -230,12 +230,37 @@ public class StudentDomainService : IStudentDomainService
             throw new EventHasAlreadyStartedException(@event.Id);
         }
         
+        var eventRole = @event.Roles.First(x => x.Id == eventRegister.EventRoleId);
+        var approvedStudentCount = await _studentEventRegisterRepository.GetCountAsync(new ApprovedStudentInEventRoleSpecification(eventRegister.EventRoleId));
+        if (approvedStudentCount >= eventRole.Quantity)
+        {
+            throw new EventRoleIsFullApprovedException(eventRegister.EventRoleId);
+        }
+        
         if (student.IsApprovedToEventRole(eventRegister.EventRoleId))
         {
             throw new StudentHasAlreadyApprovedToEventException(student.Id, @event.Id);
         }
             
         student.ApproveEventRegister(eventRegisterId);
+        return student;
+    }
+
+    public async Task<Student> RejectEventRegisterAsync(Student student, Guid eventRegisterId, string reason, DateTime currentDateTime)
+    {
+        var eventRegister = student.EventRegisters.FirstOrDefault(x => x.Id == eventRegisterId);
+        if (eventRegister == null)
+        {
+            throw new StudentEventRegisterNotFoundException(eventRegisterId);
+        }
+
+        var @event = await _eventRepository.FindAsync(new EventByRoleSpecification(eventRegister.EventRoleId));
+        if (@event!.StartAt <= currentDateTime || @event.Status != EventStatus.Approved)
+        {
+            throw new EventHasAlreadyStartedException(@event.Id);
+        }
+        
+        student.RejectEventRegister(eventRegisterId, reason);
         return student;
     }
 

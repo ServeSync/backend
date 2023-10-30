@@ -44,6 +44,11 @@ public class StudentEventRegister : AuditableEntity
     
     internal void Reject(string reason)
     {
+        if (Status != EventRegisterStatus.Pending)
+        {
+            throw new StudentEventRegisterNotPendingException(Id);
+        }
+        
         Status = EventRegisterStatus.Rejected;
         RejectReason = reason;
     }
