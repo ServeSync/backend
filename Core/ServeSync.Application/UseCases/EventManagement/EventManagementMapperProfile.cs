@@ -49,21 +49,30 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.Capacity, opt => opt.MapFrom(src => src.Roles.Sum(x => x.Quantity)))
             .ForMember(dest => dest.Registered, opt => opt.MapFrom(src => 0))
             .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => 0));
-        
+
         CreateMap<OrganizationInEvent, BasicOrganizationInEventDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrganizationId))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Organization!.Name))
-            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Organization!.ImageUrl));
+            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Organization!.ImageUrl))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Organization!.Email))
+            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Organization!.PhoneNumber))
+            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Organization!.Address));
         CreateMap<OrganizationInEvent, OrganizationInEventDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrganizationId))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Organization!.Name))
-            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Organization!.ImageUrl));
+            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Organization!.ImageUrl))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Organization!.Email))
+            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Organization!.PhoneNumber))
+            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Organization!.Address));
         
         CreateMap<OrganizationRepInEvent, BasicRepresentativeInEventDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrganizationRepId))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.OrganizationRep!.Name))
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.OrganizationRep!.ImageUrl))
-            .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.OrganizationRep!.Position));
+            .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.OrganizationRep!.Position))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.OrganizationRep!.Email))
+            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.OrganizationRep!.PhoneNumber))
+            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.OrganizationRep!.Address));
         
         CreateMap<EventCollaborationRequest, EventCollaborationRequestCreateDto>();
 

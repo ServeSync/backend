@@ -5,7 +5,5 @@ namespace ServeSync.Application.QueryObjects;
 
 public interface IEventQueries
 {
-    Task<EventDetailDto?> GetEventDetailByIdAsync(Guid eventId);
-
     Task<EventReadModel?> GetEventReadModelByIdAsync(Guid eventId);
 }
