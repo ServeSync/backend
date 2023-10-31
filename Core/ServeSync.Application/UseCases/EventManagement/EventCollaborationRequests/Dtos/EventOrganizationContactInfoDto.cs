@@ -5,7 +5,6 @@ namespace ServeSync.Application.UseCases.EventManagement.EventCollaborationReque
 public record EventOrganizationContactInfoDto
 {
     [Required]
-    [MinLength(5)]
     public string Name { get; set; } = null!;
     
     [Required]
