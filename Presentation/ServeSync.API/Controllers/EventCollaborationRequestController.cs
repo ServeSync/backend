@@ -1,10 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Commands;
 using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Queries;
+using ServeSync.Infrastructure.Identity.Commons.Constants;
 
 namespace ServeSync.API.Controllers;
 
@@ -35,5 +37,13 @@ public class EventCollaborationRequest : ControllerBase
         
         var eventCollaborationRequests = await _mediator.Send(query);
         return Ok(eventCollaborationRequests);
+    }
+    
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(EventCollaborationRequestDetailDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEventCollaborationRequestByIdAsync([FromRoute] Guid id)
+    {
+        var eventCollaborationRequest = await _mediator.Send(new GetEventCollaborationRequestByIdQuery(id));
+        return Ok(eventCollaborationRequest);
     }
 }
