@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using ServeSync.API.Common.Enums;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 
 namespace ServeSync.API.Authorization;
 
-public class PermissionAuthorizationPolicyProvider : IAuthorizationPolicyProvider
+public class ServeSyncAuthorizationPolicyProvider : IAuthorizationPolicyProvider
 {
     private readonly DefaultAuthorizationPolicyProvider _defaultPolicyProvider;
 
@@ -12,7 +13,7 @@ public class PermissionAuthorizationPolicyProvider : IAuthorizationPolicyProvide
 
     public Task<AuthorizationPolicy> GetDefaultPolicyAsync() => _defaultPolicyProvider.GetDefaultPolicyAsync();
 
-    public PermissionAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
+    public ServeSyncAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
     {
         _defaultPolicyProvider = new DefaultAuthorizationPolicyProvider(options);
     }
@@ -33,6 +34,17 @@ public class PermissionAuthorizationPolicyProvider : IAuthorizationPolicyProvide
             var policyBuilder = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .AddRequirements(new PermissionAuthorizationRequirement(policyName));
+            
+            return Task.FromResult(policyBuilder.Build());
+        }
+        
+        if (policyName.StartsWith(EventAccessControlAttribute.Prefix, StringComparison.OrdinalIgnoreCase))
+        {
+            var policyBuilder = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddRequirements(new EventAccessControlRequirement(
+                    (EventSourceAccessControl)Enum.Parse(typeof(EventSourceAccessControl), policyName.Split(".").Last(),
+                        true)));
             
             return Task.FromResult(policyBuilder.Build());
         }

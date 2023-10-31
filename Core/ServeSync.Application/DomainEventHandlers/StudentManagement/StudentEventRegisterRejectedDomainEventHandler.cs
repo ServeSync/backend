@@ -10,20 +10,20 @@ using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 
 namespace ServeSync.Application.DomainEventHandlers.StudentManagement;
 
-public class StudentEventRegisterApprovedDomainEventHandler : IDomainEventHandler<StudentEventRegisterApprovedDomainEvent>
+public class StudentEventRegisterRejectedDomainEventHandler : IDomainEventHandler<StudentEventRegisterRejectedDomainEvent>
 {
     private readonly IBasicReadOnlyRepository<Student, Guid> _studentRepository;
     private readonly IBasicReadOnlyRepository<Event, Guid> _eventRepository;
     private readonly IEmailSender _emailSender;
     private readonly IEmailTemplateGenerator _emailTemplateGenerator;
-    private readonly ILogger<StudentEventRegisterApprovedDomainEventHandler> _logger;
+    private readonly ILogger<StudentEventRegisterRejectedDomainEventHandler> _logger;
     
-    public StudentEventRegisterApprovedDomainEventHandler(
+    public StudentEventRegisterRejectedDomainEventHandler(
         IBasicReadOnlyRepository<Student, Guid> studentRepository,
         IBasicReadOnlyRepository<Event, Guid> eventRepository,
         IEmailSender emailSender,
         IEmailTemplateGenerator emailTemplateGenerator,
-        ILogger<StudentEventRegisterApprovedDomainEventHandler> logger)
+        ILogger<StudentEventRegisterRejectedDomainEventHandler> logger)
     {
         _studentRepository = studentRepository;
         _eventRepository = eventRepository;
@@ -32,7 +32,7 @@ public class StudentEventRegisterApprovedDomainEventHandler : IDomainEventHandle
         _logger = logger;
     }
     
-    public async Task Handle(StudentEventRegisterApprovedDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(StudentEventRegisterRejectedDomainEvent notification, CancellationToken cancellationToken)
     {
         var @event = await _eventRepository.FindAsync(new EventByRoleSpecification(notification.EventRoleId));
         if (@event == null)
@@ -54,9 +54,9 @@ public class StudentEventRegisterApprovedDomainEventHandler : IDomainEventHandle
         {
             Subject = "[ServeSync] Thông báo đăng ký sự kiện",
             ToAddress = student.Email,
-            Body = _emailTemplateGenerator.GetApproveEventRegistration(student.FullName, @event.Name, role.Name, @event.StartAt, @event.Address.FullAddress)
+            Body = _emailTemplateGenerator.GetRejectEventRegistration(student.FullName, @event.Name, role.Name, notification.RejectReason)
         });
         
-        _logger.LogInformation("Sent email to {Email} about approved event register {EventId}", student.Email, @event.Id);
+        _logger.LogInformation("Sent email to {Email} about rejected event register {EventId}", student.Email, @event.Id);
     }
 }

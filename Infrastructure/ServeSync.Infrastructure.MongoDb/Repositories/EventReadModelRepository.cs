@@ -128,4 +128,13 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
                 .Score)
             ;
     }
+
+    public async Task<EventReadModel?> GetEventByStudentRegistrationAsync(Guid eventRegisterId)
+    {
+        return await Collection.AsQueryable()
+            .FirstOrDefaultAsync(x =>
+                x.Roles.Any(y =>
+                    y.RegisteredStudents.Any(z => z.Id == eventRegisterId)));
+
+    }
 }
