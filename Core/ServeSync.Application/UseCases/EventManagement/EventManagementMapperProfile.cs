@@ -65,10 +65,20 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.OrganizationRep!.ImageUrl))
             .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.OrganizationRep!.Position));
         
+        CreateMap<EventCollaborationRequest, EventCollaborationRequestCreateDto>();
+
+        CreateMap<EventOrganization, EventOrganizationInfoDto>();
+
+        CreateMap<EventOrganizationContact, EventOrganizationContactInfoDto>();
+        
         CreateMap<EventAttendanceInfo, EventAttendanceInfoDto>();
 
         CreateMap<EventRole, EventRoleDto>();
 
         CreateMap<EventRegistrationInfo, EventRegistrationDto>();
+
+        CreateMap<EventOrganizationInfo, EventOrganizationInfoDto>();
+        
+        CreateMap<EventCollaborationRequest, EventCollaborationRequestDto>();
     }
 }
