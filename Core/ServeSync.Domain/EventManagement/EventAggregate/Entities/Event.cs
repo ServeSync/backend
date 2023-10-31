@@ -175,10 +175,18 @@ public class Event : AuditableAggregateRoot
         }
     }
 
-    public void Approve()
+    public void Approve(DateTime dateTime)
     {
-        Status = EventStatus.Approved;
-        AddDomainEvent(new EventUpdatedDomainEvent(Id));
+        var startTime = RegistrationInfos.Min(x => x.StartAt); ;
+        if (Status == EventStatus.Pending && dateTime < startTime)
+        {
+            Status = EventStatus.Approved;
+            AddDomainEvent(new EventUpdatedDomainEvent(Id));
+        }
+        else
+        {
+            throw new EventCanNotBeApprovedException();
+        }
     }
     
     public bool IsInAttendArea(double longitude, double latitude)

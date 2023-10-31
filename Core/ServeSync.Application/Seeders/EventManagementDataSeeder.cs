@@ -222,7 +222,7 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.PickRandom(organization.Contacts),
                     faker.Name.JobTitle());
                 
-                @event.Approve();
+                @event.Approve(DateTime.Now);
 
                 await _eventRepository.InsertAsync(@event);
                 await _unitOfWork.CommitAsync();

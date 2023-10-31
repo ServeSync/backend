@@ -15,6 +15,7 @@ public class EventCollaborationRequestCreateDto
     public string Introduction { get; set; } = null!;
 
     [Required]
+    [MinLength(256)]
     public string Description { get; set; } = null!;
 
     [Required]

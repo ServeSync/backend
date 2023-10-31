@@ -118,4 +118,11 @@ public class EventDomainService : IEventDomainService
         
         return @event;
     }
+
+    public Event ApproveEvent(Event @event, DateTime dateTime)
+    {
+        @event.Approve(dateTime);
+        
+        return @event;
+    }
 }
