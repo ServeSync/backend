@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
+using ServeSync.API.Common.Enums;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Queries;
@@ -94,6 +95,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/approve")]
+    [EventAccessControl(EventSourceAccessControl.EventRegister)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ApproveStudentEventRegisterAsync(Guid id, Guid eventRegisterId)
     {
@@ -102,6 +104,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/reject")]
+    [EventAccessControl(EventSourceAccessControl.EventRegister)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RejectStudentEventRegisterAsync(Guid id, Guid eventRegisterId, [FromBody] RejectStudentEventRegistrationDto dto)
     {
