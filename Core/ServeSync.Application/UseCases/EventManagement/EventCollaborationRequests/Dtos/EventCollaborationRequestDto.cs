@@ -8,6 +8,7 @@ public class EventCollaborationRequestDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;
+    public string Introduction { get; set; } = null!;
     public int Capacity { get; set; }
     public string ImageUrl { get; set; } = null!;
     public DateTime StartAt { get; set; }
@@ -15,13 +16,11 @@ public class EventCollaborationRequestDto
     public EventType Type { get; set; }
     public EventAddressDto Address { get; set; } = null!;
     public EventOrganizationInfoDto Organization { get; set; } = null!;
+    public EventOrganizationContactInfoDto OrganizationContact { get; set; } = null!;
+    public BasicEventActivityDto Activity { get; set; } = null!;
 }
 
 public class EventCollaborationRequestDetailDto : EventCollaborationRequestDto
 {
-    public string Introduction { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public Guid ActivityId { get; set; }
-    public EventOrganizationContactInfoDto OrganizationContact { get; set; } = null!;
-    public BasicEventActivityDto Activity { get; set; } = null!;
 }

@@ -11,8 +11,6 @@ public class EventCollaborationRequestByIdSpecification : Specification<EventCol
     public EventCollaborationRequestByIdSpecification(Guid id)
     {
         _id = id;
-        
-        AddInclude(x => x.Activity!);
     }
     
     public override Expression<Func<EventCollaborationRequest, bool>> ToExpression()
