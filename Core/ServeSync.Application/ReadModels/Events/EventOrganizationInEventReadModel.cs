@@ -7,6 +7,7 @@ public class EventOrganizationInEventReadModel : BaseReadModel<Guid>
     public string Name { get; set; } = null!;
     public string ImageUrl { get; set; } = null!;
     public string Email { get; set; } = null!;
+    public string? Address { get; set; }
     public string PhoneNumber { get; set; } = null!;
     public Guid OrganizationId { get; set; }
     public string Role { get; set; } = null!;
@@ -19,6 +20,7 @@ public class BasicEventOrganizationInEventReadModel : BaseReadModel<Guid>
     public string ImageUrl { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string PhoneNumber { get; set; } = null!;
+    public string? Address { get; set; }
     public Guid OrganizationId { get; set; }
 }
 
@@ -27,6 +29,7 @@ public class EventOrganizationRepresentativeInEventReadModel : BaseReadModel<Gui
     public string Name { get; set; } = null!;
     public string ImageUrl { get; set; } = null!;
     public string Email { get; set; } = null!;
+    public string? Address { get; set; }
     public string PhoneNumber { get; set; } = null!;
     public string? Position { get; set; }
     public string Role { get; set; } = null!;
