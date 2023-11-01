@@ -27,7 +27,9 @@ public class BasicEventDto
 public class FlatEventDto : BasicEventDto
 {
     public int Capacity { get; set; }
+    public int Attended { get; set; }
     public int Registered { get; set; }
+    public int ApprovedRegistered { get; set; }
     public int Rating { get; set; }
     
     public BasicEventActivityDto Activity { get; set; } = null!;
