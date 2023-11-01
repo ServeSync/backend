@@ -8,7 +8,7 @@ public class EventAttendanceInfoReadModel : BaseReadModel<Guid>
     public string? QrCodeUrl { get; set; }
     public DateTime StartAt { get; set; }
     public DateTime EndAt { get; set; }
-    
+    public int Attended => AttendanceStudents.Count;
     public List<AttendanceStudentInEventRoleReadModel> AttendanceStudents { get; set; } = new();
 }
 

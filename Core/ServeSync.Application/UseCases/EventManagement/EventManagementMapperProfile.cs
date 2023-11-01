@@ -16,6 +16,7 @@ using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entiti
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.EventManagement.SharedKernel.ValueObjects;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 
 namespace ServeSync.Application.UseCases.EventManagement;
 
@@ -42,13 +43,16 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.Now)))
             .ForMember(dest => dest.CalculatedStatus, opt => opt.MapFrom(src => src.GetCurrentStatus(DateTime.Now)))
             .ForMember(dest => dest.Capacity, opt => opt.MapFrom(src => src.Roles.Sum(x => x.Quantity)))
-            .ForMember(dest => dest.Registered, opt => opt.MapFrom(src => 0))
+            .ForMember(dest => dest.Attended, opt => opt.MapFrom(src => src.Roles.Sum(x => x.StudentEventRegisters.Count(y => y.StudentEventAttendance != null))))
+            .ForMember(dest => dest.Registered, opt => opt.MapFrom(src => src.Roles.Sum(x => x.StudentEventRegisters.Count)))
+            .ForMember(dest => dest.ApprovedRegistered, opt => opt.MapFrom(src => src.Roles.Sum(x => x.StudentEventRegisters.Count(y => y.Status == EventRegisterStatus.Approved))))
             .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => 0));
         CreateMap<Event, EventDetailDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.Now)))
             .ForMember(dest => dest.CalculatedStatus, opt => opt.MapFrom(src => src.GetCurrentStatus(DateTime.Now)))
             .ForMember(dest => dest.Capacity, opt => opt.MapFrom(src => src.Roles.Sum(x => x.Quantity)))
-            .ForMember(dest => dest.Registered, opt => opt.MapFrom(src => 0))
+            .ForMember(dest => dest.Registered, opt => opt.MapFrom(src => src.Roles.Sum(x => x.StudentEventRegisters.Count)))
+            .ForMember(dest => dest.ApprovedRegistered, opt => opt.MapFrom(src => src.Roles.Sum(x => x.StudentEventRegisters.Count(y => y.Status == EventRegisterStatus.Approved))))
             .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => 0));
 
         CreateMap<OrganizationInEvent, BasicOrganizationInEventDto>()

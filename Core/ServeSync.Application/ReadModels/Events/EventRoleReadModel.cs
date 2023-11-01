@@ -11,6 +11,7 @@ public class EventRoleReadModel : BaseReadModel<Guid>
     public double Score { get; set; }
     public int Quantity { get; set; }
     public int Registered => RegisteredStudents.Count;
+    public int ApprovedRegistered => RegisteredStudents.Count(x => x.Status == EventRegisterStatus.Approved);
     public List<RegisteredStudentInEventRoleReadModel> RegisteredStudents { get; set; } = new();
 }
 
