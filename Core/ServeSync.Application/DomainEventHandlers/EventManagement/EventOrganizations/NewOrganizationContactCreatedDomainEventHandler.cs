@@ -48,11 +48,11 @@ public class NewOrganizationContactCreatedDomainEventHandler : IDomainEventHandl
         notification.Contact.SetIdentityId(result.Data!.Id);
         _logger.LogInformation("Created new identity user {IdentityUserId} for event organizer {EventOrganizerId}", notification.Contact.IdentityId, notification.Contact.Id);
 
-        // _emailSender.Push(new EmailMessage()
-        // {
-        //     ToAddress = notification.Contact.Email,
-        //     Subject = "[ServeSync] Thông báo thông tin tài khoản",
-        //     Body = _emailTemplateGenerator.GetGrantAccountToEventOrganizer(notification.Contact.Name, notification.Contact.Email, userName, password)
-        // });
+        _emailSender.Push(new EmailMessage()
+        {
+            ToAddress = notification.Contact.Email,
+            Subject = "[ServeSync] Thông báo thông tin tài khoản",
+            Body = _emailTemplateGenerator.GetGrantAccountToEventOrganizer(notification.Contact.Name, notification.Contact.Email, userName, password)
+        });
     }
 }
