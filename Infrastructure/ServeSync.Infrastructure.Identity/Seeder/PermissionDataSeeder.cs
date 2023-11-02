@@ -33,6 +33,7 @@ public class PermissionDataSeeder : IDataSeeder
         await SeedPermissionForAdminRoleAsync();
         await SeedPermissionForStudentRoleAsync();
         await SeedPermissionForStudentAffairRoleAsync();
+        await SeedPermissionForEventOrganizerRoleAsync();
     }
 
     private async Task SyncPermissionAsync()
@@ -96,7 +97,7 @@ public class PermissionDataSeeder : IDataSeeder
             return;
         }
         
-        var permissions = await _permissionRepository.FindAllAsync();
+        var permissions = await _permissionRepository.FilterAsync(new PermissionByIncludedNameSpecification(StudentAffairPermissions.Provider));
         var notGrantedPermissions = permissions.ExceptBy(studentAffair.Permissions.Select(x => x.PermissionId), x => x.Id);
 
         if (!notGrantedPermissions.Any())
@@ -125,7 +126,7 @@ public class PermissionDataSeeder : IDataSeeder
             return;
         }
         
-        var permissions = await _permissionRepository.FilterAsync(new ReadOnlyPermissionSpecification());
+        var permissions = await _permissionRepository.FilterAsync(new PermissionByIncludedNameSpecification(StudentPermissions.Provider));
         var notGrantedPermissions = permissions.ExceptBy(studentRole.Permissions.Select(x => x.PermissionId), x => x.Id);
 
         if (!notGrantedPermissions.Any())
@@ -140,6 +141,35 @@ public class PermissionDataSeeder : IDataSeeder
         }
 
         _roleRepository.Update(studentRole);
+        await _unitOfWork.CommitAsync();
+    }
+    
+    private async Task SeedPermissionForEventOrganizerRoleAsync()
+    {
+        _logger.LogInformation("Begin seeding not granted permissions for event organizer...");
+
+        var eventOrganizerRole = await _roleRepository.FindByNameAsync(AppRole.EventOrganizer);
+        if (eventOrganizerRole == null)
+        {
+            _logger.LogWarning("Event organizer role not found.");
+            return;
+        }
+        
+        var permissions = await _permissionRepository.FilterAsync(new PermissionByIncludedNameSpecification(EventOrganizerPermissions.Provider));
+        var notGrantedPermissions = permissions.ExceptBy(eventOrganizerRole.Permissions.Select(x => x.PermissionId), x => x.Id);
+
+        if (!notGrantedPermissions.Any())
+        {
+            _logger.LogInformation("Admin role has all permissions.");
+            return;   
+        }
+        
+        foreach (var permission in notGrantedPermissions)
+        {
+            eventOrganizerRole.GrantPermission(permission.Id);
+        }
+
+        _roleRepository.Update(eventOrganizerRole);
         await _unitOfWork.CommitAsync();
     }
 }

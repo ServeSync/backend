@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
+using ServeSync.API.Common.Enums;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Commands;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos;
@@ -109,7 +110,8 @@ public class EventController : ControllerBase
     }
 
     [HttpPost("{id:guid}/cancel")]
-    [HasRole(AppRole.Admin)]
+    [HasPermission(Permissions.Events.Cancel)]
+    [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> CancelEvent(Guid id)
     {
@@ -118,7 +120,8 @@ public class EventController : ControllerBase
     }
     
     [HttpPost("{id:guid}/approve")]
-    [HasPermission(Permissions.Events.Edit)]
+    [HasPermission(Permissions.Events.Approve)]
+    [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ApproveEvent(Guid id)
     {

@@ -95,6 +95,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/approve")]
+    [HasPermission(Permissions.Events.ApproveRegistration)]
     [EventAccessControl(EventSourceAccessControl.EventRegister)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ApproveStudentEventRegisterAsync(Guid id, Guid eventRegisterId)
@@ -104,6 +105,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/reject")]
+    [HasPermission(Permissions.Events.RejectRegistration)]
     [EventAccessControl(EventSourceAccessControl.EventRegister)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RejectStudentEventRegisterAsync(Guid id, Guid eventRegisterId, [FromBody] RejectStudentEventRegistrationDto dto)
@@ -121,6 +123,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpGet("{id:guid}/education-program")]
+    [HasPermission(Permissions.Students.View)]
     [ProducesResponseType(typeof(StudentEducationProgramDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStudentEducationProgramAsync(Guid id)
     {
