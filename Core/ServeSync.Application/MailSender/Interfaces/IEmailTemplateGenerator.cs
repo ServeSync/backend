@@ -9,4 +9,8 @@ public interface IEmailTemplateGenerator
     string GetApproveEventRegistration(string studentName, string eventName, string eventRole, DateTime eventDate, string eventAddress);
     
     string GetRejectEventRegistration(string studentName, string eventName, string eventRole, string rejectReason);
+
+    string GetGrantAccountToEventOrganizer(string name, string email, string username, string password);
+
+    string GetApproveCollaborationRequest(string name, string eventName);
 }

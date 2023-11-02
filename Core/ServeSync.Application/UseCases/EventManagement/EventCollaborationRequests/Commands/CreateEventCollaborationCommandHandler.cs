@@ -9,15 +9,18 @@ using ServeSync.Domain.SeedWorks.Repositories;
 namespace ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Commands;
 public class CreateEventCollaborationCommandHandler : ICommandHandler<CreateEventCollaborationCommand, Guid>
 {
+    private readonly IEventCollaborationRequestRepository _eventCollaborationRequestRepository;
     private readonly IEventCollaborationRequestDomainService _eventCollaborationRequestDomainService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateEventCollaborationCommandHandler> _logger;
 
     public CreateEventCollaborationCommandHandler(
+        IEventCollaborationRequestRepository eventCollaborationRequestRepository,
         IEventCollaborationRequestDomainService eventCollaborationRequestDomainService,
         IUnitOfWork unitOfWork,
         ILogger<CreateEventCollaborationCommandHandler> logger)
     {
+        _eventCollaborationRequestRepository = eventCollaborationRequestRepository;
         _eventCollaborationRequestDomainService = eventCollaborationRequestDomainService;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -51,7 +54,8 @@ public class CreateEventCollaborationCommandHandler : ICommandHandler<CreateEven
             request.EventCollaborationCreateRequest.EventOrganizationContactInfo.Birth,
             request.EventCollaborationCreateRequest.EventOrganizationContactInfo.Position,
             request.EventCollaborationCreateRequest.EventOrganizationContactInfo.ImageUrl);
-        
+
+        await _eventCollaborationRequestRepository.InsertAsync(eventCollaborationCreateRequest);
         await _unitOfWork.CommitAsync();
         _logger.LogInformation("Created new event collaboration request with id: {EventCollaborationRequestId}", eventCollaborationCreateRequest.Id);
 

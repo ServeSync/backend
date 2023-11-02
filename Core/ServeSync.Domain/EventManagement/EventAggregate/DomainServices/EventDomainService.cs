@@ -65,6 +65,20 @@ public class EventDomainService : IEventDomainService
         return @event;
     }
 
+    public async Task<Event> AddDefaultRoleAsync(Event @event, int quantity)
+    {
+        var activity = await _eventActivityRepository.FindByIdAsync(@event.ActivityId);
+        
+        @event.AddRole(
+            "Người tham dự",
+            "Người tham dự sự kiện",
+            false, 
+            activity!.MaxScore,
+            quantity);
+        
+        return @event;
+    }
+
     public Event AddOrganization(Event @event, EventOrganization organization, string role)
     {
         @event.AddOrganization(organization.Id, role);

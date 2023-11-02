@@ -72,14 +72,33 @@ public class IdentityService : IIdentityService
         var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone, studentId);
         if (createIdentityUserResult.IsSuccess)
         {
-            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data.Id, AppRole.Student);
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.Student);
             if (grantRoleResult.IsSuccess)
             {
                 return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
             }
             else
             {
-                return IdentityResult<IdentityUserDto>.Failed(grantRoleResult.Error, grantRoleResult.ErrorCode);
+                return IdentityResult<IdentityUserDto>.Failed(grantRoleResult.Error!, grantRoleResult.ErrorCode!);
+            }
+        }
+
+        return createIdentityUserResult;
+    }
+
+    public async Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationContactAsync(string fullname, string username, string avatarUrl, string email, string password, Guid contactId, string? phone = null)
+    {
+        var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone, contactId);
+        if (createIdentityUserResult.IsSuccess)
+        {
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.EventOrganizer);
+            if (grantRoleResult.IsSuccess)
+            {
+                return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
+            }
+            else
+            {
+                return IdentityResult<IdentityUserDto>.Failed(grantRoleResult.Error!, grantRoleResult.ErrorCode!);
             }
         }
 

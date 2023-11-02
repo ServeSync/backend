@@ -1,4 +1,5 @@
-﻿using ServeSync.Domain.SeedWorks.Models;
+﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
+using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 
@@ -39,6 +40,11 @@ public class EventOrganization : AggregateRoot
         string? address, 
         string? position)
     {
+        if (Contacts.Any(x => x.Email == email))
+        {
+            throw new EventOrganizationContactAlreadyExistedException(Id, email);
+        }
+        
         var contact = new EventOrganizationContact(name, email, phoneNumber, imageUrl, Id, gender, birth, address, position);
         Contacts.Add(contact);
     }

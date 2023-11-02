@@ -1,4 +1,5 @@
-﻿using ServeSync.Domain.SeedWorks.Models;
+﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
+using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 
@@ -38,6 +39,13 @@ public class EventOrganizationContact : Entity
         Birth = birth;
         Address = address;
         Position = position;
+        
+        AddDomainEvent(new NewOrganizationContactCreatedDomainEvent(this));
+    }
+    
+    public void SetIdentityId(string identityId)
+    {
+        IdentityId = Guard.NotNullOrEmpty(identityId, nameof(IdentityId));
     }
 
     private EventOrganizationContact()
