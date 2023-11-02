@@ -157,7 +157,8 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
             await _unitOfWork.CommitAsync();
 
             _eventDomainService.SetRepresentativeOrganization(@event, organization.Id);
-
+            @event.Create(organization.Contacts.First().IdentityId);
+            
             _eventRepository.Update(@event);
             await _unitOfWork.CommitTransactionAsync();
             

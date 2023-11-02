@@ -256,7 +256,10 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
             
             migrationBuilder.Sql(@"
                 INSERT INTO AspNetRoles (Id, Name, NormalizedName)
-                VALUES ('68d37338-7b29-4ece-bcfe-f6e1bdcdf9e0', 'admin', 'ADMIN')
+                VALUES ('68d37338-7b29-4ece-bcfe-f6e1bdcdf9e0', 'Quản trị viên', 'QUẢN TRỊ VIÊN'),
+                       ('68d37338-7b29-4ece-bcfe-f6e1bdcdf9e1', 'Sinh viên', 'SINH VIÊN'),
+                       ('68d37338-7b29-4ece-bcfe-f6e1bdcdf9e2', 'Phòng CTSV', 'PHÒNG CTSV'),
+                       ('68d37338-7b29-4ece-bcfe-f6e1bdcdf9e3', 'Nhà tổ chức sự kiện', 'NHÀ TỔ CHỨC SỰ KIỆN');
             ");
         }
 

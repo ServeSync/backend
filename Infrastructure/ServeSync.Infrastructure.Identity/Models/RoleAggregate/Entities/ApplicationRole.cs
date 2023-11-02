@@ -11,9 +11,9 @@ public partial class ApplicationRole : IdentityRole
         
     public ApplicationRole(string roleName) : base(roleName)
     {
-        if (IsAdminRole(roleName))
+        if (IsDefaultRole(roleName))
         {
-            throw new AdminRoleAccessDeniedException();    
+            throw new DefaultRoleAccessDeniedException(Name);    
         }
         
         Permissions = new List<RolePermission>();
@@ -26,9 +26,9 @@ public partial class ApplicationRole : IdentityRole
 
     public void ClearPermission()
     {
-        if (IsAdminRole(Name))
+        if (IsDefaultRole(Name))
         {
-            throw new AdminRoleAccessDeniedException();    
+            throw new DefaultRoleAccessDeniedException(Name);    
         }
         
         Permissions.Clear();
@@ -48,9 +48,9 @@ public partial class ApplicationRole : IdentityRole
 
     public void Update(string name)
     {
-        if (IsAdminRole(Name) || IsAdminRole(name))
+        if (IsDefaultRole(Name) || IsDefaultRole(name))
         {
-            throw new AdminRoleAccessDeniedException();    
+            throw new DefaultRoleAccessDeniedException(name);    
         }
         
         AddDomainEvent(new RoleNameUpdatedDomainEvent(Name));
@@ -59,9 +59,9 @@ public partial class ApplicationRole : IdentityRole
 
     public void Destroy()
     {
-        if (IsAdminRole(Name))
+        if (IsDefaultRole(Name))
         {
-            throw new AdminRoleAccessDeniedException();    
+            throw new DefaultRoleAccessDeniedException(Name);    
         }
     }
 
@@ -70,8 +70,11 @@ public partial class ApplicationRole : IdentityRole
         return Permissions.Any(x => x.PermissionId == permissionId);
     }
 
-    private bool IsAdminRole(string name)
+    private bool IsDefaultRole(string name)
     {
-        return string.Equals(name, AppRole.Admin, StringComparison.CurrentCultureIgnoreCase);
+        return string.Equals(name, AppRole.Admin, StringComparison.CurrentCultureIgnoreCase)
+               || string.Equals(name, AppRole.EventOrganizer, StringComparison.CurrentCultureIgnoreCase)
+               || string.Equals(name, AppRole.StudentAffair, StringComparison.CurrentCultureIgnoreCase)
+               || string.Equals(name, AppRole.Student, StringComparison.CurrentCultureIgnoreCase);
     }
 }
