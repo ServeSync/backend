@@ -30,6 +30,12 @@ public class EventCollaborationRequestEntityConfiguration : IEntityTypeConfigura
 
         builder.Property(x => x.EndAt)
                .IsRequired();
+
+        builder.Property(x => x.Status)
+               .IsRequired();
+
+        builder.Property(x => x.EventId)
+               .IsRequired(false);
         
         builder.OwnsOne(x => x.Address, address =>
         {

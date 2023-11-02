@@ -54,6 +54,26 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
         return template;
     }
 
+    public string GetGrantAccountToEventOrganizer(string name, string email, string username, string password)
+    {
+        var template = GetTemplate("GrantAccountToEventOrganizer")
+            .Replace("{{FullName}}", name)
+            .Replace("{{Email}}", email)
+            .Replace("{{UserName}}", username)
+            .Replace("{{Password}}", password);
+
+        return template;
+    }
+
+    public string GetApproveCollaborationRequest(string name, string eventName)
+    {
+        var template = GetTemplate("ApproveCollaborationRequest")
+            .Replace("{{FullName}}", name)
+            .Replace("{{EventName}}", eventName);
+
+        return template;
+    }
+
     private string GetTemplate(string templateName)
     {
         var pathToFile = GetTemplatePath(templateName);

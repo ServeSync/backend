@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using Microsoft.Extensions.Logging;
-using Polly;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Domain.EventManagement.EventAggregate;
 using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
@@ -8,9 +7,10 @@ using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
-using ServeSync.Domain.SeedWorks.Exceptions;
 using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
@@ -21,6 +21,7 @@ namespace ServeSync.Application.Seeders;
 public class EventManagementDataSeeder : IDataSeeder
 {
     private readonly IStudentDomainService _studentDomainService;
+    private readonly IEventCollaborationRequestDomainService _eventCollaborationRequestDomainService;
     private readonly IEventCategoryDomainService _eventCategoryDomainService;
     private readonly IEventOrganizationDomainService _eventOrganizationDomainService;
     private readonly IEventDomainService _eventDomainService;
@@ -29,6 +30,7 @@ public class EventManagementDataSeeder : IDataSeeder
     private readonly IEventOrganizationRepository _eventOrganizationRepository;
     private readonly IEventRepository _eventRepository;
     private readonly IStudentRepository _studentRepository;
+    private readonly IEventCollaborationRequestRepository _eventCollaborationRequestRepository;
     private readonly IBasicReadOnlyRepository<StudentEventRegister, Guid> _studentEventRegisterRepository;
     private readonly IBasicReadOnlyRepository<EventActivity, Guid> _eventActivityRepository;
     private readonly IBasicReadOnlyRepository<StudentEventAttendance, Guid> _studentAttendanceRepository;
@@ -41,10 +43,12 @@ public class EventManagementDataSeeder : IDataSeeder
         IEventCategoryDomainService eventCategoryDomainService,
         IEventOrganizationDomainService eventOrganizationDomainService,
         IEventDomainService eventDomainService,
+        IEventCollaborationRequestDomainService eventCollaborationRequestDomainService,
         IEventCategoryRepository eventCategoryRepository,
         IEventOrganizationRepository eventOrganizationRepository,
         IEventRepository eventRepository,
         IStudentRepository studentRepository,
+        IEventCollaborationRequestRepository eventCollaborationRequestRepository,
         IBasicReadOnlyRepository<StudentEventRegister, Guid> studentEventRegisterRepository,
         IBasicReadOnlyRepository<EventActivity, Guid> eventActivityRepository,
         IBasicReadOnlyRepository<StudentEventAttendance, Guid> studentAttendanceRepository,
@@ -56,9 +60,11 @@ public class EventManagementDataSeeder : IDataSeeder
         _eventOrganizationDomainService = eventOrganizationDomainService;
         _eventDomainService = eventDomainService;
         _eventCategoryRepository = eventCategoryRepository;
+        _eventCollaborationRequestDomainService = eventCollaborationRequestDomainService;
         _eventOrganizationRepository = eventOrganizationRepository;
         _eventRepository = eventRepository;
         _studentRepository = studentRepository;
+        _eventCollaborationRequestRepository = eventCollaborationRequestRepository;
         _studentEventRegisterRepository = studentEventRegisterRepository;
         _eventActivityRepository = eventActivityRepository;
         _studentAttendanceRepository = studentAttendanceRepository;
@@ -73,6 +79,7 @@ public class EventManagementDataSeeder : IDataSeeder
         await SeedEventsAsync();
         await SeedRegisterEventAsync();
         await SeedAttendanceEventsForStudentAsync();
+        await SeedEventCollaborationRequestsAsync();
     }
 
     private async Task SeedEventCategoriesAsync()
@@ -117,7 +124,7 @@ public class EventManagementDataSeeder : IDataSeeder
 
         try
         {
-            for (var i = 0; i < 50; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var faker = new Faker();
                 var eventOrganization = await _eventOrganizationDomainService.CreateAsync(
@@ -127,8 +134,10 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Image.PicsumUrl(),
                     faker.Lorem.Sentence(),
                     faker.Address.FullAddress());
+                
+                await _eventOrganizationRepository.InsertAsync(eventOrganization);
 
-                for (var j = 0; j < 50; j++)
+                for (var j = 0; j < 5; j++)
                 {
                     faker = new Faker();
                     _eventOrganizationDomainService.AddContact(
@@ -342,5 +351,60 @@ public class EventManagementDataSeeder : IDataSeeder
         
         await _unitOfWork.CommitAsync();
         _logger.LogInformation("Seeded student event attendances successfully!");
+    }
+    
+    private async Task SeedEventCollaborationRequestsAsync()
+    {
+        if (await _eventCollaborationRequestRepository.AnyAsync())
+        {
+            _logger.LogInformation("Event collaboration requests already seeded.");
+            return;
+        }
+
+        var activities = await _eventActivityRepository.FindAllAsync();
+
+        for (var i = 0; i < 15; i++)
+        {
+            var faker = new Faker();
+            try
+            {
+                var collaborationRequest = await _eventCollaborationRequestDomainService.CreateAsync(
+                    faker.Name.FullName(),
+                    faker.Lorem.Sentence(),
+                    faker.Lorem.Paragraph(),
+                    faker.Random.Int(1, 100),
+                    faker.Image.PicsumUrl(),
+                    faker.Date.Between(DateTime.Now, DateTime.Now.AddDays(1)),
+                    faker.Date.Between(DateTime.Now.AddDays(1), DateTime.Now.AddDays(2)),
+                    faker.PickRandom<EventType>(),
+                    faker.PickRandom(activities).Id,
+                    faker.Address.FullAddress(),
+                    faker.Random.Double(-180, 180),
+                    faker.Random.Double(-90, 90),
+                    faker.Commerce.Department(),
+                    faker.Lorem.Paragraph(),
+                    faker.Person.Email,
+                    faker.Person.Phone,
+                    faker.Address.FullAddress(),
+                    faker.Image.PicsumUrl(),
+                    faker.Name.JobTitle(),
+                    faker.Person.Email,
+                    faker.Person.Phone,
+                    faker.Random.Bool(),
+                    faker.Address.FullAddress(),
+                    faker.Person.DateOfBirth,
+                    faker.Name.JobTitle(),
+                    faker.Image.PicsumUrl());
+                
+                await _eventCollaborationRequestRepository.InsertAsync(collaborationRequest);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation("Seeded event collaboration request failed: {Message}", e.Message);
+            }
+        }
+        
+        await _unitOfWork.CommitAsync();
+        _logger.LogInformation("Seeded event collaboration requests successfully!");
     }
 }

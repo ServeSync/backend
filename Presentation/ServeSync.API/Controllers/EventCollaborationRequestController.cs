@@ -33,7 +33,7 @@ public class EventCollaborationRequest : ControllerBase
     [ProducesResponseType(typeof(PagedResultDto<EventCollaborationRequestDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventCollaborationRequestsAsync([FromQuery] EventCollaborationRequestFilterRequestDto dto)
     {
-        var query = new GetAllEventCollaborationRequestsQuery(dto.StartDate, dto.EndDate, dto.Type, dto.Search, dto.Page, dto.Size, dto.Sorting);
+        var query = new GetAllEventCollaborationRequestsQuery(dto.StartDate, dto.EndDate, dto.Type, dto.Status, dto.Search, dto.Page, dto.Size, dto.Sorting);
         
         var eventCollaborationRequests = await _mediator.Send(query);
         return Ok(eventCollaborationRequests);
@@ -45,5 +45,13 @@ public class EventCollaborationRequest : ControllerBase
     {
         var eventCollaborationRequest = await _mediator.Send(new GetEventCollaborationRequestByIdQuery(id));
         return Ok(eventCollaborationRequest);
+    }
+    
+    [HttpPost("{id:guid}/approve")]
+    [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ApproveEventCollaborationRequestAsync([FromRoute] Guid id)
+    {
+        var eventId = await _mediator.Send(new ApproveEventCollaborationRequestCommand(id));
+        return Ok(SimpleIdResponse<Guid>.Create(eventId));
     }
 }

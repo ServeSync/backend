@@ -1,6 +1,9 @@
 ﻿using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainEvents;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Enums;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects;
 using ServeSync.Domain.EventManagement.SharedKernel.ValueObjects;
 using ServeSync.Domain.SeedWorks.Models;
@@ -17,12 +20,15 @@ public class EventCollaborationRequest : AggregateRoot
     public DateTime StartAt { get; private set; }
     public DateTime EndAt { get; private set; }
     public EventType Type {get; private set; }    
+    public CollaborationRequestStatus Status { get; private set; }
     public EventAddress Address { get; private set; }
     public EventOrganizationInfo Organization { get; private set; } 
     public EventOrganizationContactInfo OrganizationContact { get; private set; }
     
     public Guid ActivityId { get; private set; }
     public EventActivity? Activity { get; private set; }
+    
+    public Guid? EventId { get; private set; }
 
     internal EventCollaborationRequest(
         string name,
@@ -78,8 +84,30 @@ public class EventCollaborationRequest : AggregateRoot
             organizationContactBirth, 
             organizationContactPosition, 
             organizationContactImageUrl);
+        Status = CollaborationRequestStatus.Pending;
     }
 
+    internal void Approve(DateTime dateTime)
+    {
+        if (dateTime > StartAt.AddDays(-1))
+        {
+            throw new EventCollaborationRequestApproveTimeExpiredException(Id);
+        }
+
+        if (Status != CollaborationRequestStatus.Pending)
+        {
+            throw new EventCollaborationRequestNotPendingException(Id);
+        }
+        
+        Status = CollaborationRequestStatus.Approved;
+        AddDomainEvent(new EventCollaborationRequestApprovedDomainEvent(this));
+    }
+    
+    public void SetEventId(Guid eventId)
+    {
+        EventId = Guard.NotNull(eventId, nameof(EventId));
+    }
+    
     internal void SetEndAt(DateTime endAt)
     {
         if (endAt < StartAt.AddHours(1))
@@ -88,6 +116,7 @@ public class EventCollaborationRequest : AggregateRoot
         }
         EndAt = Guard.Range(endAt, nameof(EndAt), StartAt);
     }
+    
     private EventCollaborationRequest()
     {
         
