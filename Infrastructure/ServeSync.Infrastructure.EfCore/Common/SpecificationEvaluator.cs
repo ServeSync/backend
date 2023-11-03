@@ -47,7 +47,10 @@ public static class SpecificationEvaluator<TEntity, TKey>
         }
         else
         {
-            queryable = queryable.OrderBy(specification.BuildSorting());
+            if (!string.IsNullOrWhiteSpace(specification.BuildSorting()))
+            {
+                queryable = queryable.OrderBy(specification.BuildSorting());    
+            }
         }
 
         return queryable.Skip(specification.Skip).Take(specification.Take);

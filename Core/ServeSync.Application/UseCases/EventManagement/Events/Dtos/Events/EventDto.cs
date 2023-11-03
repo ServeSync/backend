@@ -32,7 +32,7 @@ public class FlatEventDto : BasicEventDto
     public int ApprovedRegistered { get; set; }
     public int Rating { get; set; }
     
-    public BasicEventActivityDto Activity { get; set; } = null!;
+    public EventActivityDto Activity { get; set; } = null!;
     public BasicOrganizationInEventDto RepresentativeOrganization { get; set; } = null!;
 }
 

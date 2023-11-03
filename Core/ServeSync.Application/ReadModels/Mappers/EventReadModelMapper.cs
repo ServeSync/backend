@@ -23,10 +23,11 @@ public class EventReadModelMapper : Profile
         CreateMap<AttendanceStudentInEventRoleReadModel, AttendanceStudentInEventDto>();
         CreateMap<EventAttendanceInfoReadModel, EventAttendanceInfoDto>();
         CreateMap<EventActivityReadModel, BasicEventActivityDto>();
+        CreateMap<EventActivityReadModel, EventActivityDto>();
         CreateMap<BasicEventOrganizationInEventReadModel, BasicOrganizationInEventDto>();
         CreateMap<EventOrganizationInEventReadModel, OrganizationInEventDto>();
         CreateMap<EventOrganizationRepresentativeInEventReadModel, BasicRepresentativeInEventDto>();
         CreateMap<EventAddressReadModel, EventAddressDto>();
-        CreateMap<EventReadModel, StudentAttendanceEventDto>();
+        CreateMap<AttendanceStudentInEventRoleReadModel, StudentAttendanceEventDto>();
     }
 }
