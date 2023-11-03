@@ -27,9 +27,9 @@ public class GetAllEventOrganizationQueryHandler : IQueryHandler<GetAllEventOrga
         var total = await _eventOrganizationRepository.GetCountAsync(specification);
 
         return new PagedResultDto<EventOrganizationDto>(
-            total, request.Size,
-            _mapper.Map<IEnumerable<EventOrganizationDto>>(organizations)
-        );
+            total, 
+            request.Size,
+            _mapper.Map<IEnumerable<EventOrganizationDto>>(organizations));
     }
 
     private IPagingAndSortingSpecification<EventOrganization, Guid> GetSpecification(GetAllEventOrganizationQuery request)

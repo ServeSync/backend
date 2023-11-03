@@ -20,6 +20,7 @@ public class EventCollaborationRequestDto
     public EventOrganizationInfoDto Organization { get; set; } = null!;
     public EventOrganizationContactInfoDto OrganizationContact { get; set; } = null!;
     public BasicEventActivityDto Activity { get; set; } = null!;
+    public Guid? EventId { get; set; }
 }
 
 public class EventCollaborationRequestDetailDto : EventCollaborationRequestDto
