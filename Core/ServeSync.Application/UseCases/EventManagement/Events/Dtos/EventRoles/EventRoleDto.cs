@@ -27,11 +27,13 @@ public class EventRoleDetailDto : BasicEventRoleDto
 public class RegisteredStudentInEventRoleDto 
 {
     public Guid Id { get; set; }
+    public string Code { get; set; } = null!;
     public Guid StudentId { get; set; }
     public string Name { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string Phone { get; set; } = null!;
     public EventRegisterStatus Status { get; set; }
     public string ImageUrl { get; set; } = null!;
+    public string HomeRoomName { get; set; } = null!;
     public DateTime RegisteredAt { get; set; }
 }

@@ -122,6 +122,7 @@ public class EventQueries : IEventQueries
                     tempEventRole.RegisteredStudents.Add(new RegisteredStudentInEventRoleReadModel()
                     {
                         Id  = row.StudentEventRegisterId,
+                        Code = row.StudentEventRegisterCode,
                         StudentId = row.StudentEventRegisterStudentId,
                         Status = (EventRegisterStatus)row.StudentEventRegisterStatus,
                         Name = row.StudentEventRegisterFullName,
@@ -129,7 +130,8 @@ public class EventQueries : IEventQueries
                         RegisteredAt = row.StudentEventRegisterCreated,
                         IdentityId = row.StudentEventRegisterIdentityId,
                         Email = row.StudentEventRegisterEmail,
-                        Phone = row.StudentEventRegisterPhone
+                        Phone = row.StudentEventRegisterPhone,
+                        HomeRoomName = row.StudentEventRegisterHomeRoomName
                     });
                 }
 
@@ -140,6 +142,7 @@ public class EventQueries : IEventQueries
                     tempEventAttendanceInfo.AttendanceStudents.Add(new AttendanceStudentInEventRoleReadModel()
                     {
                         Id = row.StudentEventAttendanceId,
+                        Code = row.StudentEventRegisterCode,
                         StudentId = row.StudentEventRegisterStudentId, 
                         Name = row.StudentEventRegisterFullName,
                         ImageUrl = row.StudentEventRegisterImageUrl,
@@ -147,7 +150,9 @@ public class EventQueries : IEventQueries
                         IdentityId = row.StudentEventRegisterIdentityId,
                         Email = row.StudentEventRegisterEmail,
                         Phone = row.StudentEventRegisterPhone,
-                        Role = row.EventRoleName
+                        Role = row.EventRoleName,
+                        HomeRoomName = row.StudentEventRegisterHomeRoomName,
+                        Score = row.EventRoleScore
                     });
                 }
 
@@ -166,7 +171,7 @@ public class EventQueries : IEventQueries
             SELECT 
 	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, Event.ActivityId, EventActivity.Name As ActivityName, EventActivity.MinScore As ActivityMinScore, EventActivity.MaxScore As ActivityMaxScore, EventActivity.EventCategoryId As ActivityCategoryId,
 	            EventRole.EventId As EventIdInRole, EventRole.Id As EventRoleId, EventRole.Name as EventRoleName, EventRole.Quantity as EventRoleQuantity, EventRole.Description as EventRoleDescription, EventRole.IsNeedApprove as EventRoleIsNeedApprove, EventRole.Score as EventRoleScore, 
-                StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.Id As StudentEventRegisterId, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId, Student.Email as StudentEventRegisterEmail, Student.Phone as StudentEventRegisterPhone,
+                StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.Id As StudentEventRegisterId, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId, Student.Email as StudentEventRegisterEmail, Student.Phone as StudentEventRegisterPhone, Student.Code as StudentEventRegisterCode, HomeRoom.Name as StudentEventRegisterHomeRoomName,
 	            StudentEventAttendance.EventAttendanceInfoId as StudentEventAttendanceInEventAttendanceInfoId, StudentEventAttendance.Id As StudentEventAttendanceId, StudentEventAttendance.AttendanceAt as StudentEventAttendanceAttendanceAt,
                 RepresentativeOrganizationInEvent.EventId As EventIdInRepresentativeOrganization, RepresentativeOrganizationInEvent.Id, RepresentativeOrganizationInEvent.OrganizationId, RepresentativeOrganization.Name, RepresentativeOrganization.ImageUrl, RepresentativeOrganization.Email, RepresentativeOrganization.PhoneNumber, RepresentativeOrganization.Address,
                 OrganizationInEvent.EventId As EventIdInOrganizationInEvent, OrganizationInEvent.Id, OrganizationInEvent.OrganizationId, EventOrganization.Name, OrganizationInEvent.Role, EventOrganization.Name, EventOrganization.ImageUrl, EventOrganization.Email, EventOrganization.PhoneNumber, EventOrganization.Address,
@@ -198,6 +203,8 @@ public class EventQueries : IEventQueries
             ON EventRole.Id = StudentEventRegister.EventRoleId
             LEFT JOIN Student
             ON StudentEventRegister.StudentId = Student.Id
+            LEFT JOIN HomeRoom
+            ON Student.HomeRoomId = HomeRoom.Id
             LEFT JOIN StudentEventAttendance
 		    ON StudentEventAttendance.StudentEventRegisterId = StudentEventRegister.Id
             WHERE Event.Id = @EventId

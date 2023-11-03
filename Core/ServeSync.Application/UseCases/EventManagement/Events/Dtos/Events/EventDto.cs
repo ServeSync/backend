@@ -45,6 +45,8 @@ public class EventDetailDto : FlatEventDto
     public List<OrganizationInEventDto> Organizations { get; set; } = null!;
     public List<EventRegistrationDto> RegistrationInfos { get; set; } = null!;
     public List<EventAttendanceInfoDto> AttendanceInfos { get; set; } = null!;
+    public Guid NearestRegistrationInfoId => RegistrationInfos.MinBy(x => x.StartAt.Subtract(DateTime.Now))!.Id;
+    public Guid NearestAttendanceInfoId => AttendanceInfos.MinBy(x => x.StartAt.Subtract(DateTime.Now))!.Id;
 
     public EventStatus GetStatus(DateTime dateTime)
     {

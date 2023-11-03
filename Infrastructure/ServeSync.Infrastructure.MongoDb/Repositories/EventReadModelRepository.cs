@@ -37,6 +37,7 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             .SelectMany(x => x.RegisteredStudents, (role, registeredStudent) => new RegisteredStudentInEventReadModel()
             {
                 Id = registeredStudent.Id,
+                Code = registeredStudent.Code,
                 StudentId = registeredStudent.StudentId,
                 Name = registeredStudent.Name,
                 Email = registeredStudent.Email,
@@ -44,7 +45,8 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
                 Status = registeredStudent.Status,
                 ImageUrl = registeredStudent.ImageUrl,
                 RegisteredAt = registeredStudent.RegisteredAt,
-                Role = role.Name
+                HomeRoomName = registeredStudent.HomeRoomName,
+                Role = role.Name,
             })
             .OrderBy(x => x.RegisteredAt)
             .Skip((page - 1) * size)
@@ -68,13 +70,16 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             .SelectMany(x => x.AttendanceStudents, (attendanceInfo, attendanceStudent) => new AttendanceStudentInEventRoleReadModel()
             {
                     Id = attendanceStudent.Id,
+                    Code = attendanceStudent.Code,
                     StudentId = attendanceStudent.StudentId,
                     Name = attendanceStudent.Name,
                     Email = attendanceStudent.Email,
                     Phone = attendanceStudent.Phone,
                     ImageUrl = attendanceStudent.ImageUrl,
                     AttendanceAt = attendanceStudent.AttendanceAt,
-                    Role = attendanceStudent.Role
+                    HomeRoomName = attendanceStudent.HomeRoomName,
+                    Role = attendanceStudent.Role,
+                    Score = attendanceStudent.Score
             })
             .OrderBy(x => x.AttendanceAt)
             .Skip((page - 1) * size)
