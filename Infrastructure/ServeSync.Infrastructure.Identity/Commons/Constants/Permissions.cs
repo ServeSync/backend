@@ -43,7 +43,9 @@ public static class Permissions
         new(Events.RejectRegistration, "Từ chối đơn đăng ký tham gia."),
         
         new(EventCollaborationRequests.View, "Xem thông tin đề nghị hợp tác."),
-        new(EventCollaborationRequests.Approve, "Duyệt đề nghị hợp tác.")
+        new(EventCollaborationRequests.Approve, "Duyệt đề nghị hợp tác."),
+        
+        new (EventOrganizations.View, "Xem danh sách nhà tổ chức sự kiện.")
     };
 
     public static class Roles
@@ -130,6 +132,13 @@ public static class Permissions
         
         public const string View = $"{Group}.View";
         public const string Approve = $"{Group}.Approve";
+    }
+
+    public static class EventOrganizations
+    {
+        public const string Group = $"{Default}.EventOrganizations";
+        
+        public const string View = $"{Group}.View";
     }
 
     public static List<string> GeneratePermissionsForModule(string module)

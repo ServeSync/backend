@@ -11,7 +11,7 @@ namespace ServeSync.Application.UseCases.EventManagement.EventCategories.Queries
 public class GetAllEventCategoryQueryHandler : IQueryHandler<GetAllEventCategoryQuery, PagedResultDto<EventCategoryDto>>
 {
     private readonly IBasicReadOnlyRepository<EventCategory, Guid> _eventCategoryRepository;
-    private IMapper _mapper;
+    private readonly IMapper _mapper;
 
     public GetAllEventCategoryQueryHandler(IBasicReadOnlyRepository<EventCategory, Guid> eventCategoryRepository, IMapper mapper)
     {
@@ -26,7 +26,8 @@ public class GetAllEventCategoryQueryHandler : IQueryHandler<GetAllEventCategory
         var total = await _eventCategoryRepository.GetCountAsync(specification);
 
         return new PagedResultDto<EventCategoryDto>(
-            total, request.Size,
+            total, 
+            request.Size,
             _mapper.Map<IEnumerable<EventCategoryDto>>(categories)
         );
     }

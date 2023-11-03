@@ -4,10 +4,10 @@ using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 
 namespace ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
 
-public class EventActivityByCategoryFilterRequestDto : PagingAndSortingRequestDto
+public class EventCategoryFilterRequestDto : PagingAndSortingRequestDto
 {
     public string? Search { get; set; }
 
-    [SortConstraint(Fields = $"{nameof(EventActivity.Name)}, {nameof(EventActivity.MinScore)}, {nameof(EventActivity.MaxScore)}")]
+    [SortConstraint(Fields = $"{nameof(EventCategory.Name)}")]
     public override string? Sorting { get; set; } = string.Empty;
 }
