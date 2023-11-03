@@ -23,13 +23,14 @@ public class EventCollaborationRequest : ControllerBase
     
     [HttpPost]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateEvent([FromBody] EventCollaborationRequestCreateDto dto)
+    public async Task<IActionResult> CreateEventCollaborationRequestAsync([FromBody] EventCollaborationRequestCreateDto dto)
     {
         var id = await _mediator.Send(new CreateEventCollaborationCommand(dto));
         return Ok(SimpleIdResponse<Guid>.Create(id));
     }
     
     [HttpGet]
+    [HasPermission(Permissions.EventCollaborationRequests.View)]
     [ProducesResponseType(typeof(PagedResultDto<EventCollaborationRequestDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventCollaborationRequestsAsync([FromQuery] EventCollaborationRequestFilterRequestDto dto)
     {
@@ -40,6 +41,7 @@ public class EventCollaborationRequest : ControllerBase
     }
     
     [HttpGet("{id:guid}")]
+    [HasPermission(Permissions.EventCollaborationRequests.View)]
     [ProducesResponseType(typeof(EventCollaborationRequestDetailDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventCollaborationRequestByIdAsync([FromRoute] Guid id)
     {
@@ -48,6 +50,7 @@ public class EventCollaborationRequest : ControllerBase
     }
     
     [HttpPost("{id:guid}/approve")]
+    [HasPermission(Permissions.EventCollaborationRequests.Approve)]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ApproveEventCollaborationRequestAsync([FromRoute] Guid id)
     {

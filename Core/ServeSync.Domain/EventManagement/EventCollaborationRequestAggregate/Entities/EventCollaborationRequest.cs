@@ -10,7 +10,7 @@ using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities;
 
-public class EventCollaborationRequest : AggregateRoot
+public class EventCollaborationRequest : AuditableAggregateRoot
 {
     public string Name { get; private set; }
     public string Introduction { get; private set; }

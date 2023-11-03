@@ -21,6 +21,6 @@ public class EventCollaborationRequestFilterRequestDto : PagingAndSortingRequest
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public CollaborationRequestStatus? Status { get; set; }
     
-    [SortConstraint(Fields = $"{nameof(EventCollaborationRequest.Name)}, {nameof(EventCollaborationRequest.StartAt)}, {nameof(EventCollaborationRequest.EndAt)}, {nameof(EventCollaborationRequest.Type)}")]
+    [SortConstraint(Fields = $"{nameof(EventCollaborationRequest.Name)}, {nameof(EventCollaborationRequest.StartAt)}, {nameof(EventCollaborationRequest.EndAt)}, {nameof(EventCollaborationRequest.Type)}, {nameof(EventCollaborationRequest.Status)}")]
     public override string? Sorting { get; set; } = string.Empty;
 }
