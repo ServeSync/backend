@@ -1,13 +1,8 @@
-﻿using ServeSync.Application.Common.Dtos;
-using ServeSync.Application.Common.Validations;
-using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
+﻿using ServeSync.Domain.EventManagement.EventCategoryAggregate.Enums;
 
 namespace ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
 
-public class EventCategoryFilterRequestDto : PagingAndSortingRequestDto
+public class EventCategoryFilterRequestDto
 {
-    public string? Search { get; set; }
-
-    [SortConstraint(Fields = $"{nameof(EventCategory.Name)}")]
-    public override string? Sorting { get; set; } = string.Empty;
+    public EventCategoryType? Type { get; set; }
 }

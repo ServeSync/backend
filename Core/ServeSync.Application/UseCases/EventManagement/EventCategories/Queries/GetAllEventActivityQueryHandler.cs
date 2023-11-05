@@ -5,13 +5,11 @@ using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Specifications;
-using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.SeedWorks.Repositories;
-using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 
 namespace ServeSync.Application.UseCases.EventManagement.EventCategories.Queries;
 
-public class GetAllEventActivityQueryHandler : IQueryHandler<GetAllEventActivityQuery, PagedResultDto<EventActivityDto>>
+public class GetAllEventActivityQueryHandler : IQueryHandler<GetAllEventActivityQuery, IEnumerable<EventActivityDto>>
 {
     private readonly IBasicReadOnlyRepository<EventCategory, Guid> _eventCategoryRepository;
     private readonly IBasicReadOnlyRepository<EventActivity, Guid> _eventActivityRepository;
@@ -27,28 +25,16 @@ public class GetAllEventActivityQueryHandler : IQueryHandler<GetAllEventActivity
         _mapper = mapper;
     }
     
-    public async Task<PagedResultDto<EventActivityDto>> Handle(GetAllEventActivityQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<EventActivityDto>> Handle(GetAllEventActivityQuery request, CancellationToken cancellationToken)
     {
         if (!await _eventCategoryRepository.IsExistingAsync(request.EventCategoryId))
         {
             throw new EventCategoryNotFoundException(request.EventCategoryId);
         }
 
-        var specification = GetSpecification(request);
-        var activities = await _eventActivityRepository.GetPagedListAsync(specification);
-        var total = await _eventActivityRepository.GetCountAsync(specification);
+        var specification = new EventActivityByCategorySpecification(request.EventCategoryId);
+        var activities = await _eventActivityRepository.FilterAsync(specification);
 
-        return new PagedResultDto<EventActivityDto>(
-            total,
-            request.Size,
-            _mapper.Map<IEnumerable<EventActivityDto>>(activities));
-    }
-
-    private IPagingAndSortingSpecification<EventActivity, Guid> GetSpecification(GetAllEventActivityQuery request)
-    {
-        var specification = new FilterEventActivitySpecification(request.Page, request.Size, request.Sorting, request.Search)
-            .And(new EventActivityByCategorySpecification(request.EventCategoryId));
-
-        return specification;
+        return _mapper.Map<IEnumerable<EventActivityDto>>(activities.OrderBy(x => x.Index));
     }
 }

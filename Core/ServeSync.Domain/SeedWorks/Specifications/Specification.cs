@@ -74,3 +74,15 @@ public abstract class Specification<TEntity> : Specification<TEntity, Guid>
     where TEntity : IEntity
 {
 }
+
+public class EmptySpecification<TEntity, TKey> : Specification<TEntity, TKey>
+    where TEntity : IEntity<TKey> 
+    where TKey : IEquatable<TKey> 
+{
+    public static EmptySpecification<TEntity, TKey> Instance { get; } = new();
+    
+    public override Expression<Func<TEntity, bool>> ToExpression()
+    {
+        return x => true;
+    }
+}

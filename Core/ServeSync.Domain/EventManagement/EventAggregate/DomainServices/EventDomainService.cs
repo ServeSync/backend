@@ -3,6 +3,7 @@ using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Exceptions;
+using ServeSync.Domain.EventManagement.EventCategoryAggregate.Specifications;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Repositories;
@@ -36,7 +37,7 @@ public class EventDomainService : IEventDomainService
         double longitude, 
         double latitude)
     {
-        await CheckEventActivityExistedAsync(activityId);
+        await CheckValidEventActivityExistedAsync(activityId);
         var @event = new Event(
             name,
             introduction,
@@ -118,9 +119,9 @@ public class EventDomainService : IEventDomainService
         return @event;
     }
 
-    private async Task CheckEventActivityExistedAsync(Guid activityId)
+    private async Task CheckValidEventActivityExistedAsync(Guid activityId)
     {
-        if (!await _eventActivityRepository.IsExistingAsync(activityId))
+        if (!await _eventActivityRepository.AnyAsync(new EventActivityFromEventCategorySpecification(activityId)))
         {
             throw new EventActivityNotFoundException(activityId);
         }
