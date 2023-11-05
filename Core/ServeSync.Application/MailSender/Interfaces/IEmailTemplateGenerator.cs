@@ -13,4 +13,6 @@ public interface IEmailTemplateGenerator
     string GetGrantAccountToEventOrganizer(string name, string email, string username, string password);
 
     string GetApproveCollaborationRequest(string name, string eventName);
+    
+    string GetRejectCollaborationRequest(string name, string eventName);
 }

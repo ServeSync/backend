@@ -57,4 +57,12 @@ public class EventCollaborationRequest : ControllerBase
         var eventId = await _mediator.Send(new ApproveEventCollaborationRequestCommand(id));
         return Ok(SimpleIdResponse<Guid>.Create(eventId));
     }
+    
+    [HttpPost("{id:guid}/reject")]
+    [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RejectEventCollaborationRequestAsync([FromRoute] Guid id)
+    {
+        var eventId = await _mediator.Send(new RejectEventCollaborationRequestCommand(id));
+        return Ok(SimpleIdResponse<Guid>.Create(eventId));
+    }
 }

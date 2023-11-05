@@ -94,9 +94,11 @@ public class EventManagementMapperProfile : Profile
         CreateMap<EventOrganizationInfo, EventOrganizationInfoDto>();
         
         CreateMap<EventOrganizationContactInfo, EventOrganizationContactInfoDto>();
-        
-        CreateMap<EventCollaborationRequest, EventCollaborationRequestDto>();
+
+        CreateMap<EventCollaborationRequest, EventCollaborationRequestDto>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.Now)));
 
         CreateMap<EventCollaborationRequest, EventCollaborationRequestDetailDto>();
+            
     }
 }

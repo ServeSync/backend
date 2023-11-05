@@ -35,4 +35,6 @@ public interface IEventCollaborationRequestDomainService
         string organizationContactImageUrl);
 
     EventCollaborationRequest Approve(EventCollaborationRequest eventCollaborationRequest, DateTime dateTime);
+    
+    EventCollaborationRequest Reject(EventCollaborationRequest eventCollaborationRequest, DateTime dateTime);
 }

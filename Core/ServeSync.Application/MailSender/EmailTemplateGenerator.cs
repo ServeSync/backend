@@ -74,6 +74,15 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
         return template;
     }
 
+    public string GetRejectCollaborationRequest(string name, string eventName)
+    {
+        var template = GetTemplate("RejectCollaborationRequest")
+            .Replace("{{FullName}}", name)
+            .Replace("{{EventName}}", eventName);
+
+        return template;
+    }
+
     private string GetTemplate(string templateName)
     {
         var pathToFile = GetTemplatePath(templateName);

@@ -102,6 +102,41 @@ public class EventCollaborationRequest : AuditableAggregateRoot
         Status = CollaborationRequestStatus.Approved;
         AddDomainEvent(new EventCollaborationRequestApprovedDomainEvent(this));
     }
+
+    internal void Reject(DateTime dateTime)
+    {
+        if (GetStatus(dateTime) == CollaborationRequestStatus.Pending)
+        {
+            Status = CollaborationRequestStatus.Rejected;
+            AddDomainEvent(new EventCollaborationRequestRejectedDomainEvent(this));
+        }
+        else
+        {
+            throw new EventCollaborationRequestCanNotBeRejectedException(Id);
+        }
+    }
+    
+    public CollaborationRequestStatus GetStatus(DateTime dateTime)
+    {
+        if (Status == CollaborationRequestStatus.Pending && StartAt > dateTime.AddDays(1))
+        {
+            return CollaborationRequestStatus.Pending;
+        }
+        else if (Status == CollaborationRequestStatus.Pending && StartAt <= dateTime.AddDays(-1))
+        {
+            return CollaborationRequestStatus.Expired;
+        }
+        else if (Status == CollaborationRequestStatus.Approved)
+        {
+            return CollaborationRequestStatus.Approved;
+        }
+        else if (Status == CollaborationRequestStatus.Rejected)
+        {
+            return CollaborationRequestStatus.Rejected;
+        }
+        
+        return Status;
+    }
     
     public void SetEventId(Guid eventId)
     {
