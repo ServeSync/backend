@@ -86,6 +86,13 @@ public class EventCollaborationRequestDomainService : IEventCollaborationRequest
 
         return eventCollaborationRequest;
     }
+    
+    public EventCollaborationRequest Reject(EventCollaborationRequest eventCollaborationRequest, DateTime dateTime)
+    {
+        eventCollaborationRequest.Reject(dateTime);
+
+        return eventCollaborationRequest;
+    }
 
 
     private async Task CheckEventActivityExistedAsync(Guid activityId)
