@@ -158,8 +158,10 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
 
             _eventDomainService.SetRepresentativeOrganization(@event, organization.Id);
             @event.Create(organization.Contacts.First().IdentityId);
+            _eventDomainService.ApproveEvent(@event, DateTime.Now);
             
             _eventRepository.Update(@event);
+            
             await _unitOfWork.CommitTransactionAsync();
             
             _logger.LogInformation("Convert collaboration request '{Id}' to event success with id: {EventId}", notification.EventCollaborationRequest.Id, @event.Id);
