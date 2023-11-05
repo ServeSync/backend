@@ -92,15 +92,14 @@ public class EventManagementDataSeeder : IDataSeeder
 
         try
         {
-            for (var i = 0; i < 10; i++)
+            var eventCategories = GetEventCategories();
+            foreach (var eventCategoryData in eventCategories)
             {
-                var faker = new Faker();
-                var eventCategory = await _eventCategoryDomainService.CreateAsync(faker.Company.CompanyName());
+                var eventCategory = await _eventCategoryDomainService.CreateAsync(eventCategoryData.Key);
 
-                for (var j = 0; j < 10; j++)
+                foreach (var activity in eventCategoryData.Value)
                 {
-                    var minScore = faker.Random.Double(0, 20);
-                    _eventCategoryDomainService.AddActivity(eventCategory, faker.Commerce.ProductName(), minScore, faker.Random.Double(minScore, 20));
+                    _eventCategoryDomainService.AddActivity(eventCategory, activity.Name, activity.MinScore, activity.MaxScore);
                 }
             }
         
@@ -406,5 +405,233 @@ public class EventManagementDataSeeder : IDataSeeder
         
         await _unitOfWork.CommitAsync();
         _logger.LogInformation("Seeded event collaboration requests successfully!");
+    }
+
+    private Dictionary<string, List<dynamic>> GetEventCategories()
+    {
+        var eventCategories = new Dictionary<string, List<dynamic>>();
+        
+        eventCategories.Add("Lĩnh vực công tác xã hội, tình nguyện, nhân đạo, ", new List<dynamic>()
+        {
+            new
+            {
+                MinScore = 20,
+                MaxScore = 30,
+                Name = "Tham gia chương trình Mùa hè xanh hoặc các chương trình tình nguyện, nhân đạo, xã hội có quy mô và thời gian tham gia từ 03 ngày trở lên"
+            },
+            new
+            {
+                MinScore = 10,
+                MaxScore = 20,
+                Name = "Tham gia các hoạt động nhân đạo; Hoạt động bảo vệ môi trường, góp phần xây dựng, cải tạo cảnh quan Nhà trường"
+            },
+            new
+            {
+                MinScore = 10,
+                MaxScore = 20,
+                Name = "Tham gia các hoạt động nhằm bảo vệ môi trường, góp phần xây dựng, cải tạo cảnh quan Nhà trường"
+            },
+            new
+            {
+                MinScore = 10,
+                MaxScore = 20,
+                Name = "Tham gia các hoạt động hỗ trợ công tác khắc phục hậu quả thiên tai, dịch bệnh... trong khuôn viên của Nhà trường, ký túc xá, nơi cư trú...; các hoạt động tình nguyện, phục vụ cộng đồng khác có tính chất tương tự có thời gian từ 01 đến dưới 03 ngày;"
+            },
+            new
+            {
+                MinScore = 15,
+                MaxScore = 20,
+                Name = "Tham gia các hoạt động đền ơn đáp nghĩa"
+            },
+            new
+            {
+                MinScore = 15,
+                MaxScore = 20,
+                Name = "Tham gia trực tiếp hiến máu nhân đạo"
+            },
+            new
+            {
+                MinScore = 15,
+                MaxScore = 20,
+                Name = "Tham gia các hoạt động khác có tính chất tương tự mà thời gian diễn ra dưới 01 ngày"
+            },
+            new
+            {
+                MinScore = 5,
+                MaxScore = 10,
+                Name = "Đóng góp vật chất để ủng hộ cho các hoạt động từ thiện, tình nguyện...: mức đóng go tối thiểu là 100.000 đồng"
+            }
+        });
+        
+        eventCategories.Add("Hoạt động mang tính học thuật", new List<dynamic>()
+        {
+            new
+            {
+                MinScore = 15,
+                MaxScore = 15,
+                Name = "Tham gia với tư cách là thành viên BTC hoặc cộng tc viên cho các hoạt động cấp quốc gia, quốc tế được cấp có thẩm quyền xác nhận"
+            },
+            new
+            {
+                MinScore = 10,
+                MaxScore = 10,
+                Name = "Tham dự với tư cách là thành viên BTC hoặc cộng tác viên cho các hoạt động cấp thành phố, cấp ĐHĐN"
+            },
+            new
+            {
+                MinScore = 5,
+                MaxScore = 7,
+                Name = "Tham dự với tư cách là thành viên BTC hoặc cộng tác viên cho các họat động trong trường (từ cấp Khoa trở lên)"
+            },
+            new
+            {
+                MinScore = 3,
+                MaxScore = 5,
+                Name = "Tham dự (cổ vũ) cho các hoạt động các cấp"
+            },
+            new
+            {
+                MinScore = 30,
+                MaxScore = 30,
+                Name = "Có giải cấp Quốc tế"
+            },
+            new
+            {
+                MinScore = 25,
+                MaxScore = 25,
+                Name = "Có giải cấp Quốc gia"
+            },
+            new
+            {
+                MinScore = 20,
+                MaxScore = 20,
+                Name = "Có giải cấp tỉnh, thành phố"
+            },
+            new
+            {
+                MinScore = 15,
+                MaxScore = 20,
+                Name = "Có giải cấp ĐHĐN"
+            },
+            new
+            {
+                MinScore = 10,
+                MaxScore = 25,
+                Name = "Có giải cấp Trường"
+            },
+            new
+            {
+                MinScore = 5,
+                MaxScore = 10,
+                Name = "Có giải cấp Khoa"
+            },
+            new
+            {
+                MinScore = 3,
+                MaxScore = 5,
+                Name = "Tham gia nhưng không đạt giải tại các cuộc thi (có chứng nhận tham gia của Ban Tổ chức cuộc thi)"
+            }
+        });
+        
+        eventCategories.Add("Tham gia BCH Đoàn, Hội Sinh viên các cấp, Ban cán sự lớp và có đóng góp tích cực", new List<dynamic>()
+        {
+            new
+            {
+                MinScore = 25,
+                MaxScore = 25,
+                Name = "Là Ủy viên BCH Đoàn, Ủy viên BCH Hội SV cấp ĐHĐN trở lên, hoàn thành tốt nghiệm vụ và được tập thể ghi nhận"
+            },
+            new
+            {
+                MinScore = 20,
+                MaxScore = 20,
+                Name = "Là Ủy viên BTV Đoàn, Ủy viên BTK Hội SV Trường, hoàn thành tốt nhiệm vụ và được tập thể ghi nhận"
+            },
+            new
+            {
+                MinScore = 15,
+                MaxScore = 15,
+                Name = "Là Ủy viên BCH Đoàn, Ủy viên BCH Hội Sinh viên Trường, Bí thư/Phó Bí thư Liên chi Đoàn, Chi hội trưởng Liên chi hội Chủ nhiệm/Đội trưởng các Câu la bộ/Đội/Nhóm trực thuộc Đoàn Thanh niên - Hội Sinh viên Trường, hoàn thành tốt nhiệm vụ và được tập thể ghi nhận"
+            },
+            new
+            {
+                MinScore = 5,
+                MaxScore = 10,
+                Name = "Là Ủy viên BCH Liên chi Đoàn - Liên chi Hội, Phó Chủ nhiệm các Câu lạc bộ/Đội/Nhóm trực thuộc Đoàn Thanh niên - Hội Sinh viên Trường, Chủ nhiệm các Câu lạc bộ/Đội/Nhóm trực thuộc Khoa/Liên chi Đoàn; Bí thư Chi Đoàn; Lớp trưởng; hoàn thành tốt nhiệm vụ và được tập thể ghi nhận"
+            },
+            new
+            {
+                MinScore = 5,
+                MaxScore = 7,
+                Name = "Là Phó Bí thư Chi Đoàn, Lớp phó, Phó Chủ nhiệm các Câu lạc bộ/Đội/Nhóm trực thuộc Khoa/Liên chi Đoàn; hoàn thành tốt nhiệm vụ và được tập thể ghi nhận"
+            },
+            new
+            {
+                MinScore = 3,
+                MaxScore = 5,
+                Name = "Là Ủy viên BCH Chi Đoàn - Chi Hội, thành viên Ban Chủ nhiệm/Ban Điều hành các Câu lạc bộ/Đội/Nhóm trực thuộc Đoàn Thanh niên/Hội SV, Khoa, Liên Chi Đoàn, hoàn thành tốt nhiệm vụ và được tập thể ghi nhận"
+            }
+        });
+        
+        eventCategories.Add("Hỗ trợ, cộng tác viên thường xuyên cho Nhà trường và Đại học Đà Nẵng", new List<dynamic>()
+        {
+            new
+            {
+                MinScore = 10,
+                MaxScore = 20,
+                Name = "Tham gia hỗ trợ, cộng tác viên thường xuyên cho Nhà trường và Đại học Đà Nẵng"
+            }
+        });
+        
+        eventCategories.Add("Các HĐCĐ được quy định tại Điều 7 của Quy định này", new List<dynamic>()
+        {
+            new
+            {
+                MinScore = 5,
+                MaxScore = 20,
+                Name = "Lĩnh vực đào tạo và đảm bảo chất lượng giáo dục đào tạo"
+            },
+            new
+            {
+                MinScore = 20,
+                MaxScore = 30,
+                Name = "Lĩnh vực nghiên cứu khoa học và chuyển giao công nghệ"
+            },
+            new
+            {
+                MinScore = 5,
+                MaxScore = 20,
+                Name = "Lĩnh vực tư vấn"
+            }
+        });
+        
+        eventCategories.Add("Các hoạt động khác", new List<dynamic>()
+        {
+            new
+            {
+                MinScore = 5,
+                MaxScore = 10,
+                Name = "Tham gia các buổi gặp mặt, giao lưu, trao đổi với doanh nghiệp, khác mời, cựu sinh viên... do Trường/Khoa tổ chức, hoặc do Trường/Khoa điều động"
+            },
+            new
+            {
+                MinScore = 5,
+                MaxScore = 10,
+                Name = "Tham gia các buổi tòa đạm, nói chuyện chuyên đề như giáo dục giới tính, bình đẳng giới, văn hóa ứng xử, phòng chống bạo hành và xâm phạm trẻ em, pháp luật, an toàn giao thông, bảo vệ biển đảo"
+            },
+            new
+            {
+                MinScore = 5,
+                MaxScore = 10,
+                Name = "Tham gia các hoạt động công tác sinh viên thường niên như khai giảng năm học mới, đón tn sinh viên, các sự kiên lớn, lễ kỷ niệm của Trường và Khoa"
+            },
+            new
+            {
+                MinScore = 5,
+                MaxScore = 5,
+                Name = "Tham gia các buổi gặp mặt, đối thoại với Hiệu trưởng và lãnh đao Nhà trường"
+            },
+        });
+        return eventCategories;
     }
 }

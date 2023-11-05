@@ -71,7 +71,8 @@ public class EventQueries : IEventQueries
                         Name = row.ActivityName,
                         MinScore = row.ActivityMinScore,
                         MaxScore = row.ActivityMaxScore,
-                        EventCategoryId = row.ActivityCategoryId
+                        EventCategoryId = row.ActivityCategoryId,
+                        EventCategoryName = row.ActivityCategoryName
                     },
                     Roles = new List<EventRoleReadModel>(),
                     Organizations = new List<EventOrganizationInEventReadModel>(),
@@ -169,7 +170,7 @@ public class EventQueries : IEventQueries
         // Todo: move to stored procedure
         return @$"
             SELECT 
-	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, Event.ActivityId, EventActivity.Name As ActivityName, EventActivity.MinScore As ActivityMinScore, EventActivity.MaxScore As ActivityMaxScore, EventActivity.EventCategoryId As ActivityCategoryId,
+	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, Event.ActivityId, EventActivity.Name As ActivityName, EventActivity.MinScore As ActivityMinScore, EventActivity.MaxScore As ActivityMaxScore, EventActivity.EventCategoryId As ActivityCategoryId, EventCategory.Name As ActivityCategoryName,
 	            EventRole.EventId As EventIdInRole, EventRole.Id As EventRoleId, EventRole.Name as EventRoleName, EventRole.Quantity as EventRoleQuantity, EventRole.Description as EventRoleDescription, EventRole.IsNeedApprove as EventRoleIsNeedApprove, EventRole.Score as EventRoleScore, 
                 StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.Id As StudentEventRegisterId, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId, Student.Email as StudentEventRegisterEmail, Student.Phone as StudentEventRegisterPhone, Student.Code as StudentEventRegisterCode, HomeRoom.Name as StudentEventRegisterHomeRoomName,
 	            StudentEventAttendance.EventAttendanceInfoId as StudentEventAttendanceInEventAttendanceInfoId, StudentEventAttendance.Id As StudentEventAttendanceId, StudentEventAttendance.AttendanceAt as StudentEventAttendanceAttendanceAt,
@@ -181,6 +182,8 @@ public class EventQueries : IEventQueries
             From Event
             LEFT JOIN EventActivity
             ON EventActivity.Id = Event.ActivityId
+            LEFT JOIN EventCategory
+            ON EventCategory.Id = EventActivity.EventCategoryId
             LEFT JOIN OrganizationInEvent as RepresentativeOrganizationInEvent
             ON Event.RepresentativeOrganizationId = RepresentativeOrganizationInEvent.Id
             LEFT JOIN EventOrganization as RepresentativeOrganization

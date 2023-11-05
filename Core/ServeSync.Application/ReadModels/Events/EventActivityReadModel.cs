@@ -8,4 +8,5 @@ public class EventActivityReadModel : BaseReadModel<Guid>
     public double MinScore { get; set; }
     public double MaxScore { get; set; }
     public Guid EventCategoryId { get; set; }
+    public string EventCategoryName { get; set; } = null!;
 }

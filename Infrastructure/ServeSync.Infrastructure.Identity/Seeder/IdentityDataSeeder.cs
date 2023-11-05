@@ -31,7 +31,7 @@ public class IdentityDataSeeder : IDataSeeder
             _logger.LogInformation("Begin seeding identity data...");
             
             // Admin role seed by migration
-            if (!await _userManager.Users.AnyAsync())
+            if (!await _roleManager.Roles.AnyAsync())
             {
                 await SeedStudentRoleAsync();   
                 await SeedStudentAffairRoleAsync();

@@ -24,6 +24,7 @@ public class EventReadModelMapper : Profile
         CreateMap<EventAttendanceInfoReadModel, EventAttendanceInfoDto>();
         CreateMap<EventActivityReadModel, BasicEventActivityDto>();
         CreateMap<EventActivityReadModel, EventActivityDto>();
+        CreateMap<EventActivityReadModel, EventActivityDetailDto>();
         CreateMap<BasicEventOrganizationInEventReadModel, BasicOrganizationInEventDto>();
         CreateMap<EventOrganizationInEventReadModel, OrganizationInEventDto>();
         CreateMap<EventOrganizationRepresentativeInEventReadModel, BasicRepresentativeInEventDto>();

@@ -41,6 +41,7 @@ public class EventDetailDto : FlatEventDto
     public string Description { get; set; } = null!;
     public bool IsRegistered { get; set; }
     public bool IsAttendance { get; set; }
+    public new EventActivityDetailDto Activity { get; set; } = null!;
     public List<EventRoleDto> Roles { get; set; } = null!;
     public List<OrganizationInEventDto> Organizations { get; set; } = null!;
     public List<EventRegistrationDto> RegistrationInfos { get; set; } = null!;
