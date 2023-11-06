@@ -126,14 +126,6 @@ public class EventCollaborationRequest : AuditableAggregateRoot
         {
             return CollaborationRequestStatus.Expired;
         }
-        else if (Status == CollaborationRequestStatus.Approved)
-        {
-            return CollaborationRequestStatus.Approved;
-        }
-        else if (Status == CollaborationRequestStatus.Rejected)
-        {
-            return CollaborationRequestStatus.Rejected;
-        }
         
         return Status;
     }

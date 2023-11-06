@@ -2,7 +2,7 @@
 
 namespace ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Commands;
 
-public class RejectEventCollaborationRequestCommand : ICommand<Guid>
+public class RejectEventCollaborationRequestCommand : ICommand
 {
     public Guid Id { get; set; }
     
