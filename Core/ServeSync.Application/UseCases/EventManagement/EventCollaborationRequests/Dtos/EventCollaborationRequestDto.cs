@@ -26,4 +26,5 @@ public class EventCollaborationRequestDto
 public class EventCollaborationRequestDetailDto : EventCollaborationRequestDto
 {
     public string Description { get; set; } = null!;
+    public new EventActivityDetailDto Activity { get; set; } = null!;
 }

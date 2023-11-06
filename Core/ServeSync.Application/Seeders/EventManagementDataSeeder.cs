@@ -278,14 +278,14 @@ public class EventManagementDataSeeder : IDataSeeder
         {
             try
             {
-                var faker = new Faker();
-                for (var i = 0; i < 10; i++)
+                foreach (var student in students)
                 {
+                    var faker = new Faker();
                     await _studentDomainService.RegisterEventAsync(
-                        faker.PickRandom(students),
-                        faker.PickRandom(@event.Roles).Id,
-                        faker.Lorem.Paragraph(),
-                        faker.PickRandom(@event.RegistrationInfos).StartAt.AddMinutes(1));    
+                        student,
+                        faker.PickRandom(@event.Roles.Where(x => !x.IsNeedApprove)).Id,
+                        "Đăng ký tham gia sự kiện",
+                        @event.RegistrationInfos.First().StartAt.AddMinutes(1));
                 }
             }
             catch (Exception e)
@@ -327,11 +327,10 @@ public class EventManagementDataSeeder : IDataSeeder
         foreach (var @event in events)
         {
             var faker = new Faker();
-            for (var i = 0; i < 10; i++)
+            foreach (var student in students)
             {
                 try
                 {
-                    var student = faker.PickRandom(students);
                     var attendance = faker.PickRandom(@event.AttendanceInfos);
                     await _studentDomainService.AttendEventAsync(
                         student,

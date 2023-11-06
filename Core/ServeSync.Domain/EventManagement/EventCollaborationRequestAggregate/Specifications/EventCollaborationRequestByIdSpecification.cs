@@ -13,6 +13,7 @@ public class EventCollaborationRequestByIdSpecification : Specification<EventCol
         _id = id;
         
         AddInclude(x => x.Activity!);
+        AddInclude("Activity.EventCategory");
     }
     
     public override Expression<Func<EventCollaborationRequest, bool>> ToExpression()

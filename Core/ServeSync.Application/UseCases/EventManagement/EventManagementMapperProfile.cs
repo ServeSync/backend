@@ -28,6 +28,8 @@ public class EventManagementMapperProfile : Profile
         
         CreateMap<EventActivity, EventActivityDto>();
 
+        CreateMap<EventActivity, EventActivityDetailDto>();
+
         CreateMap<EventOrganization, EventOrganizationDto>();
 
         CreateMap<EventCategory, EventCategoryDto>();

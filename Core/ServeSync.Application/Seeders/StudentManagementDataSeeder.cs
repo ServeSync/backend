@@ -188,7 +188,7 @@ public class StudentManagementDataSeeder : IDataSeeder
         
             await _unitOfWork.BeginTransactionAsync();
             
-            for (var i = 0;i < 20;i++)
+            for (var i = 0;i < 10;i++)
             {
                 var faker = new Faker();
                     
