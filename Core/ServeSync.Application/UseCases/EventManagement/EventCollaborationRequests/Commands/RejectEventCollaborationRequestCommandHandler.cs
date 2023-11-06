@@ -7,7 +7,7 @@ using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Except
 
 namespace ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Commands;
 
-public class RejectEventCollaborationRequestCommandHandler : ICommandHandler<RejectEventCollaborationRequestCommand, Guid>
+public class RejectEventCollaborationRequestCommandHandler : ICommandHandler<RejectEventCollaborationRequestCommand>
 {
     private readonly IEventCollaborationRequestRepository _eventCollaborationRequestRepository;
     private readonly IEventCollaborationRequestDomainService _eventCollaborationRequestDomainService;
@@ -26,7 +26,7 @@ public class RejectEventCollaborationRequestCommandHandler : ICommandHandler<Rej
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<Guid> Handle(RejectEventCollaborationRequestCommand request, CancellationToken cancellationToken)
+    public async Task Handle(RejectEventCollaborationRequestCommand request, CancellationToken cancellationToken)
     {
         var eventCollaborationRequest = await _eventCollaborationRequestRepository.FindByIdAsync(request.Id);
         if (eventCollaborationRequest == null)
@@ -40,6 +40,5 @@ public class RejectEventCollaborationRequestCommandHandler : ICommandHandler<Rej
         await _unitOfWork.CommitAsync();
         
         _logger.LogInformation("Event collaboration request {Id} rejected successfully!", request.Id);
-        return eventCollaborationRequest.EventId!.Value;
     }
 }
