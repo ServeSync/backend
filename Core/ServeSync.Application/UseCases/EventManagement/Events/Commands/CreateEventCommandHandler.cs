@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Data;
+using ServeSync.Application.SeedWorks.Sessions;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.OrganizationInEvents;
 using ServeSync.Domain.EventManagement.EventAggregate;
 using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
@@ -20,6 +21,7 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
     
     private readonly IEventDomainService _eventDomainService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUser _currentUser;
     private readonly ILogger<CreateEventCommandHandler> _logger;
     
     public CreateEventCommandHandler(
@@ -28,6 +30,7 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
         IBasicReadOnlyRepository<EventOrganizationContact, Guid> eventOrganizationContactRepository,
         IEventDomainService eventDomainService,
         IUnitOfWork unitOfWork,
+        ICurrentUser currentUser,
         ILogger<CreateEventCommandHandler> logger)
     {
         _eventRepository = eventRepository;
@@ -35,6 +38,7 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
         _eventOrganizationContactRepository = eventOrganizationContactRepository;
         _eventDomainService = eventDomainService;
         _unitOfWork = unitOfWork;
+        _currentUser = currentUser;
         _logger = logger;
     }
     
@@ -76,7 +80,11 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
         await _unitOfWork.CommitAsync();
 
         _eventDomainService.SetRepresentativeOrganization(@event, request.Event.RepresentativeOrganizationId);
-
+        if (await _currentUser.IsAdminAsync() || await _currentUser.IsStudentAsync())
+        {
+            _eventDomainService.ApproveEvent(@event, DateTime.Now);
+        }
+        
         _eventRepository.Update(@event);
         await _unitOfWork.CommitTransactionAsync(true);
 
