@@ -20,6 +20,7 @@ public class EventOrganizationController : ControllerBase
     }
 
     [HttpGet]
+    [HasPermission(Permissions.EventOrganizations.View)]
     [ProducesResponseType(typeof(PagedResultDto<EventOrganizationDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventOrganizationsAsync([FromQuery] EventOrganizationFilterRequestDto dto)
     {
@@ -27,14 +28,22 @@ public class EventOrganizationController : ControllerBase
         var organizations = await _mediator.Send(query);
         return Ok(organizations);
     }
+    
+    [HttpGet("{id:guid}")]
+    [HasPermission(Permissions.EventOrganizations.View)]
+    [ProducesResponseType(typeof(EventOrganizationDetailDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEventOrganizationByIdAsync([FromRoute] Guid id)
+    {
+        var organization = await _mediator.Send(new GetEventOrganizationByIdQuery(id));
+        return Ok(organization);
+    }
 
     [HttpGet("{id:guid}/contacts")]
+    [HasPermission(Permissions.EventOrganizations.View)]
     [ProducesResponseType(typeof(PagedResultDto<EventOrganizationContactDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetContactByOrganizationAsync(Guid id, [FromQuery] EventOrganizationContactFilterRequestDto dto)
     {
         var contacts = await _mediator.Send(new GetAllEventOrganizationContactQuery(id, dto.Search, dto.Page, dto.Size, dto.Sorting));
         return Ok(contacts);
     }
-
-
 }

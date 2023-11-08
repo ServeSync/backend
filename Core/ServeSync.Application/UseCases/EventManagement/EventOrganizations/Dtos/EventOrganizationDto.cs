@@ -9,4 +9,9 @@ namespace ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos
         public string? Address { get; set; }
         public string ImageUrl { get; set; } = null!;
     }
+
+    public class EventOrganizationDetailDto : EventOrganizationDto
+    {
+        public List<EventOrganizationContactDto> Contacts { get; set; } = null!;
+    }
 }
