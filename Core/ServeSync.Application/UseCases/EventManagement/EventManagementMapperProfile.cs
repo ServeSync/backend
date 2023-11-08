@@ -101,6 +101,7 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.Now)));
 
         CreateMap<EventCollaborationRequest, EventCollaborationRequestDetailDto>();
-            
+
+        CreateMap<EventOrganization, EventOrganizationDetailDto>();
     }
 }
