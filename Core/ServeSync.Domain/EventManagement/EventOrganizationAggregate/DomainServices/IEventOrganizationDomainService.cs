@@ -22,4 +22,13 @@ public interface IEventOrganizationDomainService
         DateTime? birth, 
         string? address, 
         string? position);
+    
+    Task<EventOrganization> UpdateBaseInfoAsync(
+        EventOrganization eventOrganization,
+        string name, 
+        string email, 
+        string phoneNumber, 
+        string imageUrl, 
+        string? description, 
+        string? address);
 }

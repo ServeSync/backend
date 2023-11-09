@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Commands;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Queries;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
@@ -32,10 +33,21 @@ public class EventOrganizationController : ControllerBase
     [HttpGet("{id:guid}")]
     [HasPermission(Permissions.EventOrganizations.View)]
     [ProducesResponseType(typeof(EventOrganizationDetailDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetEventOrganizationByIdAsync([FromRoute] Guid id)
+    public async Task<IActionResult> GetEventOrganizationByIdAsync(Guid id)
     {
         var organization = await _mediator.Send(new GetEventOrganizationByIdQuery(id));
         return Ok(organization);
+    }
+    
+    [HttpPut("{id:guid}")]
+    [HasPermission(Permissions.EventOrganizations.Update)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateEventOrganizationAsync(Guid id, [FromBody] EventOrganizationUpdateDto dto)
+    {
+        var command = new UpdateEventOrganizationCommand(id, dto.Name, dto.Description, dto.Email, dto.PhoneNumber, dto.Address, dto.ImageUrl);
+
+        await _mediator.Send(command);
+        return NoContent();
     }
 
     [HttpGet("{id:guid}/contacts")]

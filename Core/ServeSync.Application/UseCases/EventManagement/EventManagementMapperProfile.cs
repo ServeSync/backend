@@ -103,5 +103,7 @@ public class EventManagementMapperProfile : Profile
         CreateMap<EventCollaborationRequest, EventCollaborationRequestDetailDto>();
 
         CreateMap<EventOrganization, EventOrganizationDetailDto>();
+
+        CreateMap<EventOrganization, EventOrganizationUpdateDto>();
     }
 }

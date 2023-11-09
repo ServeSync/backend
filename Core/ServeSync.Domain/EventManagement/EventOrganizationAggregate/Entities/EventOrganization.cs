@@ -1,9 +1,10 @@
-﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
+﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 
-public class EventOrganization : AggregateRoot
+public class EventOrganization : AuditableAggregateRoot
 {
     public string Name { get; private set; }
     public string? Description { get; private set; }
@@ -48,9 +49,45 @@ public class EventOrganization : AggregateRoot
         var contact = new EventOrganizationContact(name, email, phoneNumber, imageUrl, Id, gender, birth, address, position);
         Contacts.Add(contact);
     }
+    
+    internal void UpdateBaseInfo(
+        string name, 
+        string email, 
+        string phoneNumber, 
+        string imageUrl, 
+        string? description, 
+        string? address)
+    {
+        // if (IsNameChanged(name) || IsEmailChanged(email) || IsImageUrlChanged(imageUrl))
+        // {
+        //     
+        // }
+        
+        Name = Guard.NotNullOrEmpty(name, nameof(Name));
+        Email = Guard.NotNullOrEmpty(email, nameof(Email));
+        PhoneNumber = Guard.NotNullOrEmpty(phoneNumber, nameof(PhoneNumber));
+        ImageUrl = Guard.NotNullOrEmpty(imageUrl, nameof(ImageUrl));
+        Description = description;
+        Address = address;
+    }
 
     private EventOrganization()
     {
         Contacts = new List<EventOrganizationContact>();
+    }
+    
+    private bool IsNameChanged(string name)
+    {
+        return Name != name;
+    }
+    
+    private bool IsEmailChanged(string email)
+    {
+        return Email != email;
+    }
+    
+    private bool IsImageUrlChanged(string imageUrl)
+    {
+        return ImageUrl != imageUrl;
     }
 }
