@@ -9,7 +9,6 @@ namespace ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Do
 
 public class EventCollaborationRequestDomainService : IEventCollaborationRequestDomainService
 {
-
     private readonly IEventCollaborationRequestRepository _eventCollaborationRequestRepository;
     private readonly IBasicReadOnlyRepository<EventActivity, Guid> _eventActivityRepository;
 
@@ -77,9 +76,25 @@ public class EventCollaborationRequestDomainService : IEventCollaborationRequest
             organizationContactBirth,
             organizationContactPosition,
             organizationContactImageUrl);
-        await _eventCollaborationRequestRepository.InsertAsync(eventCollaborationRequest);
+        
         return eventCollaborationRequest;
     }
+
+    public EventCollaborationRequest Approve(EventCollaborationRequest eventCollaborationRequest, DateTime dateTime)
+    {
+        eventCollaborationRequest.Approve(dateTime);
+
+        return eventCollaborationRequest;
+    }
+    
+    public EventCollaborationRequest Reject(EventCollaborationRequest eventCollaborationRequest, DateTime dateTime)
+    {
+        eventCollaborationRequest.Reject(dateTime);
+
+        return eventCollaborationRequest;
+    }
+
+
     private async Task CheckEventActivityExistedAsync(Guid activityId)
     {
         if (!await _eventActivityRepository.IsExistingAsync(activityId))

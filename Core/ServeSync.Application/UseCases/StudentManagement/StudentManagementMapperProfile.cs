@@ -15,6 +15,8 @@ public class StudentManagementMapperProfile : Profile
     public StudentManagementMapperProfile()
     {
         CreateMap<EducationProgram, EducationProgramDto>();
+        CreateMap<EducationProgram, StudentEducationProgramDto>();
+        CreateMap<EducationProgramDto, StudentEducationProgramDto>();
         
         CreateMap<Faculty, FacultyDto>();
         

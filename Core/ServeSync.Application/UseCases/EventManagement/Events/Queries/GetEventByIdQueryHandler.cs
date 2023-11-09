@@ -50,11 +50,13 @@ public class GetEventByIdQueryHandler : IQueryHandler<GetEventByIdQuery, EventDe
             eventDetailDto.IsRegistered = @event.Roles.Any(x => x.RegisteredStudents.Any(y => y.IdentityId == _currentUser.Id && y.Status == EventRegisterStatus.Approved));
             eventDetailDto.Roles.ForEach(x =>
             {
-                x.IsRegistered = @event.Roles.Any(y => y.RegisteredStudents.Any(z => z.IdentityId == _currentUser.Id && z.Id == x.Id));
+                x.IsRegistered = @event.Roles.Any(y => y.RegisteredStudents.Any(z => z.IdentityId == _currentUser.Id && y.Id == x.Id));
             });
         }
 
-        eventDetailDto.Status = eventDetailDto.GetCurrentStatus(DateTime.Now);
+        var currentTime = DateTime.Now;
+        eventDetailDto.CalculatedStatus = eventDetailDto.GetCurrentStatus(currentTime);
+        eventDetailDto.Status = eventDetailDto.GetStatus(currentTime);
         return eventDetailDto;
     }
 }

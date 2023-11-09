@@ -1,18 +1,16 @@
-using ServeSync.Application.Common.Dtos;
+using System.Text.Json.Serialization;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
+using ServeSync.Domain.EventManagement.EventCategoryAggregate.Enums;
 
 namespace ServeSync.Application.UseCases.EventManagement.EventCategories.Queries;
-public class GetAllEventCategoryQuery : PagingAndSortingRequestDto, IQuery<PagedResultDto<EventCategoryDto>>
+public class GetAllEventCategoryQuery : IQuery<IEnumerable<EventCategoryDto>>
 {
-    public string? Search { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public EventCategoryType? Type { get; set; }
     
-    public GetAllEventCategoryQuery(
-        string? search,
-        int page, 
-        int size,
-        string? sorting) : base(page, size, sorting)
+    public GetAllEventCategoryQuery(EventCategoryType? type)
     {
-        Search = search;
+        Type = type;
     }
 }

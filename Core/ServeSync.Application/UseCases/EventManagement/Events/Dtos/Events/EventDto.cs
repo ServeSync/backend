@@ -20,27 +20,53 @@ public class BasicEventDto
     
     public EventType Type { get; set; }
     public EventStatus Status { get; set; }
+    public EventStatus CalculatedStatus { get; set; }
     public EventAddressDto Address { get; set; } = null!;
 }
 
 public class FlatEventDto : BasicEventDto
 {
     public int Capacity { get; set; }
+    public int Attended { get; set; }
     public int Registered { get; set; }
+    public int ApprovedRegistered { get; set; }
     public int Rating { get; set; }
     
-    public BasicEventActivityDto Activity { get; set; } = null!;
+    public EventActivityDto Activity { get; set; } = null!;
     public BasicOrganizationInEventDto RepresentativeOrganization { get; set; } = null!;
 }
 
 public class EventDetailDto : FlatEventDto
 {
+    public string Description { get; set; } = null!;
     public bool IsRegistered { get; set; }
     public bool IsAttendance { get; set; }
+    public new EventActivityDetailDto Activity { get; set; } = null!;
     public List<EventRoleDto> Roles { get; set; } = null!;
     public List<OrganizationInEventDto> Organizations { get; set; } = null!;
     public List<EventRegistrationDto> RegistrationInfos { get; set; } = null!;
     public List<EventAttendanceInfoDto> AttendanceInfos { get; set; } = null!;
+    public Guid NearestRegistrationInfoId => RegistrationInfos.MinBy(x => x.StartAt.Subtract(DateTime.Now))!.Id;
+    public Guid NearestAttendanceInfoId => AttendanceInfos.MinBy(x => x.StartAt.Subtract(DateTime.Now))!.Id;
+
+    public EventStatus GetStatus(DateTime dateTime)
+    {
+        var currentStatus = GetCurrentStatus(dateTime);
+        if (currentStatus == EventStatus.Pending || currentStatus == EventStatus.Expired)
+        {
+            return EventStatus.Pending;
+        }
+        else if (currentStatus == EventStatus.Happening || currentStatus == EventStatus.Attendance)
+        {
+            return EventStatus.Happening;
+        }
+        else if (currentStatus == EventStatus.Upcoming || currentStatus == EventStatus.Registration || currentStatus == EventStatus.ClosedRegistration)
+        {
+            return EventStatus.Upcoming;
+        }
+
+        return currentStatus;
+    }
     
     public EventStatus GetCurrentStatus(DateTime dateTime)
     {
@@ -55,6 +81,10 @@ public class EventDetailDto : FlatEventDto
         else if (Status == EventStatus.Approved && StartAt >= dateTime && RegistrationInfos.Any(x => dateTime >= x.StartAt && dateTime <= x.EndAt))
         {
             return EventStatus.Registration;
+        }
+        else if (Status == EventStatus.Approved && StartAt >= dateTime && RegistrationInfos.All(x => dateTime >= x.EndAt))
+        {
+            return EventStatus.ClosedRegistration;
         }
         else if (Status == EventStatus.Approved && StartAt >= dateTime)
         {
@@ -71,4 +101,11 @@ public class EventDetailDto : FlatEventDto
         
         return Status;
     }
+}
+
+public class StudentAttendanceEventDto : FlatEventDto
+{
+    public string Role { get; set; } = null!;
+    public double Score { get; set; }
+    public DateTime AttendanceAt { get; set; }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Commands;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
+using ServeSync.Infrastructure.Identity.UseCases.Auth.Enums;
 
 namespace ServeSync.API.Controllers;
 
@@ -16,11 +17,19 @@ public class AuthController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpPost("sign-in")]
+    [HttpPost("admin-portal/sign-in")]
     [ProducesResponseType(typeof(AuthCredentialDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SignInAsync(SignInDto dto)
+    public async Task<IActionResult> AdminPortalSignInAsync(SignInDto dto)
     {
-        var authCredential = await _mediator.Send(new SignInCommand(dto.UserNameOrEmail, dto.Password));
+        var authCredential = await _mediator.Send(new SignInCommand(dto.UserNameOrEmail, dto.Password, LoginPortal.Admin));
+        return Ok(authCredential);
+    }
+    
+    [HttpPost("student-portal/sign-in")]
+    [ProducesResponseType(typeof(AuthCredentialDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> StudentPortalSignInAsync(SignInDto dto)
+    {
+        var authCredential = await _mediator.Send(new SignInCommand(dto.UserNameOrEmail, dto.Password, LoginPortal.Student));
         return Ok(authCredential);
     }
     

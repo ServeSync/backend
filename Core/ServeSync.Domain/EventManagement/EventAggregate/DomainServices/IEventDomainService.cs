@@ -22,6 +22,8 @@ public interface IEventDomainService
     Event AddAttendanceInfo(Event @event, DateTime startAt, DateTime endAt);
 
     Event AddRole(Event @event, string name, string description, bool isNeedApprove, double score, int quantity);
+
+    Task<Event> AddDefaultRoleAsync(Event @event, int quantity);
     
     Event AddOrganization(Event @event, EventOrganization organization, string role);
 
@@ -34,4 +36,6 @@ public interface IEventDomainService
     Event SetAttendanceQrCodeUrl(Event @event, Guid id, string qrCodeUrl);
 
     Event CancelEvent(Event @event, DateTime dateTime);
+    
+    Event ApproveEvent(Event @event, DateTime dateTime);
 }

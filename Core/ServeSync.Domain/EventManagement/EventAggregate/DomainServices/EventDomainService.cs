@@ -3,6 +3,7 @@ using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Exceptions;
+using ServeSync.Domain.EventManagement.EventCategoryAggregate.Specifications;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Repositories;
@@ -36,7 +37,7 @@ public class EventDomainService : IEventDomainService
         double longitude, 
         double latitude)
     {
-        await CheckEventActivityExistedAsync(activityId);
+        await CheckValidEventActivityExistedAsync(activityId);
         var @event = new Event(
             name,
             introduction,
@@ -62,6 +63,20 @@ public class EventDomainService : IEventDomainService
     public Event AddRole(Event @event, string name, string description, bool isNeedApprove, double score, int quantity)
     {
         @event.AddRole(name, description, isNeedApprove, score, quantity);
+        return @event;
+    }
+
+    public async Task<Event> AddDefaultRoleAsync(Event @event, int quantity)
+    {
+        var activity = await _eventActivityRepository.FindByIdAsync(@event.ActivityId);
+        
+        @event.AddRole(
+            "Người tham dự",
+            "Người tham dự sự kiện",
+            false, 
+            activity!.MaxScore,
+            quantity);
+        
         return @event;
     }
 
@@ -104,9 +119,9 @@ public class EventDomainService : IEventDomainService
         return @event;
     }
 
-    private async Task CheckEventActivityExistedAsync(Guid activityId)
+    private async Task CheckValidEventActivityExistedAsync(Guid activityId)
     {
-        if (!await _eventActivityRepository.IsExistingAsync(activityId))
+        if (!await _eventActivityRepository.AnyAsync(new EventActivityFromEventCategorySpecification(activityId)))
         {
             throw new EventActivityNotFoundException(activityId);
         }
@@ -115,6 +130,13 @@ public class EventDomainService : IEventDomainService
     public Event CancelEvent(Event @event, DateTime dateTime)
     {
         @event.Cancel(dateTime);
+        
+        return @event;
+    }
+
+    public Event ApproveEvent(Event @event, DateTime dateTime)
+    {
+        @event.Approve(dateTime);
         
         return @event;
     }

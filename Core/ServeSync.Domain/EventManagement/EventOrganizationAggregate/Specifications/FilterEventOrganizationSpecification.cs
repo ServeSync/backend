@@ -15,8 +15,9 @@ public class FilterEventOrganizationSpecification : PagingAndSortingSpecificatio
     
     public override Expression<Func<EventOrganization, bool>> ToExpression()
     {
-        return x => string.IsNullOrWhiteSpace(_search) || x.Name.ToLower().Contains(_search.ToLower()) 
-                                                || x.Email.ToLower().Contains(_search.ToLower())
-                                                || x.PhoneNumber.Contains(_search);
+        return x => string.IsNullOrWhiteSpace(_search) || 
+                                    x.Name.ToLower().Contains(_search.ToLower()) || 
+                                    x.Email.ToLower().Contains(_search.ToLower()) || 
+                                    x.PhoneNumber.Contains(_search);
     }
 }

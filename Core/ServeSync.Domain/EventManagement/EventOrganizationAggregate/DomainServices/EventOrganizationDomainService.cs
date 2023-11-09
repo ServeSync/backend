@@ -20,8 +20,7 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         string? address)
     {
         var eventOrganization = new EventOrganization(name, email, phoneNumber, imageUrl, description, address);
-
-        await _eventOrganizationRepository.InsertAsync(eventOrganization);
+        
         return eventOrganization;
     }
 

@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ServeSync.Application.ImageUploader;
 using ServeSync.Application.UseCases.Images;
+using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 
 namespace ServeSync.API.Controllers;
 
@@ -9,10 +11,12 @@ namespace ServeSync.API.Controllers;
 public class ImageController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IImageUploader _imageUploader;
     
-    public ImageController(IMediator mediator)
+    public ImageController(IMediator mediator, IImageUploader imageUploader)
     {
         _mediator = mediator;
+        _imageUploader = imageUploader;
     }
     
     [HttpPost]
@@ -22,6 +26,21 @@ public class ImageController : ControllerBase
         return Ok(new
         {
             Url = url
+        });
+    }
+    
+    [HttpPost("assets")]
+    public async Task<IActionResult> UploadAssetImageAsync([FromForm] IFormFile file)
+    {
+        var result = await _imageUploader.UploadAsync(file.FileName, file.OpenReadStream());
+        if (!result.IsSuccess)
+        {
+            throw new ResourceInvalidOperationException(result.ErrorMessage!, "UploadImageFailed");
+        }
+
+        return Ok(new
+        {
+            Url = result.Url
         });
     }
 }

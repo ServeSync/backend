@@ -33,4 +33,8 @@ public interface IEventCollaborationRequestDomainService
         DateTime? organizationContactBirth, 
         string? organizationContactPosition, 
         string organizationContactImageUrl);
+
+    EventCollaborationRequest Approve(EventCollaborationRequest eventCollaborationRequest, DateTime dateTime);
+    
+    EventCollaborationRequest Reject(EventCollaborationRequest eventCollaborationRequest, DateTime dateTime);
 }

@@ -18,20 +18,18 @@ public class EventCategoryController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(PagedResultDto<EventCategoryDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllEventCategoriesAsync([FromQuery] EventActivityByCategoryFilterRequestDto dto)
+    [ProducesResponseType(typeof(IEnumerable<EventCategoryDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllEventCategoriesAsync([FromQuery] EventCategoryFilterRequestDto dto)
     {
-        var query = new GetAllEventCategoryQuery(dto.Search, dto.Page, dto.Size, dto.Sorting);
-        var categories = await _mediator.Send(query);
+        var categories = await _mediator.Send(new GetAllEventCategoryQuery(dto.Type));
         return Ok(categories);
     }
 
-
     [HttpGet("{id:guid}/activities")]
-    [ProducesResponseType(typeof(PagedResultDto<EventActivityDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetActivitiesByCategoryAsync(Guid id, [FromQuery] EventActivityByCategoryFilterRequestDto dto)
+    [ProducesResponseType(typeof(IEnumerable<EventActivityDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetActivitiesByCategoryAsync(Guid id)
     {
-        var activities = await _mediator.Send(new GetAllEventActivityQuery(id, dto.Search, dto.Page, dto.Size, dto.Sorting));
+        var activities = await _mediator.Send(new GetAllEventActivityQuery(id));
         return Ok(activities);
     }
 }

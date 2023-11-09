@@ -24,90 +24,6 @@ public class EventQueries : IEventQueries
         _connectionString = configuration.GetConnectionString("Default") ?? throw new Exception("Default connection string is not provided!");
     }
     
-    public async Task<EventDetailDto?> GetEventDetailByIdAsync(Guid eventId)
-    {
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.OpenAsync();
-
-        EventDetailDto? @event = null;
-        
-        await connection.QueryAsync
-        <dynamic, EventRoleDto, BasicOrganizationInEventDto, OrganizationInEventDto, BasicRepresentativeInEventDto, EventAttendanceInfoDto, EventRegistrationDto, EventDetailDto>(
-            GetQueryString(), (
-                row, eventRole, eventRepresentative, organizationInEvent, 
-                representativeInOrganization, eventAttendance, eventRegistration) =>
-            {
-                @event = @event ?? new EventDetailDto()
-                {
-                    Id = row.Id,
-                    Name = row.Name,
-                    Introduction = row.Introduction,
-                    ImageUrl = row.ImageUrl,
-                    StartAt = row.StartAt,
-                    EndAt = row.EndAt,
-                    Type = (EventType)row.Type,
-                    Status = (EventStatus)row.Status,
-                    Address = new EventAddressDto()
-                    {
-                        FullAddress = row.Address_FullAddress,
-                        Latitude = row.Address_Latitude,
-                        Longitude = row.Address_longitude
-                    },
-                    RepresentativeOrganization = eventRepresentative,
-                    Activity = new BasicEventActivityDto()
-                    {
-                        Id = row.ActivityId,
-                        Name = row.ActivityName  
-                    },
-                    Roles = new List<EventRoleDto>(),
-                    Organizations = new List<OrganizationInEventDto>(),
-                    AttendanceInfos = new List<EventAttendanceInfoDto>(),
-                    RegistrationInfos = new List<EventRegistrationDto>()
-                };
-
-                if (@event.Roles.All(x => eventRole.Id != x.Id))
-                {
-                    @event.Roles.Add(eventRole);    
-                }
-                
-                if (@event.Organizations.All(x => organizationInEvent.Id != x.Id))
-                {
-                    @event.Organizations.Add(organizationInEvent);
-                }
-                
-                if (@event.AttendanceInfos.All(x => eventAttendance.Id != x.Id))
-                {
-                    @event.AttendanceInfos.Add(eventAttendance);
-                }
-
-                if (@event.RegistrationInfos.All(x => eventRegistration.Id != x.Id))
-                {
-                    @event.RegistrationInfos.Add(eventRegistration);
-                }
-                
-                var temp = @event.Organizations.First(x => x.Id == organizationInEvent.Id);
-                temp.Representatives = temp.Representatives ?? new List<BasicRepresentativeInEventDto>();
-
-                if (temp.Representatives.All(x => representativeInOrganization.Id != x.Id))
-                {
-                    temp.Representatives.Add(representativeInOrganization);
-                }
-
-                return @event;
-            },
-            splitOn: "EventIdInRole, EventIdInRepresentativeOrganization, EventIdInOrganizationInEvent, OrganizationInEventIdInOrganizationRepInEvent, EventIdInEventAttendanceInfo, EventIdInEventRegistrationInfo",
-            param: new { EventId = eventId, RegisterStatus = EventRegisterStatus.Approved });
-
-        if (@event != null)
-        {
-            @event!.Registered = @event.Roles.Sum(x => x.Registered);
-            @event.Capacity = @event.Roles.Sum(x => x.Quantity);    
-            @event.Status = @event.GetCurrentStatus(DateTime.Now);
-        }
-        
-        return @event;
-    }
-    
     public async Task<EventReadModel?> GetEventReadModelByIdAsync(Guid eventId)
     {
         await using var connection = new MySqlConnection(_connectionString);
@@ -136,6 +52,7 @@ public class EventQueries : IEventQueries
                     Id = row.Id,
                     Name = row.Name,
                     Introduction = row.Introduction,
+                    Description = row.Description,
                     ImageUrl = row.ImageUrl,
                     StartAt = row.StartAt,
                     EndAt = row.EndAt,
@@ -154,7 +71,8 @@ public class EventQueries : IEventQueries
                         Name = row.ActivityName,
                         MinScore = row.ActivityMinScore,
                         MaxScore = row.ActivityMaxScore,
-                        EventCategoryId = row.ActivityCategoryId
+                        EventCategoryId = row.ActivityCategoryId,
+                        EventCategoryName = row.ActivityCategoryName
                     },
                     Roles = new List<EventRoleReadModel>(),
                     Organizations = new List<EventOrganizationInEventReadModel>(),
@@ -204,12 +122,17 @@ public class EventQueries : IEventQueries
                     var tempEventRole = @event.Roles.First(x => x.Id == row.EventRoleId);
                     tempEventRole.RegisteredStudents.Add(new RegisteredStudentInEventRoleReadModel()
                     {
-                        Id  = row.StudentEventRegisterStudentId,
+                        Id  = row.StudentEventRegisterId,
+                        Code = row.StudentEventRegisterCode,
+                        StudentId = row.StudentEventRegisterStudentId,
                         Status = (EventRegisterStatus)row.StudentEventRegisterStatus,
                         Name = row.StudentEventRegisterFullName,
                         ImageUrl = row.StudentEventRegisterImageUrl,
                         RegisteredAt = row.StudentEventRegisterCreated,
-                        IdentityId = row.StudentEventRegisterIdentityId
+                        IdentityId = row.StudentEventRegisterIdentityId,
+                        Email = row.StudentEventRegisterEmail,
+                        Phone = row.StudentEventRegisterPhone,
+                        HomeRoomName = row.StudentEventRegisterHomeRoomName
                     });
                 }
 
@@ -219,11 +142,18 @@ public class EventQueries : IEventQueries
                     tempEventAttendanceInfo.AttendanceStudents = tempEventAttendanceInfo.AttendanceStudents ?? new List<AttendanceStudentInEventRoleReadModel>();
                     tempEventAttendanceInfo.AttendanceStudents.Add(new AttendanceStudentInEventRoleReadModel()
                     {
-                        Id = row.StudentEventAttendanceInEventAttendanceInfoId,
+                        Id = row.StudentEventAttendanceId,
+                        Code = row.StudentEventRegisterCode,
+                        StudentId = row.StudentEventRegisterStudentId, 
                         Name = row.StudentEventRegisterFullName,
                         ImageUrl = row.StudentEventRegisterImageUrl,
                         AttendanceAt = row.StudentEventAttendanceAttendanceAt,
-                        IdentityId = row.StudentEventRegisterIdentityId
+                        IdentityId = row.StudentEventRegisterIdentityId,
+                        Email = row.StudentEventRegisterEmail,
+                        Phone = row.StudentEventRegisterPhone,
+                        Role = row.EventRoleName,
+                        HomeRoomName = row.StudentEventRegisterHomeRoomName,
+                        Score = row.EventRoleScore
                     });
                 }
 
@@ -240,18 +170,20 @@ public class EventQueries : IEventQueries
         // Todo: move to stored procedure
         return @$"
             SELECT 
-	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, Event.ActivityId, EventActivity.Name As ActivityName, EventActivity.MinScore As ActivityMinScore, EventActivity.MaxScore As ActivityMaxScore, EventActivity.EventCategoryId As ActivityCategoryId,
+	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, Event.ActivityId, EventActivity.Name As ActivityName, EventActivity.MinScore As ActivityMinScore, EventActivity.MaxScore As ActivityMaxScore, EventActivity.EventCategoryId As ActivityCategoryId, EventCategory.Name As ActivityCategoryName,
 	            EventRole.EventId As EventIdInRole, EventRole.Id As EventRoleId, EventRole.Name as EventRoleName, EventRole.Quantity as EventRoleQuantity, EventRole.Description as EventRoleDescription, EventRole.IsNeedApprove as EventRoleIsNeedApprove, EventRole.Score as EventRoleScore, 
-                StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId,
-	            StudentEventAttendance.EventAttendanceInfoId as StudentEventAttendanceInEventAttendanceInfoId, StudentEventAttendance.AttendanceAt as StudentEventAttendanceAttendanceAt,
-                RepresentativeOrganizationInEvent.EventId As EventIdInRepresentativeOrganization, RepresentativeOrganizationInEvent.Id, RepresentativeOrganizationInEvent.OrganizationId, RepresentativeOrganization.Name, RepresentativeOrganization.ImageUrl,
-                OrganizationInEvent.EventId As EventIdInOrganizationInEvent, OrganizationInEvent.Id, OrganizationInEvent.OrganizationId, EventOrganization.Name, OrganizationInEvent.Role, EventOrganization.Name, EventOrganization.ImageUrl,
-                OrganizationRepInEvent.OrganizationInEventId As OrganizationInEventIdInOrganizationRepInEvent, OrganizationRepInEvent.Id, OrganizationRepInEvent.OrganizationRepId, EventOrganizationContact.Name, EventOrganizationContact.ImageUrl, OrganizationRepInEvent.Role, EventOrganizationContact.Position,
+                StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.Id As StudentEventRegisterId, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId, Student.Email as StudentEventRegisterEmail, Student.Phone as StudentEventRegisterPhone, Student.Code as StudentEventRegisterCode, HomeRoom.Name as StudentEventRegisterHomeRoomName,
+	            StudentEventAttendance.EventAttendanceInfoId as StudentEventAttendanceInEventAttendanceInfoId, StudentEventAttendance.Id As StudentEventAttendanceId, StudentEventAttendance.AttendanceAt as StudentEventAttendanceAttendanceAt,
+                RepresentativeOrganizationInEvent.EventId As EventIdInRepresentativeOrganization, RepresentativeOrganizationInEvent.Id, RepresentativeOrganizationInEvent.OrganizationId, RepresentativeOrganization.Name, RepresentativeOrganization.ImageUrl, RepresentativeOrganization.Email, RepresentativeOrganization.PhoneNumber, RepresentativeOrganization.Address,
+                OrganizationInEvent.EventId As EventIdInOrganizationInEvent, OrganizationInEvent.Id, OrganizationInEvent.OrganizationId, EventOrganization.Name, OrganizationInEvent.Role, EventOrganization.Name, EventOrganization.ImageUrl, EventOrganization.Email, EventOrganization.PhoneNumber, EventOrganization.Address,
+                OrganizationRepInEvent.OrganizationInEventId As OrganizationInEventIdInOrganizationRepInEvent, OrganizationRepInEvent.Id, OrganizationRepInEvent.OrganizationRepId, EventOrganizationContact.Name, EventOrganizationContact.ImageUrl, OrganizationRepInEvent.Role, EventOrganizationContact.Position, EventOrganizationContact.Email, EventOrganizationContact.PhoneNumber, EventOrganization.Address,
                 EventAttendanceInfo.EventId As EventIdInEventAttendanceInfo, EventAttendanceInfo.Id, EventAttendanceInfo.StartAt, EventAttendanceInfo.EndAt, EventAttendanceInfo.Code, EventAttendanceInfo.QrCodeUrl,
                 EventRegistrationInfo.EventId As EventIdInEventRegistrationInfo, EventRegistrationInfo.Id, EventRegistrationInfo.StartAt, EventRegistrationInfo.EndAt
             From Event
             LEFT JOIN EventActivity
             ON EventActivity.Id = Event.ActivityId
+            LEFT JOIN EventCategory
+            ON EventCategory.Id = EventActivity.EventCategoryId
             LEFT JOIN OrganizationInEvent as RepresentativeOrganizationInEvent
             ON Event.RepresentativeOrganizationId = RepresentativeOrganizationInEvent.Id
             LEFT JOIN EventOrganization as RepresentativeOrganization
@@ -274,6 +206,8 @@ public class EventQueries : IEventQueries
             ON EventRole.Id = StudentEventRegister.EventRoleId
             LEFT JOIN Student
             ON StudentEventRegister.StudentId = Student.Id
+            LEFT JOIN HomeRoom
+            ON Student.HomeRoomId = HomeRoom.Id
             LEFT JOIN StudentEventAttendance
 		    ON StudentEventAttendance.StudentEventRegisterId = StudentEventRegister.Id
             WHERE Event.Id = @EventId

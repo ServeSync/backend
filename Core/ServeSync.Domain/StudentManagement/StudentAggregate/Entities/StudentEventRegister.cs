@@ -1,5 +1,6 @@
 ﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
 
@@ -32,11 +33,22 @@ public class StudentEventRegister : AuditableEntity
     
     internal void Approve()
     {
+        if (Status != EventRegisterStatus.Pending)
+        {
+            throw new StudentEventRegisterNotPendingException(Id);
+        }
+
         Status = EventRegisterStatus.Approved;
+        AddDomainEvent(new StudentEventRegisterApprovedDomainEvent(StudentId, EventRoleId));
     }
     
     internal void Reject(string reason)
     {
+        if (Status != EventRegisterStatus.Pending)
+        {
+            throw new StudentEventRegisterNotPendingException(Id);
+        }
+        
         Status = EventRegisterStatus.Rejected;
         RejectReason = reason;
     }
@@ -49,6 +61,7 @@ public class StudentEventRegister : AuditableEntity
         }
         
         StudentEventAttendance = new StudentEventAttendance(Id, eventAttendanceInfoId);
+        AddDomainEvent(new StudentAttendedToEventDomainEvent(Student!, EventRoleId));
     }
 
     private StudentEventRegister()

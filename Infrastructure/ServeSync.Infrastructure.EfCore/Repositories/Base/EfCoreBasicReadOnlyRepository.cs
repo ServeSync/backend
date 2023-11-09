@@ -19,10 +19,13 @@ public class EfCoreBasicReadOnlyRepository<TEntity, TKey> : EfCoreSpecificationR
         return await GetQueryable().Where(x => ids.Contains(x.Id)).ToListAsync();
     }
 
-    public async Task<IList<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? expression = null)
+    public async Task<IList<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? expression = null, string? sorting = null)
     {
-        var queryable = GetQueryable();
-        return expression != null ? await queryable.Where(expression).ToListAsync() : await queryable.ToListAsync();
+        return await new AppQueryableBuilder<TEntity, TKey>(GetQueryable())
+                                    .ApplyFilter(expression)
+                                    .ApplySorting(sorting)
+                                    .Build()
+                                    .ToListAsync();
     }
 
     public async Task<IList<TEntity>> GetPagedListAsync(int skip, int take, Expression<Func<TEntity, bool>> expression, string? sorting = null, bool tracking = true, string? includeProps = null)

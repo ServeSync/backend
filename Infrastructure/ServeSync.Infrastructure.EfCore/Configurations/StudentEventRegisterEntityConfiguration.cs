@@ -20,7 +20,7 @@ public class StudentEventRegisterEntityConfiguration : IEntityTypeConfiguration<
                .IsRequired();
 
         builder.HasOne(x => x.EventRole)
-               .WithMany()
+               .WithMany(x => x.StudentEventRegisters)
                .HasForeignKey(x => x.EventRoleId);
         
         builder.HasOne(x => x.Student)

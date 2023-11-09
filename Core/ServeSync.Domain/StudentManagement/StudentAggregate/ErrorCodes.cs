@@ -12,4 +12,7 @@ public static class ErrorCodes
     public const string StudentHasAlreadyApprovedToEvent = "Student:000008";
     public const string StudentAlreadyAttendance = "Student:000009";
     public const string StudentNotApprovedToEvent = "Student:000010";
+    public const string StudentNotInAttendEventArea = "Student:000011";
+    public const string StudentEventRegisterNotPending = "Student:000012";
+    public const string StudentEventRegisterNotFound = "Student:000013";
 }

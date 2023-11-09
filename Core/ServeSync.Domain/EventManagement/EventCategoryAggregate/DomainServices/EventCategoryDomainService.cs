@@ -1,4 +1,5 @@
 ﻿using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventCategoryAggregate.Enums;
 
 namespace ServeSync.Domain.EventManagement.EventCategoryAggregate.DomainServices;
 
@@ -11,9 +12,9 @@ public class EventCategoryDomainService : IEventCategoryDomainService
         _eventCategoryRepository = eventCategoryRepository;
     }
     
-    public async Task<EventCategory> CreateAsync(string name)
+    public async Task<EventCategory> CreateAsync(string name, double index, EventCategoryType type)
     {
-        var eventCategory = new EventCategory(name);
+        var eventCategory = new EventCategory(name, index, type);
 
         await _eventCategoryRepository.InsertAsync(eventCategory);
         return eventCategory;

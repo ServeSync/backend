@@ -38,7 +38,7 @@ public class AttendEventCommandHandler : ICommandHandler<AttendEventCommand>
             throw new StudentNotFoundException(_currentUser.Id);
         }
         
-        await _studentDomainService.AttendEventAsync(student, request.EventId, request.Code, DateTime.Now);
+        await _studentDomainService.AttendEventAsync(student, request.EventId, request.Code, DateTime.Now, request.Longitude, request.Latitude);
         await _unitOfWork.CommitAsync();
         
         _logger.LogInformation("Student with identity Id {StudentId} attended event {EventId}", _currentUser.Id, request.EventId);

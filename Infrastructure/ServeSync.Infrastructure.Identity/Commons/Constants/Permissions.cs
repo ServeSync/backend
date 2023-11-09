@@ -1,4 +1,6 @@
-﻿using ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Entities;
+﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities;
+using ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Entities;
 
 namespace ServeSync.Infrastructure.Identity.Commons.Constants;
 
@@ -34,7 +36,17 @@ public static class Permissions
         new(Events.View, "Xem danh sách sự kiện."),
         new(Events.Delete, "Xóa sự kiện."),
         new(Events.Create, "Tạo sự kiện."),
-        new(Events.Edit, "Chỉnh sửa sự kiện.")
+        new(Events.Edit, "Chỉnh sửa sự kiện."),
+        new(Events.Approve, "Duyệt sự kiện."),
+        new(Events.Cancel, "Hủy sự kiện."),
+        new(Events.ApproveRegistration, "Duyệt đơn đăng ký tham gia."),
+        new(Events.RejectRegistration, "Từ chối đơn đăng ký tham gia."),
+        
+        new(EventCollaborationRequests.View, "Xem thông tin đề nghị hợp tác."),
+        new(EventCollaborationRequests.Approve, "Duyệt đề nghị hợp tác."),
+        new(EventCollaborationRequests.Reject, "Từ chối đề nghị hợp tác."),
+        
+        new (EventOrganizations.View, "Xem danh sách nhà tổ chức sự kiện.")
     };
 
     public static class Roles
@@ -107,6 +119,28 @@ public static class Permissions
         public const string Create = $"{Group}.Create";
         public const string Delete = $"{Group}.Delete";
         public const string Edit = $"{Group}.Edit";
+        
+        public const string Approve = $"{Group}.Approve";
+        public const string Cancel = $"{Group}.Cancel";
+
+        public const string ApproveRegistration = $"{Group}.ApproveRegistration";
+        public const string RejectRegistration = $"{Group}.RejectRegistration";
+    }
+
+    public static class EventCollaborationRequests
+    {
+        public const string Group = $"{Default}.EventCollaborationRequests";
+        
+        public const string View = $"{Group}.View";
+        public const string Approve = $"{Group}.Approve";
+        public const string Reject = $"{Group}.Reject";
+    }
+
+    public static class EventOrganizations
+    {
+        public const string Group = $"{Default}.EventOrganizations";
+        
+        public const string View = $"{Group}.View";
     }
 
     public static List<string> GeneratePermissionsForModule(string module)

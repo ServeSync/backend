@@ -13,6 +13,8 @@ public class EventRole : Entity
     
     public Guid EventId { get; private set; }
     public Event? Event { get; private set; }
+    
+    public List<StudentEventRegister> StudentEventRegisters { get; private set; } = new();
 
     internal EventRole(string name, string description, bool isNeedApprove, double score, int quantity, Guid eventId)
     {

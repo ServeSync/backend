@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
+using ServeSync.API.Common.Enums;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Commands;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.StudentInEvents;
 using ServeSync.Application.UseCases.EventManagement.Events.Queries;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
@@ -63,6 +65,22 @@ public class EventController : ControllerBase
         await _mediator.Send(new RegisterEventCommand(dto.EventRoleId, dto.Description));
         return NoContent();
     }
+    
+    [HttpGet("{id:guid}/registered-students")]
+    [ProducesResponseType(typeof(PagedResultDto<RegisteredStudentInEventDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRegisteredStudentsAsync(Guid id, [FromQuery] RegisteredStudentFilterRequestDto dto)
+    {
+        var registeredStudents = await _mediator.Send(new GetAllRegisteredStudentsQuery(id, dto.Page, dto.Size));
+        return Ok(registeredStudents);
+    }
+    
+    [HttpGet("{id:guid}/attendance-students")]
+    [ProducesResponseType(typeof(PagedResultDto<AttendanceStudentInEventDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAttendanceStudentsAsync(Guid id, [FromQuery] AttendanceStudentFilterRequestDto dto)
+    {
+        var attendanceStudents = await _mediator.Send(new GetAllAttendanceStudentsQuery(id, dto.Page, dto.Size));
+        return Ok(attendanceStudents);
+    }
 
     [HttpGet("{id:guid}/roles")]
     // [HasPermission(Permissions.Events.View)]
@@ -87,16 +105,27 @@ public class EventController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AttendEventAsync([FromRoute] Guid id, [FromBody] StudentAttendEventDto dto)
     {
-        await _mediator.Send(new AttendEventCommand(id, dto.Code));
+        await _mediator.Send(new AttendEventCommand(id, dto.Code, dto.Longitude, dto.Latitude));
         return NoContent();
     }
 
     [HttpPost("{id:guid}/cancel")]
-    [HasRole(AppRole.Admin)]
+    [HasPermission(Permissions.Events.Cancel)]
+    [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> CancelEvent(Guid id)
     {
         await _mediator.Send(new CancelEventCommand(id));
+        return NoContent();
+    }
+    
+    [HttpPost("{id:guid}/approve")]
+    [HasPermission(Permissions.Events.Approve)]
+    [EventAccessControl(EventSourceAccessControl.Event)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ApproveEvent(Guid id)
+    {
+        await _mediator.Send(new ApproveEventCommand(id));
         return NoContent();
     }
 }

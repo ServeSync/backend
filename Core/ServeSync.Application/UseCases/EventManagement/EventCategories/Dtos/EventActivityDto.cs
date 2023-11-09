@@ -12,3 +12,8 @@ public class EventActivityDto : BasicEventActivityDto
     public double MaxScore { get; set; }
     public Guid EventCategoryId { get; set; }
 }
+
+public class EventActivityDetailDto : EventActivityDto
+{
+    public string EventCategoryName { get; set; } = null!;
+}

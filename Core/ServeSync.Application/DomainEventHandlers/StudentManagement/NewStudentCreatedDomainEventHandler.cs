@@ -30,7 +30,8 @@ public class NewStudentCreatedDomainEventHandler : IDomainEventHandler<NewStuden
             @event.Student.Code,
             @event.Student.ImageUrl,
             @event.Student.Email,
-            @event.Student.Code);
+            @event.Student.Code,
+            @event.Student.Id);
 
         if (!result.IsSuccess)
         {

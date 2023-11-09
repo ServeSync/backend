@@ -53,7 +53,42 @@ public class CloudinaryImageUploader : IImageUploader
 
         return result.IsSuccess ? result : UploaderResult.Failed(errorMessage);
     }
-    
+
+    public async Task<UploaderResult> UploadAssetAsync(string name, Stream stream)
+    {
+        var uploadParams = new ImageUploadParams()
+        {
+            File = new FileDescription($"{Guid.NewGuid()}-{name}", stream),
+            UseFilename = true,
+            UniqueFilename = false,
+            Overwrite = false,
+            Folder = "Assets"
+        };
+
+        var policy = Policy.Handle<Exception>()
+            .WaitAndRetryAsync(5,retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                (ex, time) =>
+                {
+                    _logger.LogError("Upload file {name} to cloudinary failed: {error}", name, ex.Message);
+                }
+            );
+
+        var errorMessage = string.Empty;
+        var result = await policy.ExecuteAsync(async () =>
+        {
+            var result = await _cloudinary.UploadAsync(uploadParams);
+            if (result.Error == null)
+            {
+                return UploaderResult.Success(result.Url.ToString());
+            }
+
+            errorMessage = result.Error.Message;
+            throw new Exception(result.Error.Message);
+        });
+
+        return result.IsSuccess ? result : UploaderResult.Failed(errorMessage);
+    }
+
     public void PushUpload(string name, Stream stream)
     {
         var uploadParams = new ImageUploadParams()

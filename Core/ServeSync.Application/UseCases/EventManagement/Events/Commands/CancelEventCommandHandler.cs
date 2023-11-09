@@ -3,18 +3,13 @@ using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Domain.EventManagement.EventAggregate;
 using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
-using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
-using ServeSync.Domain.SeedWorks.Repositories;
-using ServeSync.Domain.StudentManagement.StudentAggregate;
-using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 
 namespace ServeSync.Application.UseCases.EventManagement.Events.Commands;
 
 public class CancelEventCommandHandler : ICommandHandler<CancelEventCommand, Guid>
 {
     private readonly IEventRepository _eventRepository;
-    
     private readonly IEventDomainService _eventDomainService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CancelEventCommandHandler> _logger;

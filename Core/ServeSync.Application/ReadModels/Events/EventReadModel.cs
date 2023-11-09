@@ -7,6 +7,7 @@ public class EventReadModel : BaseReadModel<Guid>
 {
     public string Name { get; set; } = null!;
     public string Introduction { get; set; } = null!;
+    public string Description { get; set; } = null!;
     public string ImageUrl { get; set; } = null!;
     
     public DateTime StartAt { get; set; }
@@ -28,6 +29,8 @@ public class EventReadModel : BaseReadModel<Guid>
     
     public int Capacity => Roles.Sum(x => x.Quantity);
     public int Registered => Roles.Sum(x => x.Registered);
+    public int ApprovedRegistered => Roles.Sum(x => x.ApprovedRegistered);
+    public int Attended => AttendanceInfos.Sum(x => x.Attended);
 }
 
 public class EventAddressReadModel

@@ -48,9 +48,9 @@ public class IdentityService : IIdentityService
         return permissions.Contains(permission);
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone)
+    public async Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone, Guid? externalId)
     {
-        var user = new ApplicationUser(fullname, avatarUrl)
+        var user = new ApplicationUser(fullname, avatarUrl, externalId)
         {
             UserName = username,
             Email = email,
@@ -67,19 +67,38 @@ public class IdentityService : IIdentityService
         return IdentityResult<IdentityUserDto>.Failed(error.Code, error.Description);
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone = null)
+    public async Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string avatarUrl, string email, string password, Guid studentId, string? phone = null)
     {
-        var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone);
+        var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone, studentId);
         if (createIdentityUserResult.IsSuccess)
         {
-            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data.Id, AppRole.Student);
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.Student);
             if (grantRoleResult.IsSuccess)
             {
                 return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
             }
             else
             {
-                return IdentityResult<IdentityUserDto>.Failed(grantRoleResult.Error, grantRoleResult.ErrorCode);
+                return IdentityResult<IdentityUserDto>.Failed(grantRoleResult.Error!, grantRoleResult.ErrorCode!);
+            }
+        }
+
+        return createIdentityUserResult;
+    }
+
+    public async Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationContactAsync(string fullname, string username, string avatarUrl, string email, string password, Guid contactId, string? phone = null)
+    {
+        var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone, contactId);
+        if (createIdentityUserResult.IsSuccess)
+        {
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.EventOrganizer);
+            if (grantRoleResult.IsSuccess)
+            {
+                return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
+            }
+            else
+            {
+                return IdentityResult<IdentityUserDto>.Failed(grantRoleResult.Error!, grantRoleResult.ErrorCode!);
             }
         }
 

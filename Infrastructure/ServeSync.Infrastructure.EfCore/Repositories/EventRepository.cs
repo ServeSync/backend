@@ -27,4 +27,12 @@ public class EventRepository : EfCoreRepository<Event>, IEventRepository
             .Where(x => x.EventRegisters.Any(y => y.Status == EventRegisterStatus.Approved && eventRoleQueryable.Any(e => e.Id == y.EventRoleId)));
         return await studentQueryable.ToListAsync();
     }
+
+    public async Task<string> GetEventOwnerByRegistrationAsync(Guid eventRegisterId)
+    {
+        return (await (DbContext.Set<StudentEventRegister>().Include(x => x.EventRole)
+            .ThenInclude(x => x.Event)
+            .FirstOrDefaultAsync(x => x.Id == eventRegisterId)))
+            ?.CreatedBy;
+    }
 }

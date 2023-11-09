@@ -1,13 +1,16 @@
 ﻿using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainEvents;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Enums;
+using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects;
 using ServeSync.Domain.EventManagement.SharedKernel.ValueObjects;
 using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities;
 
-public class EventCollaborationRequest : AggregateRoot
+public class EventCollaborationRequest : AuditableAggregateRoot
 {
     public string Name { get; private set; }
     public string Introduction { get; private set; }
@@ -17,12 +20,15 @@ public class EventCollaborationRequest : AggregateRoot
     public DateTime StartAt { get; private set; }
     public DateTime EndAt { get; private set; }
     public EventType Type {get; private set; }    
+    public CollaborationRequestStatus Status { get; private set; }
     public EventAddress Address { get; private set; }
     public EventOrganizationInfo Organization { get; private set; } 
     public EventOrganizationContactInfo OrganizationContact { get; private set; }
     
     public Guid ActivityId { get; private set; }
     public EventActivity? Activity { get; private set; }
+    
+    public Guid? EventId { get; private set; }
 
     internal EventCollaborationRequest(
         string name,
@@ -58,7 +64,7 @@ public class EventCollaborationRequest : AggregateRoot
         Capacity = Guard.Range(capacity, nameof(Capacity), 0);
         ImageUrl = Guard.NotNullOrWhiteSpace(imageUrl, nameof(ImageUrl));
         StartAt = Guard.NotNull(startAt, nameof(StartAt));
-        EndAt = Guard.Range(endAt, nameof(EndAt), startAt);
+        SetEndAt(endAt);
         Type = Guard.NotNull(eventType, nameof(EventType));
         ActivityId = Guard.NotNull(activityId, nameof(ActivityId));
         Address = new EventAddress(fullAddress, longitude, latitude);
@@ -78,8 +84,57 @@ public class EventCollaborationRequest : AggregateRoot
             organizationContactBirth, 
             organizationContactPosition, 
             organizationContactImageUrl);
+        Status = CollaborationRequestStatus.Pending;
     }
 
+    internal void Approve(DateTime dateTime)
+    {
+        if (dateTime > StartAt.AddDays(-1))
+        {
+            throw new EventCollaborationRequestApproveTimeExpiredException(Id);
+        }
+
+        if (Status != CollaborationRequestStatus.Pending)
+        {
+            throw new EventCollaborationRequestNotPendingException(Id);
+        }
+        
+        Status = CollaborationRequestStatus.Approved;
+        AddDomainEvent(new EventCollaborationRequestApprovedDomainEvent(this));
+    }
+
+    internal void Reject(DateTime dateTime)
+    {
+        if (GetStatus(dateTime) == CollaborationRequestStatus.Pending)
+        {
+            Status = CollaborationRequestStatus.Rejected;
+            AddDomainEvent(new EventCollaborationRequestRejectedDomainEvent(this));
+        }
+        else
+        {
+            throw new EventCollaborationRequestCanNotBeRejectedException(Id);
+        }
+    }
+    
+    public CollaborationRequestStatus GetStatus(DateTime dateTime)
+    {
+        if (Status == CollaborationRequestStatus.Pending && StartAt > dateTime.AddDays(1))
+        {
+            return CollaborationRequestStatus.Pending;
+        }
+        else if (Status == CollaborationRequestStatus.Pending && StartAt <= dateTime.AddDays(-1))
+        {
+            return CollaborationRequestStatus.Expired;
+        }
+        
+        return Status;
+    }
+    
+    public void SetEventId(Guid eventId)
+    {
+        EventId = Guard.NotNull(eventId, nameof(EventId));
+    }
+    
     internal void SetEndAt(DateTime endAt)
     {
         if (endAt < StartAt.AddHours(1))
@@ -88,6 +143,7 @@ public class EventCollaborationRequest : AggregateRoot
         }
         EndAt = Guard.Range(endAt, nameof(EndAt), StartAt);
     }
+    
     private EventCollaborationRequest()
     {
         

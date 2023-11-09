@@ -26,6 +26,63 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
         return template.Replace("{{EventName}}", eventName);
     }
 
+    public string GetApproveEventRegistration(
+        string studentName, 
+        string eventName, 
+        string eventRole, 
+        DateTime eventDate,
+        string eventAddress)
+    {
+        var template = GetTemplate("ApproveEventRegistration")
+            .Replace("{{StudentName}}", studentName)
+            .Replace("{{EventName}}", eventName)
+            .Replace("{{Role}}", eventRole)
+            .Replace("{{EventDate}}", eventDate.ToString("hh:mm dd/MM/yyyy"))
+            .Replace("{{EventAddress}}", eventAddress);
+
+        return template;
+    }
+
+    public string GetRejectEventRegistration(string studentName, string eventName, string eventRole, string rejectReason)
+    {
+        var template = GetTemplate("RejectEventRegistration")
+            .Replace("{{StudentName}}", studentName)
+            .Replace("{{EventName}}", eventName)
+            .Replace("{{EventRole}}", eventRole)
+            .Replace("{{RejectReason}}", rejectReason);
+
+        return template;
+    }
+
+    public string GetGrantAccountToEventOrganizer(string name, string email, string username, string password)
+    {
+        var template = GetTemplate("GrantAccountToEventOrganizer")
+            .Replace("{{FullName}}", name)
+            .Replace("{{Email}}", email)
+            .Replace("{{UserName}}", username)
+            .Replace("{{Password}}", password);
+
+        return template;
+    }
+
+    public string GetApproveCollaborationRequest(string name, string eventName)
+    {
+        var template = GetTemplate("ApproveCollaborationRequest")
+            .Replace("{{FullName}}", name)
+            .Replace("{{EventName}}", eventName);
+
+        return template;
+    }
+
+    public string GetRejectCollaborationRequest(string name, string eventName)
+    {
+        var template = GetTemplate("RejectCollaborationRequest")
+            .Replace("{{FullName}}", name)
+            .Replace("{{EventName}}", eventName);
+
+        return template;
+    }
+
     private string GetTemplate(string templateName)
     {
         var pathToFile = GetTemplatePath(templateName);

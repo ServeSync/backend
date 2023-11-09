@@ -132,6 +132,36 @@ public class Student : AuditableAggregateRoot
         EventRegisters.Add(eventRegister);
     }
     
+    internal void ApproveEventRegister(Guid eventRegisterId)
+    {
+        var eventRegister = EventRegisters.FirstOrDefault(x => x.Id == eventRegisterId);
+        if (eventRegister == null)
+        {
+            throw new StudentEventRegisterNotFoundException(eventRegisterId);
+        }
+        
+        eventRegister.Approve();
+        foreach (var register in EventRegisters)
+        {
+            if (register.Id != eventRegisterId)
+            {
+                register.Reject("Đã tham gia với vai trò khác!");
+            }
+        }
+    }
+
+    internal void RejectEventRegister(Guid eventRegisterId, string reason)
+    {
+        var eventRegister = EventRegisters.FirstOrDefault(x => x.Id == eventRegisterId);
+        if (eventRegister == null)
+        {
+            throw new StudentEventRegisterNotFoundException(eventRegisterId);
+        }
+        
+        eventRegister.Reject(reason);
+        AddDomainEvent(new StudentEventRegisterRejectedDomainEvent(Id, eventRegister.EventRoleId, reason));
+    }
+    
     internal void AttendEvent(Guid eventRoleId, Guid eventAttendanceInfoId)
     {
         var eventRegister = EventRegisters.FirstOrDefault(x => x.EventRoleId == eventRoleId);

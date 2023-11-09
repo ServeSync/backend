@@ -17,6 +17,7 @@ public class FilterEventSpecification : PagingAndSortingSpecification<Event, Gui
         AddInclude(x => x.AttendanceInfos);
         AddInclude(x => x.Roles);
         AddInclude(x => x.RepresentativeOrganization!);
+        AddInclude("Roles.StudentEventRegisters.StudentEventAttendance");
         AddInclude("RepresentativeOrganization.Organization");
     }
     

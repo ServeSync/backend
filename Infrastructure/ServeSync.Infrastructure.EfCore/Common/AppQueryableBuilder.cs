@@ -21,21 +21,35 @@ public class AppQueryableBuilder<TEntity, TKey>
         _queryable = queryable;
     }
 
-    public AppQueryableBuilder<TEntity, TKey> ApplyFilter(Expression<Func<TEntity, bool>> expression)
+    public AppQueryableBuilder<TEntity, TKey> ApplyFilter(Expression<Func<TEntity, bool>>? expression)
     {
-        _queryable = _queryable.Where(expression);
+        if (expression != null)
+        {
+            _queryable = _queryable.Where(expression);    
+        }
+        
         return this;
     }
 
     public AppQueryableBuilder<TEntity, TKey> ApplySorting(string? sorting)
     {
-        if (!string.IsNullOrWhiteSpace(sorting))
+        if (typeof(TEntity).IsAssignableTo(typeof(IHasAuditable)))
         {
-            _queryable = _queryable.OrderBy($"{sorting}, {GetDefaultSorting()}");
+            if (string.IsNullOrWhiteSpace(sorting))
+            {
+                _queryable = _queryable.OrderBy(GetDefaultSorting());  
+            }
+            else
+            {
+                _queryable = _queryable.OrderBy($"{sorting}, {GetDefaultSorting()}");
+            }
         }
-        else if (typeof(TEntity).IsAssignableTo(typeof(IAuditableEntity)))
+        else
         {
-            _queryable = _queryable.OrderBy(GetDefaultSorting());    
+            if (!string.IsNullOrWhiteSpace(sorting))
+            {
+                _queryable = _queryable.OrderBy(sorting);    
+            }
         }
         return this;
     }

@@ -143,6 +143,7 @@ public static class DependencyInjectionExtensions
         services.AddTransient<IFacultyCachingManager, FacultyCachingManager>();
         services.AddTransient<IUserCacheManager, UserCacheManager>();
         services.AddTransient<IPermissionCacheManager, PermissionCacheManager>();
+        services.AddTransient<IEventCachingManager, EventCachingManager>();
         
         services.AddStackExchangeRedisCache(options =>
         {
@@ -245,7 +246,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ICurrentUser, CurrentUser>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
-        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+        services.AddScoped<IAuthorizationHandler, EventAccessControlAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationPolicyProvider, ServeSyncAuthorizationPolicyProvider>();
 
         return services;
     }
@@ -283,7 +285,7 @@ public static class DependencyInjectionExtensions
 
             // User settings.
             options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-            options.User.RequireUniqueEmail = true;
+            options.User.RequireUniqueEmail = false;
 
             // Signin settings.
             options.SignIn.RequireConfirmedEmail = false;

@@ -326,6 +326,9 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Property<Guid>("EventCategoryId")
                         .HasColumnType("char(36)");
 
+                    b.Property<double>("Index")
+                        .HasColumnType("double");
+
                     b.Property<double>("MaxScore")
                         .HasColumnType("double");
 
@@ -349,9 +352,15 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<double>("Index")
+                        .HasColumnType("double");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -370,12 +379,21 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("EndAt")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("EventId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -385,12 +403,21 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("StartAt")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -774,6 +801,9 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid?>("ExternalId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -1216,7 +1246,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.StudentEventRegister", b =>
                 {
                     b.HasOne("ServeSync.Domain.EventManagement.EventAggregate.Entities.EventRole", "EventRole")
-                        .WithMany()
+                        .WithMany("StudentEventRegisters")
                         .HasForeignKey("EventRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1267,6 +1297,11 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Navigation("RegistrationInfos");
 
                     b.Navigation("Roles");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.EventManagement.EventAggregate.Entities.EventRole", b =>
+                {
+                    b.Navigation("StudentEventRegisters");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventAggregate.Entities.OrganizationInEvent", b =>

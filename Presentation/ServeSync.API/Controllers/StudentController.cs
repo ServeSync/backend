@@ -2,7 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
+using ServeSync.API.Common.Enums;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Application.UseCases.EventManagement.Events.Queries;
+using ServeSync.Application.UseCases.StudentManagement.EducationPrograms.Dtos;
+using ServeSync.Application.UseCases.StudentManagement.EducationPrograms.Queries;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Queries;
@@ -87,5 +92,42 @@ public class StudentController : ControllerBase
     {
         await _mediator.Send(new DeleteStudentCommand(id));
         return Ok();
+    }
+    
+    [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/approve")]
+    [HasPermission(Permissions.Events.ApproveRegistration)]
+    [EventAccessControl(EventSourceAccessControl.EventRegister)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ApproveStudentEventRegisterAsync(Guid id, Guid eventRegisterId)
+    {
+        await _mediator.Send(new ApproveEventRegisterCommand(id, eventRegisterId));
+        return NoContent();
+    }
+    
+    [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/reject")]
+    [HasPermission(Permissions.Events.RejectRegistration)]
+    [EventAccessControl(EventSourceAccessControl.EventRegister)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> RejectStudentEventRegisterAsync(Guid id, Guid eventRegisterId, [FromBody] RejectStudentEventRegistrationDto dto)
+    {
+        await _mediator.Send(new RejectEventRegisterCommand(id, eventRegisterId, dto.RejectReason));
+        return NoContent();
+    }
+
+    [HttpGet("{id:guid}/attendance-events")]
+    [ProducesResponseType(typeof(PagedResultDto<StudentAttendanceEventDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAttendanceEventsOfStudentAsync(Guid id, [FromQuery] PagingRequestDto dto)
+    {
+        var events = await _mediator.Send(new GetAllAttendanceEventsOfStudentQuery(id, dto.Page, dto.Size));
+        return Ok(events);
+    }
+    
+    [HttpGet("{id:guid}/education-program")]
+    [HasPermission(Permissions.Students.View)]
+    [ProducesResponseType(typeof(StudentEducationProgramDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStudentEducationProgramAsync(Guid id)
+    {
+        var program = await _mediator.Send(new GetEducationProgramByStudentQuery(id));
+        return Ok(program);
     }
 }
