@@ -43,7 +43,7 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         return eventOrganization;
     }
 
-    public async Task<EventOrganization> UpdateBaseInfoAsync(
+    public async Task<EventOrganization> UpdateInfoAsync(
         EventOrganization eventOrganization, 
         string name, 
         string email, 
@@ -57,7 +57,7 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
             await CheckDuplicateEmailAsync(email);
         }
         
-        eventOrganization.UpdateBaseInfo(name, email, phoneNumber, imageUrl, description, address);
+        eventOrganization.Update(name, email, phoneNumber, imageUrl, description, address);
         _eventOrganizationRepository.Update(eventOrganization);
         return eventOrganization;
     }
