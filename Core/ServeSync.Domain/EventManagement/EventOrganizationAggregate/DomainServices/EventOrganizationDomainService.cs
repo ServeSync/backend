@@ -1,4 +1,6 @@
 ﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Specifications;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
 
@@ -39,5 +41,32 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         
         // _eventOrganizationRepository.Update(eventOrganization);
         return eventOrganization;
+    }
+
+    public async Task<EventOrganization> UpdateBaseInfoAsync(
+        EventOrganization eventOrganization, 
+        string name, 
+        string email, 
+        string phoneNumber, 
+        string imageUrl,
+        string? description = null, 
+        string? address = null)
+    {
+        if (eventOrganization.Email != email)
+        {
+            await CheckDuplicateEmailAsync(email);
+        }
+        
+        eventOrganization.UpdateBaseInfo(name, email, phoneNumber, imageUrl, description, address);
+        _eventOrganizationRepository.Update(eventOrganization);
+        return eventOrganization;
+    }
+
+    private async Task CheckDuplicateEmailAsync(string email)
+    {
+        if (await _eventOrganizationRepository.AnyAsync(new EventOrganizationByEmailSpecification(email))) 
+        {
+            throw new EventOrganizationEmailException(email);
+        }   
     }
 }
