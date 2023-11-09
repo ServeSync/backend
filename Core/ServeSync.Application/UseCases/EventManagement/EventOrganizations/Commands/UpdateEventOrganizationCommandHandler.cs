@@ -34,7 +34,7 @@ public class UpdateEventOrganizationCommandHandler : ICommandHandler<UpdateEvent
             throw new EventOrganizationNotFoundException(request.Id);
         }
 
-        await _eventOrganizationDomainService.UpdateBaseInfoAsync(
+        await _eventOrganizationDomainService.UpdateInfoAsync(
             eventOrganization,
             request.Name,
             request.Email,

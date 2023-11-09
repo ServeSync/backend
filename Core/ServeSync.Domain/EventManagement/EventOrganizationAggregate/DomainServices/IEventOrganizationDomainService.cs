@@ -23,7 +23,7 @@ public interface IEventOrganizationDomainService
         string? address, 
         string? position);
     
-    Task<EventOrganization> UpdateBaseInfoAsync(
+    Task<EventOrganization> UpdateInfoAsync(
         EventOrganization eventOrganization,
         string name, 
         string email, 

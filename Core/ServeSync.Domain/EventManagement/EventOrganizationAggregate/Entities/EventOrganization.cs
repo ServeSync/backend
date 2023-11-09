@@ -50,7 +50,7 @@ public class EventOrganization : AuditableAggregateRoot
         Contacts.Add(contact);
     }
     
-    internal void UpdateBaseInfo(
+    internal void Update(
         string name, 
         string email, 
         string phoneNumber, 
@@ -58,11 +58,6 @@ public class EventOrganization : AuditableAggregateRoot
         string? description, 
         string? address)
     {
-        // if (IsNameChanged(name) || IsEmailChanged(email) || IsImageUrlChanged(imageUrl))
-        // {
-        //     
-        // }
-        
         Name = Guard.NotNullOrEmpty(name, nameof(Name));
         Email = Guard.NotNullOrEmpty(email, nameof(Email));
         PhoneNumber = Guard.NotNullOrEmpty(phoneNumber, nameof(PhoneNumber));
@@ -76,18 +71,4 @@ public class EventOrganization : AuditableAggregateRoot
         Contacts = new List<EventOrganizationContact>();
     }
     
-    private bool IsNameChanged(string name)
-    {
-        return Name != name;
-    }
-    
-    private bool IsEmailChanged(string email)
-    {
-        return Email != email;
-    }
-    
-    private bool IsImageUrlChanged(string imageUrl)
-    {
-        return ImageUrl != imageUrl;
-    }
 }
