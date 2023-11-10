@@ -18,7 +18,7 @@ public class EventOrganizationRepository : EfCoreRepository<EventOrganization>, 
         return GetQueryable().FirstOrDefaultAsync(x => x.Email == email);
     }
     
-    public Task<bool> IsOrganizationHasEventAsync(Guid organizationId)
+    public Task<bool> HasHostAnyEventAsync(Guid organizationId)
     {
         return DbContext.Set<OrganizationInEvent>().AnyAsync(x => x.OrganizationId == organizationId);
     }

@@ -32,5 +32,5 @@ public interface IEventOrganizationDomainService
         string? description, 
         string? address);
     
-    void Delete(EventOrganization eventOrganization);
+    Task DeleteAsync(EventOrganization eventOrganization);
 }
