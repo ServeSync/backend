@@ -7,5 +7,5 @@ public interface IEventOrganizationRepository : IRepository<EventOrganization>
 {
     Task<EventOrganization?> FindByEmailAsync(string email);
     
-    Task<bool> IsOrganizationHasEventAsync(Guid organizationId);
+    Task<bool> HasHostAnyEventAsync(Guid organizationId);
 }

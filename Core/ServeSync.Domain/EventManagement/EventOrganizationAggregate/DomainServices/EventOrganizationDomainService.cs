@@ -61,9 +61,16 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         _eventOrganizationRepository.Update(eventOrganization);
         return eventOrganization;
     }
-    
-    public void Delete(EventOrganization eventOrganization)
+
+    public async Task DeleteAsync(EventOrganization eventOrganization)
     {
+        var hasHostAnyEvent = await _eventOrganizationRepository.HasHostAnyEventAsync(eventOrganization.Id);
+        
+        if (hasHostAnyEvent)
+        {
+            throw new EventOrganizationHasHostedAnEventException(eventOrganization.Id);
+        }
+        
         _eventOrganizationRepository.Delete(eventOrganization);
     }
 
