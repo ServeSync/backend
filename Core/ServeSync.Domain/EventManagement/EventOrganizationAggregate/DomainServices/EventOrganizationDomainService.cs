@@ -61,6 +61,11 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         _eventOrganizationRepository.Update(eventOrganization);
         return eventOrganization;
     }
+    
+    public void Delete(EventOrganization eventOrganization)
+    {
+        _eventOrganizationRepository.Delete(eventOrganization);
+    }
 
     private async Task CheckDuplicateEmailAsync(string email)
     {
