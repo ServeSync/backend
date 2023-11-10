@@ -6,4 +6,6 @@ namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate;
 public interface IEventOrganizationRepository : IRepository<EventOrganization>
 {
     Task<EventOrganization?> FindByEmailAsync(string email);
+    
+    Task<bool> IsOrganizationHasEventAsync(Guid organizationId);
 }

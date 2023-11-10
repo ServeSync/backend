@@ -31,4 +31,6 @@ public interface IEventOrganizationDomainService
         string imageUrl, 
         string? description, 
         string? address);
+    
+    void Delete(EventOrganization eventOrganization);
 }

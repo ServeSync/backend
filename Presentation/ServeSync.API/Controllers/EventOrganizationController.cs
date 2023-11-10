@@ -21,7 +21,7 @@ public class EventOrganizationController : ControllerBase
     }
 
     [HttpGet]
-    [HasPermission(Permissions.EventOrganizations.View)]
+    // [HasPermission(Permissions.EventOrganizations.View)]
     [ProducesResponseType(typeof(PagedResultDto<EventOrganizationDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventOrganizationsAsync([FromQuery] EventOrganizationFilterRequestDto dto)
     {
@@ -31,7 +31,7 @@ public class EventOrganizationController : ControllerBase
     }
     
     [HttpGet("{id:guid}")]
-    [HasPermission(Permissions.EventOrganizations.View)]
+    // [HasPermission(Permissions.EventOrganizations.View)]
     [ProducesResponseType(typeof(EventOrganizationDetailDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventOrganizationByIdAsync(Guid id)
     {
@@ -40,7 +40,7 @@ public class EventOrganizationController : ControllerBase
     }
     
     [HttpPut("{id:guid}")]
-    [HasPermission(Permissions.EventOrganizations.Update)]
+    // [HasPermission(Permissions.EventOrganizations.Update)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateEventOrganizationAsync(Guid id, [FromBody] EventOrganizationUpdateDto dto)
     {
@@ -51,11 +51,20 @@ public class EventOrganizationController : ControllerBase
     }
 
     [HttpGet("{id:guid}/contacts")]
-    [HasPermission(Permissions.EventOrganizations.View)]
+    // [HasPermission(Permissions.EventOrganizations.View)]
     [ProducesResponseType(typeof(PagedResultDto<EventOrganizationContactDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetContactByOrganizationAsync(Guid id, [FromQuery] EventOrganizationContactFilterRequestDto dto)
     {
         var contacts = await _mediator.Send(new GetAllEventOrganizationContactQuery(id, dto.Search, dto.Page, dto.Size, dto.Sorting));
         return Ok(contacts);
+    }
+    
+    [HttpDelete("{id:guid}")]
+    // [HasPermission(Permissions.EventOrganizations.Delete)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteEventOrganizationByIdAsync(Guid id)
+    {
+        await _mediator.Send(new DeleteEventOrganizationCommand(id));
+        return Ok();
     }
 }
