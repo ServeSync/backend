@@ -21,6 +21,8 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         string? description, 
         string? address)
     {
+        await CheckDuplicateNameAsync(name);
+        await CheckDuplicateEmailAsync(email);
         var eventOrganization = new EventOrganization(name, email, phoneNumber, imageUrl, description, address);
         
         return eventOrganization;
@@ -57,6 +59,11 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
             await CheckDuplicateEmailAsync(email);
         }
         
+        if (eventOrganization.Name != name)
+        {
+            await CheckDuplicateNameAsync(name);
+        }
+        
         eventOrganization.Update(name, email, phoneNumber, imageUrl, description, address);
         _eventOrganizationRepository.Update(eventOrganization);
         return eventOrganization;
@@ -79,6 +86,14 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         if (await _eventOrganizationRepository.AnyAsync(new EventOrganizationByEmailSpecification(email))) 
         {
             throw new EventOrganizationEmailException(email);
+        }   
+    }
+    
+    private async Task CheckDuplicateNameAsync(string name)
+    {
+        if (await _eventOrganizationRepository.AnyAsync(new EventOrganizationByNameSpecification(name))) 
+        {
+            throw new EventOrganizationNameException(name);
         }   
     }
 }

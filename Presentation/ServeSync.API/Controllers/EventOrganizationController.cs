@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
+using ServeSync.API.Common.Dtos;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Commands;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
@@ -37,6 +38,15 @@ public class EventOrganizationController : ControllerBase
     {
         var organization = await _mediator.Send(new GetEventOrganizationByIdQuery(id));
         return Ok(organization);
+    }
+    
+    [HttpPost]
+    [HasPermission(Permissions.EventOrganizations.Create)]
+    [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateEventOrganizationAsync([FromBody] EventOrganizationCreateDto dto)
+    {
+        var id = await _mediator.Send(new CreateEventOrganizationCommand(dto));
+        return Ok(SimpleIdResponse<Guid>.Create(id));
     }
     
     [HttpPut("{id:guid}")]
