@@ -35,6 +35,8 @@ public interface IEventDomainService
     
     Event SetAttendanceQrCodeUrl(Event @event, Guid id, string qrCodeUrl);
 
+    Event Reject(Event @event);
+
     Event CancelEvent(Event @event, DateTime dateTime);
     
     Event ApproveEvent(Event @event, DateTime dateTime);

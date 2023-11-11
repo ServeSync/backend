@@ -188,6 +188,18 @@ public class Event : AuditableAggregateRoot
             throw new EventCanNotBeApprovedException();
         }
     }
+
+    public void Reject()
+    {
+        if (Status != EventStatus.Pending)
+        {
+            throw new EventCanNotBeRejectedException(Id);
+        }
+        
+        Status = EventStatus.Rejected;
+        AddDomainEvent(new EventRejectedDomainEvent(this));
+        AddDomainEvent(new EventUpdatedDomainEvent(Id));
+    }
     
     public bool IsInAttendArea(double longitude, double latitude)
     {
