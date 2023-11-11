@@ -46,6 +46,7 @@ public class GetEventByIdQueryHandler : IQueryHandler<GetEventByIdQuery, EventDe
         
         if (_currentUser.IsAuthenticated)
         {
+            eventDetailDto.CanAccess = eventDetailDto.Created.Id == _currentUser.Id || await _currentUser.IsAdminAsync() || await _currentUser.IsStudentAffairAsync();
             eventDetailDto.IsAttendance = @event.AttendanceInfos.Any(x => x.AttendanceStudents.Any(y => y.IdentityId == _currentUser.Id));
             eventDetailDto.IsRegistered = @event.Roles.Any(x => x.RegisteredStudents.Any(y => y.IdentityId == _currentUser.Id && y.Status == EventRegisterStatus.Approved));
             eventDetailDto.Roles.ForEach(x =>

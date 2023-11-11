@@ -3,13 +3,6 @@ using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using ServeSync.Application.QueryObjects;
 using ServeSync.Application.ReadModels.Events;
-using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRegistrationInfos;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.OrganizationInEvents;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Shared;
 using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 
@@ -73,6 +66,20 @@ public class EventQueries : IEventQueries
                         MaxScore = row.ActivityMaxScore,
                         EventCategoryId = row.ActivityCategoryId,
                         EventCategoryName = row.ActivityCategoryName
+                    },
+                    Created = new AuditReadModel()
+                    {
+                        Id = row.CreatedBy,
+                        At = row.Created,
+                        FullName = row.CreatedUserFullName,
+                        ImageUrl = row.CreatedUserAvatarUrl
+                    },
+                    Modified = new AuditReadModel()
+                    {
+                        Id = row.LastModifiedBy,
+                        At = row.LastModified,
+                        FullName = row.ModifiedUserFullName,
+                        ImageUrl = row.ModifiedUserAvatarUrl
                     },
                     Roles = new List<EventRoleReadModel>(),
                     Organizations = new List<EventOrganizationInEventReadModel>(),
@@ -177,15 +184,15 @@ public class EventQueries : IEventQueries
         // Todo: move to stored procedure
         return @$"
             SELECT 
-	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, Event.ActivityId, EventActivity.Name As ActivityName, EventActivity.MinScore As ActivityMinScore, EventActivity.MaxScore As ActivityMaxScore, EventActivity.EventCategoryId As ActivityCategoryId, EventCategory.Name As ActivityCategoryName,
+	            Event.Id, Event.ActivityId, Event.Description, Event.StartAt, Event.EndAt, Event.ImageUrl, Event.Introduction, Event.Name, Event.RepresentativeOrganizationId, Event.Status, Event.Type, Event.Address_FullAddress, Event.Address_Latitude, Event.Address_longitude, Event.Created, Event.CreatedBy, CreatedUser.FullName as CreatedUserFullName, CreatedUser.AvatarUrl as CreatedUserAvatarUrl, Event.LastModified, Event.LastModifiedBy, ModifiedUser.FullName as ModifiedUserFullName, ModifiedUser.AvatarUrl as ModifiedUserAvatarUrl, Event.ActivityId, EventActivity.Name As ActivityName, EventActivity.MinScore As ActivityMinScore, EventActivity.MaxScore As ActivityMaxScore, EventActivity.EventCategoryId As ActivityCategoryId, EventCategory.Name As ActivityCategoryName,
 	            EventRole.EventId As EventIdInRole, EventRole.Id As EventRoleId, EventRole.Name as EventRoleName, EventRole.Quantity as EventRoleQuantity, EventRole.Description as EventRoleDescription, EventRole.IsNeedApprove as EventRoleIsNeedApprove, EventRole.Score as EventRoleScore, 
-                StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.Id As StudentEventRegisterId, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.RejectReason as StudentEventRegisterRejectReason, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId, Student.Email as StudentEventRegisterEmail, Student.Phone as StudentEventRegisterPhone, Student.Code as StudentEventRegisterCode, HomeRoom.Name as StudentEventRegisterHomeRoomName,
+	            StudentEventRegister.EventRoleId As EventRoleIdInStudentEventRegister, StudentEventRegister.Id As StudentEventRegisterId, StudentEventRegister.StudentId as StudentEventRegisterStudentId, StudentEventRegister.Status as StudentEventRegisterStatus, StudentEventRegister.RejectReason as StudentEventRegisterRejectReason, StudentEventRegister.Created as StudentEventRegisterCreated, Student.FullName as StudentEventRegisterFullName, Student.ImageUrl as StudentEventRegisterImageUrl, Student.IdentityId as StudentEventRegisterIdentityId, Student.Email as StudentEventRegisterEmail, Student.Phone as StudentEventRegisterPhone, Student.Code as StudentEventRegisterCode, HomeRoom.Name as StudentEventRegisterHomeRoomName,
 	            StudentEventAttendance.EventAttendanceInfoId as StudentEventAttendanceInEventAttendanceInfoId, StudentEventAttendance.Id As StudentEventAttendanceId, StudentEventAttendance.AttendanceAt as StudentEventAttendanceAttendanceAt,
-                RepresentativeOrganizationInEvent.EventId As EventIdInRepresentativeOrganization, RepresentativeOrganizationInEvent.Id, RepresentativeOrganizationInEvent.OrganizationId, RepresentativeOrganization.Name, RepresentativeOrganization.ImageUrl, RepresentativeOrganization.Email, RepresentativeOrganization.PhoneNumber, RepresentativeOrganization.Address,
-                OrganizationInEvent.EventId As EventIdInOrganizationInEvent, OrganizationInEvent.Id, OrganizationInEvent.OrganizationId, EventOrganization.Name, OrganizationInEvent.Role, EventOrganization.Name, EventOrganization.ImageUrl, EventOrganization.Email, EventOrganization.PhoneNumber, EventOrganization.Address,
-                OrganizationRepInEvent.OrganizationInEventId As OrganizationInEventIdInOrganizationRepInEvent, OrganizationRepInEvent.Id, OrganizationRepInEvent.OrganizationRepId, EventOrganizationContact.Name, EventOrganizationContact.ImageUrl, OrganizationRepInEvent.Role, EventOrganizationContact.Position, EventOrganizationContact.Email, EventOrganizationContact.PhoneNumber, EventOrganization.Address,
-                EventAttendanceInfo.EventId As EventIdInEventAttendanceInfo, EventAttendanceInfo.Id, EventAttendanceInfo.StartAt, EventAttendanceInfo.EndAt, EventAttendanceInfo.Code, EventAttendanceInfo.QrCodeUrl,
-                EventRegistrationInfo.EventId As EventIdInEventRegistrationInfo, EventRegistrationInfo.Id, EventRegistrationInfo.StartAt, EventRegistrationInfo.EndAt
+	            RepresentativeOrganizationInEvent.EventId As EventIdInRepresentativeOrganization, RepresentativeOrganizationInEvent.Id, RepresentativeOrganizationInEvent.OrganizationId, RepresentativeOrganization.Name, RepresentativeOrganization.ImageUrl, RepresentativeOrganization.Email, RepresentativeOrganization.PhoneNumber, RepresentativeOrganization.Address,
+	            OrganizationInEvent.EventId As EventIdInOrganizationInEvent, OrganizationInEvent.Id, OrganizationInEvent.OrganizationId, EventOrganization.Name, OrganizationInEvent.Role, EventOrganization.Name, EventOrganization.ImageUrl, EventOrganization.Email, EventOrganization.PhoneNumber, EventOrganization.Address,
+	            OrganizationRepInEvent.OrganizationInEventId As OrganizationInEventIdInOrganizationRepInEvent, OrganizationRepInEvent.Id, OrganizationRepInEvent.OrganizationRepId, EventOrganizationContact.Name, EventOrganizationContact.ImageUrl, OrganizationRepInEvent.Role, EventOrganizationContact.Position, EventOrganizationContact.Email, EventOrganizationContact.PhoneNumber, EventOrganization.Address,
+	            EventAttendanceInfo.EventId As EventIdInEventAttendanceInfo, EventAttendanceInfo.Id, EventAttendanceInfo.StartAt, EventAttendanceInfo.EndAt, EventAttendanceInfo.Code, EventAttendanceInfo.QrCodeUrl,
+	            EventRegistrationInfo.EventId As EventIdInEventRegistrationInfo, EventRegistrationInfo.Id, EventRegistrationInfo.StartAt, EventRegistrationInfo.EndAt
             From Event
             LEFT JOIN EventActivity
             ON EventActivity.Id = Event.ActivityId
@@ -216,7 +223,11 @@ public class EventQueries : IEventQueries
             LEFT JOIN HomeRoom
             ON Student.HomeRoomId = HomeRoom.Id
             LEFT JOIN StudentEventAttendance
-		    ON StudentEventAttendance.StudentEventRegisterId = StudentEventRegister.Id
+            ON StudentEventAttendance.StudentEventRegisterId = StudentEventRegister.Id
+            LEFT JOIN AspNetUsers As CreatedUser
+            ON Event.CreatedBy = CreatedUser.Id
+            LEFT JOIN AspNetUsers As ModifiedUser
+            ON Event.LastModifiedBy = ModifiedUser.Id
             WHERE Event.Id = @EventId
         ";
     }

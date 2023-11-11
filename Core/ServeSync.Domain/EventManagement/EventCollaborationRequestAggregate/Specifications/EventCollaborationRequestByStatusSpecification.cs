@@ -16,6 +16,11 @@ public class EventCollaborationRequestByStatusSpecification : Specification<Even
     
     public override Expression<Func<EventCollaborationRequest, bool>> ToExpression()
     {
-        return eventCollaborationRequest => eventCollaborationRequest.Status == _status;
+        if (_status == CollaborationRequestStatus.Expired)
+        {
+            return x => x.Status == CollaborationRequestStatus.Pending && x.StartAt.AddDays(-1) <= DateTime.UtcNow;
+        }
+        
+        return x => x.Status == _status;
     }
 }

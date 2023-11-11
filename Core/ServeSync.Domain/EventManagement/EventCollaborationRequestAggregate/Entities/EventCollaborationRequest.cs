@@ -118,11 +118,7 @@ public class EventCollaborationRequest : AuditableAggregateRoot
     
     public CollaborationRequestStatus GetStatus(DateTime dateTime)
     {
-        if (Status == CollaborationRequestStatus.Pending && StartAt > dateTime.AddDays(1))
-        {
-            return CollaborationRequestStatus.Pending;
-        }
-        else if (Status == CollaborationRequestStatus.Pending && StartAt <= dateTime.AddDays(-1))
+        if (Status == CollaborationRequestStatus.Pending && StartAt.AddDays(-1) <= dateTime)
         {
             return CollaborationRequestStatus.Expired;
         }

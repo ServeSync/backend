@@ -1,4 +1,5 @@
-﻿using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
+﻿using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRegistrationInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
@@ -41,13 +42,17 @@ public class EventDetailDto : FlatEventDto
     public string Description { get; set; } = null!;
     public bool IsRegistered { get; set; }
     public bool IsAttendance { get; set; }
+    public bool CanAccess { get; set; }
     public new EventActivityDetailDto Activity { get; set; } = null!;
+    public AuditDto Created { get; set; } = null!;
+    public AuditDto Modified { get; set; } = null!;
     public List<EventRoleDto> Roles { get; set; } = null!;
     public List<OrganizationInEventDto> Organizations { get; set; } = null!;
     public List<EventRegistrationDto> RegistrationInfos { get; set; } = null!;
     public List<EventAttendanceInfoDto> AttendanceInfos { get; set; } = null!;
     public Guid NearestRegistrationInfoId => RegistrationInfos.MinBy(x => x.StartAt.Subtract(DateTime.UtcNow))!.Id;
     public Guid NearestAttendanceInfoId => AttendanceInfos.MinBy(x => x.StartAt.Subtract(DateTime.UtcNow))!.Id;
+    public bool HasOrganizedRegistration => RegistrationInfos.Any(x => x.StartAt < DateTime.UtcNow);
 
     public EventStatus GetStatus(DateTime dateTime)
     {

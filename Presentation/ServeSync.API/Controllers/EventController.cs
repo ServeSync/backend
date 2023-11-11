@@ -121,7 +121,7 @@ public class EventController : ControllerBase
     [HasPermission(Permissions.Events.Cancel)]
     [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> CancelEvent(Guid id)
+    public async Task<IActionResult> CancelEventAsync(Guid id)
     {
         await _mediator.Send(new CancelEventCommand(id));
         return NoContent();
@@ -130,7 +130,7 @@ public class EventController : ControllerBase
     [HttpPost("{id:guid}/approve")]
     [HasPermission(Permissions.Events.Approve)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> ApproveEvent(Guid id)
+    public async Task<IActionResult> ApproveEventAsync(Guid id)
     {
         await _mediator.Send(new ApproveEventCommand(id));
         return NoContent();
@@ -139,9 +139,18 @@ public class EventController : ControllerBase
     [HttpPost("{id:guid}/reject")]
     [HasPermission(Permissions.Events.Reject)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> RejectEvent(Guid id)
+    public async Task<IActionResult> RejectEventAsync(Guid id)
     {
         await _mediator.Send(new RejectEventCommand(id));
+        return NoContent();
+    }
+    
+    [HttpPost("sync")]
+    [HasRole(AppRole.Admin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> SyncEventsAsync()
+    {
+        await _mediator.Send(new SyncEventsCommand());
         return NoContent();
     }
 }
