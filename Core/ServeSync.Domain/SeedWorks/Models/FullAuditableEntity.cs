@@ -11,7 +11,7 @@ public abstract class FullAuditableEntity<TKey> : AuditableEntity<TKey>, IFullAu
     {
         IsDeleted = true;
         DeletedBy = deletedBy;
-        LastModified = DateTime.Now;
+        LastModified = DateTime.UtcNow;
     }
 }
 

@@ -415,7 +415,7 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddMongoDB(this IServiceCollection services, IConfiguration configuration)
     {
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-        BsonSerializer.RegisterSerializer(new DateTimeSerializer(DateTimeKind.Local));
+        BsonSerializer.RegisterSerializer(new DateTimeSerializer(DateTimeKind.Utc));
  
         services.AddSingleton(provider =>
         {

@@ -39,19 +39,19 @@ public class EventManagementMapperProfile : Profile
         CreateMap<EventAddress, EventAddressDto>();
         
         CreateMap<Event, BasicEventDto>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.Now)))
-            .ForMember(dest => dest.CalculatedStatus, opt => opt.MapFrom(src => src.GetCurrentStatus(DateTime.Now)));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.UtcNow)))
+            .ForMember(dest => dest.CalculatedStatus, opt => opt.MapFrom(src => src.GetCurrentStatus(DateTime.UtcNow)));
         CreateMap<Event, FlatEventDto>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.Now)))
-            .ForMember(dest => dest.CalculatedStatus, opt => opt.MapFrom(src => src.GetCurrentStatus(DateTime.Now)))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.UtcNow)))
+            .ForMember(dest => dest.CalculatedStatus, opt => opt.MapFrom(src => src.GetCurrentStatus(DateTime.UtcNow)))
             .ForMember(dest => dest.Capacity, opt => opt.MapFrom(src => src.Roles.Sum(x => x.Quantity)))
             .ForMember(dest => dest.Attended, opt => opt.MapFrom(src => src.Roles.Sum(x => x.StudentEventRegisters.Count(y => y.StudentEventAttendance != null))))
             .ForMember(dest => dest.Registered, opt => opt.MapFrom(src => src.Roles.Sum(x => x.StudentEventRegisters.Count)))
             .ForMember(dest => dest.ApprovedRegistered, opt => opt.MapFrom(src => src.Roles.Sum(x => x.StudentEventRegisters.Count(y => y.Status == EventRegisterStatus.Approved))))
             .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => 0));
         CreateMap<Event, EventDetailDto>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.Now)))
-            .ForMember(dest => dest.CalculatedStatus, opt => opt.MapFrom(src => src.GetCurrentStatus(DateTime.Now)))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.UtcNow)))
+            .ForMember(dest => dest.CalculatedStatus, opt => opt.MapFrom(src => src.GetCurrentStatus(DateTime.UtcNow)))
             .ForMember(dest => dest.Capacity, opt => opt.MapFrom(src => src.Roles.Sum(x => x.Quantity)))
             .ForMember(dest => dest.Registered, opt => opt.MapFrom(src => src.Roles.Sum(x => x.StudentEventRegisters.Count)))
             .ForMember(dest => dest.ApprovedRegistered, opt => opt.MapFrom(src => src.Roles.Sum(x => x.StudentEventRegisters.Count(y => y.Status == EventRegisterStatus.Approved))))
@@ -98,7 +98,7 @@ public class EventManagementMapperProfile : Profile
         CreateMap<EventOrganizationContactInfo, EventOrganizationContactInfoDto>();
 
         CreateMap<EventCollaborationRequest, EventCollaborationRequestDto>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.Now)));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.UtcNow)));
 
         CreateMap<EventCollaborationRequest, EventCollaborationRequestDetailDto>();
 

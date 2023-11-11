@@ -51,7 +51,7 @@ public class Event : AuditableAggregateRoot
         ImageUrl = Guard.NotNullOrWhiteSpace(imageUrl, nameof(ImageUrl));
         Type = type;
         Status = EventStatus.Pending;
-        StartAt = Guard.Range(startAt, nameof(StartAt), DateTime.Now);
+        StartAt = Guard.Range(startAt, nameof(StartAt), DateTime.UtcNow);
         SetEndAt(endAt);
         ActivityId = Guard.NotNull(activityId, nameof(ActivityId));
         Address = new EventAddress(fullAddress, longitude, latitude);

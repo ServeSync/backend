@@ -13,7 +13,7 @@ public class EventRegistrationInfo : Entity
     
     internal EventRegistrationInfo(DateTime startAt, DateTime endAt, Guid eventId)
     {
-        StartAt = Guard.Range(startAt, nameof(StartAt), DateTime.Now);
+        StartAt = Guard.Range(startAt, nameof(StartAt), DateTime.UtcNow);
         SetEndAt(endAt);
         EventId = Guard.NotNull(eventId, nameof(EventId));
     }

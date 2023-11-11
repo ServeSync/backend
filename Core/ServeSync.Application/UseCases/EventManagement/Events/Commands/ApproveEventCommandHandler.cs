@@ -34,7 +34,7 @@ public class ApproveEventCommandHandler : ICommandHandler<ApproveEventCommand, G
             throw new EventNotFoundException(request.EventId);
         }
         
-        _eventDomainService.ApproveEvent(@event, DateTime.Now);
+        _eventDomainService.ApproveEvent(@event, DateTime.UtcNow);
         await _unitOfWork.CommitAsync();
         _logger.LogInformation("Event with id {EventID} was approved!", request.EventId);
 

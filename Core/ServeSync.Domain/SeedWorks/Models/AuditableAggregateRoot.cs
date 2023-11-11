@@ -11,13 +11,13 @@ public abstract class AuditableAggregateRoot<TKey> : AggregateRoot<TKey>, IAudit
     
     public void Create(string createdBy)
     {
-        Created = DateTime.Now;
+        Created = DateTime.UtcNow;
         CreatedBy = createdBy;
     }
     
     public void Update(string lastModifiedBy)
     {
-        LastModified = DateTime.Now;
+        LastModified = DateTime.UtcNow;
         LastModifiedBy = lastModifiedBy;
     }
 }

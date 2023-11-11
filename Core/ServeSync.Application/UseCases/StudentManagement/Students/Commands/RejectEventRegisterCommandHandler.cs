@@ -34,7 +34,7 @@ public class RejectEventRegisterCommandHandler : ICommandHandler<RejectEventRegi
             throw new StudentNotFoundException(request.StudentId);
         }
         
-        await _studentDomainService.RejectEventRegisterAsync(student, request.EventRegisterId, request.RejectReason, DateTime.Now);
+        await _studentDomainService.RejectEventRegisterAsync(student, request.EventRegisterId, request.RejectReason, DateTime.UtcNow);
         _studentRepository.Update(student);
         await _unitOfWork.CommitAsync();
         

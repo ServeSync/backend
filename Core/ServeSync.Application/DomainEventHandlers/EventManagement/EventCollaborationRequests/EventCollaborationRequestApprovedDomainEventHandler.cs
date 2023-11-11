@@ -143,7 +143,7 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
                 @event,
                 notification.EventCollaborationRequest.StartAt.AddDays(-1), 
                 notification.EventCollaborationRequest.StartAt.AddDays(-1).AddMinutes(15)
-                , DateTime.Now);
+                , DateTime.UtcNow);
             
             _eventDomainService.AddAttendanceInfo(
                 @event, 
@@ -165,7 +165,7 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
 
             _eventDomainService.SetRepresentativeOrganization(@event, organization.Id);
             @event.Create(organization.Contacts.First().IdentityId);
-            _eventDomainService.ApproveEvent(@event, DateTime.Now);
+            _eventDomainService.ApproveEvent(@event, DateTime.UtcNow);
             
             _eventRepository.Update(@event);
             

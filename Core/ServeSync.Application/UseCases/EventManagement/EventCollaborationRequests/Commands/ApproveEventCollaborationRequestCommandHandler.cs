@@ -34,7 +34,7 @@ public class ApproveEventCollaborationRequestCommandHandler : ICommandHandler<Ap
             throw new EventCollaborationRequestNotFoundException(request.Id);
         }
 
-        _eventCollaborationRequestDomainService.Approve(eventCollaborationRequest, DateTime.Now);
+        _eventCollaborationRequestDomainService.Approve(eventCollaborationRequest, DateTime.UtcNow);
         _eventCollaborationRequestRepository.Update(eventCollaborationRequest);
         
         await _unitOfWork.CommitAsync();

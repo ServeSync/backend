@@ -26,6 +26,6 @@ public class RefreshToken : Entity
 
     public bool IsExpire()
     {
-        return ExpiresAt < DateTime.Now;
+        return ExpiresAt < DateTime.UtcNow;
     }
 }

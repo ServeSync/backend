@@ -37,7 +37,7 @@ public class GetAllEventsQueryHandler : IQueryHandler<GetAllEventsQuery, PagedRe
     {
         var specification = new FilterEventSpecification(request.Page, request.Size, request.Sorting, request.Search)
             .And(new EventByTimeFrameSpecification(request.StartDate, request.EndDate))
-            .AndIf(request.EventStatus.HasValue, new EventByStatusSpecification(request.EventStatus.GetValueOrDefault(), DateTime.Now))
+            .AndIf(request.EventStatus.HasValue, new EventByStatusSpecification(request.EventStatus.GetValueOrDefault(), DateTime.UtcNow))
             .AndIf(request.EventType.HasValue, new EventByTypeSpecification(request.EventType.GetValueOrDefault()));
 
         return specification;

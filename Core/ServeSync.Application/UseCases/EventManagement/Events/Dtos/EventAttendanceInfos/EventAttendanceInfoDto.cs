@@ -12,7 +12,7 @@ public class EventAttendanceInfoDto
     {
         get
         {
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             if (now < StartAt)
             {
                 return AttendanceInfoStatus.Upcoming;

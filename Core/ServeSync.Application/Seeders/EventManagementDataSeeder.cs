@@ -189,8 +189,8 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Lorem.Paragraph(),
                     faker.Image.PicsumUrl(),
                     faker.PickRandom<EventType>(),
-                    faker.Date.Between(DateTime.Now.AddHours(1), DateTime.Now.AddDays(2)),
-                    faker.Date.Between(DateTime.Now.AddDays(0), DateTime.Now.AddDays(2)),
+                    faker.Date.Between(DateTime.UtcNow.AddHours(1), DateTime.UtcNow.AddDays(2)),
+                    faker.Date.Between(DateTime.UtcNow.AddDays(0), DateTime.UtcNow.AddDays(2)),
                     faker.PickRandom(eventActivities).Id,
                     faker.Address.FullAddress(),
                     faker.Random.Double(-180, 180),
@@ -210,14 +210,14 @@ public class EventManagementDataSeeder : IDataSeeder
 
                 _eventDomainService.AddAttendanceInfo(
                     @event,
-                    faker.Date.Between(DateTime.Now.AddMinutes(30), DateTime.Now.AddDays(1)),
-                    faker.Date.Between(DateTime.Now.AddDays(1), DateTime.Now.AddDays(2)));
+                    faker.Date.Between(DateTime.UtcNow.AddMinutes(30), DateTime.UtcNow.AddDays(1)),
+                    faker.Date.Between(DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2)));
 
                 _eventDomainService.AddRegistrationInfo(
                     @event,
-                    faker.Date.Between(DateTime.Now.AddMinutes(30), DateTime.Now.AddMinutes(45)),
-                    faker.Date.Between(DateTime.Now.AddHours(2), DateTime.Now.AddHours(3)),
-                    DateTime.Now);
+                    faker.Date.Between(DateTime.UtcNow.AddMinutes(30), DateTime.UtcNow.AddMinutes(45)),
+                    faker.Date.Between(DateTime.UtcNow.AddHours(2), DateTime.UtcNow.AddHours(3)),
+                    DateTime.UtcNow);
 
                 var organization = faker.PickRandom(eventOrganizations);
                 
@@ -232,7 +232,7 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.PickRandom(organization.Contacts),
                     faker.Name.JobTitle());
                 
-                @event.Approve(DateTime.Now);
+                @event.Approve(DateTime.UtcNow);
 
                 await _eventRepository.InsertAsync(@event);
                 await _unitOfWork.CommitAsync();
@@ -374,8 +374,8 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Lorem.Paragraph(),
                     faker.Random.Int(1, 100),
                     faker.Image.PicsumUrl(),
-                    faker.Date.Between(DateTime.Now, DateTime.Now.AddDays(1)),
-                    faker.Date.Between(DateTime.Now.AddDays(1), DateTime.Now.AddDays(2)),
+                    faker.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)),
+                    faker.Date.Between(DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2)),
                     faker.PickRandom<EventType>(),
                     faker.PickRandom(activities).Id,
                     faker.Address.FullAddress(),

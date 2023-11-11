@@ -71,7 +71,7 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
         
         foreach (var registrationInfo in request.Event.RegistrationInfos)
         {
-            _eventDomainService.AddRegistrationInfo(@event, registrationInfo.StartAt, registrationInfo.EndAt, DateTime.Now);
+            _eventDomainService.AddRegistrationInfo(@event, registrationInfo.StartAt, registrationInfo.EndAt, DateTime.UtcNow);
         }
         
         await AddOrganizationsAsync(@event, request.Event.Organizations);
@@ -82,7 +82,7 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
         _eventDomainService.SetRepresentativeOrganization(@event, request.Event.RepresentativeOrganizationId);
         if (await _currentUser.IsAdminAsync() || await _currentUser.IsStudentAsync())
         {
-            _eventDomainService.ApproveEvent(@event, DateTime.Now);
+            _eventDomainService.ApproveEvent(@event, DateTime.UtcNow);
         }
         
         _eventRepository.Update(@event);

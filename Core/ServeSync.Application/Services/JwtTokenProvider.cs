@@ -25,7 +25,7 @@ public class JwtTokenProvider : ITokenProvider
             issuer: _jwtSetting.Issuer,
             audience: _jwtSetting.Audience,
             claims: claims,
-            expires: DateTime.Now.AddMinutes(_jwtSetting.ExpiresInMinute),
+            expires: DateTime.UtcNow.AddMinutes(_jwtSetting.ExpiresInMinute),
             signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
         );
         
