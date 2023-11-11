@@ -57,6 +57,13 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
             Subject = "[ServeSync] Thông báo duyệt đơn hợp tác",
             Body = _emailTemplateGenerator.GetApproveCollaborationRequest(notification.EventCollaborationRequest.OrganizationContact.Name, notification.EventCollaborationRequest.Name)
         });
+        
+        _emailSender.Push(new EmailMessage()
+        {
+            ToAddress = notification.EventCollaborationRequest.Organization.Email,
+            Subject = "[ServeSync] Thông báo duyệt đơn hợp tác",
+            Body = _emailTemplateGenerator.GetApproveCollaborationRequest(notification.EventCollaborationRequest.OrganizationContact.Name, notification.EventCollaborationRequest.Name)
+        });
     }
     
     private async Task<EventOrganization> CreateOrganizationAsync(EventCollaborationRequestApprovedDomainEvent notification)

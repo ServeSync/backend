@@ -36,6 +36,7 @@ public class IdentityDataSeeder : IDataSeeder
                 await SeedStudentRoleAsync();   
                 await SeedStudentAffairRoleAsync();
                 await SeedEventOrganizerRoleAsync();
+                await SeedEventOrganizationRoleAsync();
             }
             
             if (!await _userManager.Users.AnyAsync())
@@ -147,6 +148,12 @@ public class IdentityDataSeeder : IDataSeeder
     private Task SeedEventOrganizerRoleAsync()
     {
         var eventOrganizerRole = new ApplicationRole(AppRole.EventOrganizer);
+        return _roleManager.CreateAsync(eventOrganizerRole);
+    }
+    
+    private Task SeedEventOrganizationRoleAsync()
+    {
+        var eventOrganizerRole = new ApplicationRole(AppRole.EventOrganization);
         return _roleManager.CreateAsync(eventOrganizerRole);
     }
 }

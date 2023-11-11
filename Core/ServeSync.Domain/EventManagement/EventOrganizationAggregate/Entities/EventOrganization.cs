@@ -12,6 +12,7 @@ public class EventOrganization : AuditableAggregateRoot
     public string PhoneNumber { get; private set; }
     public string? Address { get; private set; }
     public string ImageUrl { get; private set; }
+    public string? IdentityId { get; private set; }
     public List<EventOrganizationContact> Contacts { get; private set; }
     
     internal EventOrganization(
@@ -29,6 +30,8 @@ public class EventOrganization : AuditableAggregateRoot
         Description = description;
         Address = address;
         Contacts = new List<EventOrganizationContact>();
+        
+        AddDomainEvent(new NewEventOrganizationCreatedDomainEvent(this));
     }
 
     internal void AddContact(
@@ -64,6 +67,11 @@ public class EventOrganization : AuditableAggregateRoot
         ImageUrl = Guard.NotNullOrEmpty(imageUrl, nameof(ImageUrl));
         Description = description;
         Address = address;
+    }
+    
+    public void SetIdentityId(string identityId)
+    {
+        IdentityId = identityId;
     }
 
     private EventOrganization()

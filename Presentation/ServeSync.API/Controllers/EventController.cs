@@ -1,12 +1,10 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
 using ServeSync.API.Common.Enums;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Commands;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
@@ -121,7 +119,6 @@ public class EventController : ControllerBase
     
     [HttpPost("{id:guid}/approve")]
     [HasPermission(Permissions.Events.Approve)]
-    [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ApproveEvent(Guid id)
     {
@@ -130,7 +127,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPost("{id:guid}/reject")]
-    // [HasPermission(Permissions.Events.Reject)]
+    [HasPermission(Permissions.Events.Reject)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RejectEvent(Guid id)
     {
