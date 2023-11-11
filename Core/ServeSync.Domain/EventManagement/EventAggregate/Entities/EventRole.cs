@@ -26,6 +26,15 @@ public class EventRole : Entity
         EventId = Guard.NotNull(eventId, nameof(EventId));
     }
 
+    internal void Update(string name, string description, bool isNeedApprove, double score, int quantity)
+    {
+        Name = Guard.NotNullOrWhiteSpace(name, nameof(Name));
+        Description = Guard.NotNullOrWhiteSpace(description, nameof(Description));
+        IsNeedApprove = isNeedApprove;
+        Score = Guard.Range(score, nameof(Score), 0);
+        Quantity = Guard.Range(quantity, nameof(Quantity), 1);
+    }
+
     private EventRole()
     {
     }

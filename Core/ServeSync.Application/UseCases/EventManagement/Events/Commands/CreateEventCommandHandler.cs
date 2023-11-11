@@ -45,6 +45,8 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
     public async Task<Guid> Handle(CreateEventCommand request, CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync();
+
+        var dateTime = DateTime.UtcNow;
         
         var @event = await _eventDomainService.CreateAsync(
             request.Event.Name,
@@ -61,12 +63,12 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
         
         foreach (var attendanceInfo in request.Event.AttendanceInfos)
         {
-            _eventDomainService.AddAttendanceInfo(@event, attendanceInfo.StartAt, attendanceInfo.EndAt);
+            _eventDomainService.AddAttendanceInfo(@event, attendanceInfo.StartAt, attendanceInfo.EndAt, dateTime);
         }
 
         foreach (var role in request.Event.Roles)
         {
-            _eventDomainService.AddRole(@event, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity);
+            _eventDomainService.AddRole(@event, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
         }
         
         foreach (var registrationInfo in request.Event.RegistrationInfos)
@@ -74,13 +76,13 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
             _eventDomainService.AddRegistrationInfo(@event, registrationInfo.StartAt, registrationInfo.EndAt, DateTime.UtcNow);
         }
         
-        await AddOrganizationsAsync(@event, request.Event.Organizations);
+        await AddOrganizationsAsync(@event, request.Event.Organizations, dateTime);
         
         await _eventRepository.InsertAsync(@event);
         await _unitOfWork.CommitAsync();
 
-        _eventDomainService.SetRepresentativeOrganization(@event, request.Event.RepresentativeOrganizationId);
-        if (await _currentUser.IsAdminAsync() || await _currentUser.IsStudentAsync())
+        _eventDomainService.SetRepresentativeOrganization(@event, request.Event.RepresentativeOrganizationId, dateTime);
+        if (await _currentUser.IsAdminAsync() || await _currentUser.IsStudentAffairAsync())
         {
             _eventDomainService.ApproveEvent(@event, DateTime.UtcNow);
         }
@@ -93,7 +95,7 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
         return @event.Id;
     }
 
-    private async Task AddOrganizationsAsync(Event @event, List<OrganizationInEventCreateDto> organizations)
+    private async Task AddOrganizationsAsync(Event @event, List<OrganizationInEventCreateDto> organizations, DateTime dateTime)
     {
         var eventOrganizations = await _eventOrganizationRepository.FindByIncludedIdsAsync(organizations.Select(x => x.OrganizationId));
         var organizationRepresentatives = await _eventOrganizationContactRepository.FindByIncludedIdsAsync(organizations.SelectMany(x => x.OrganizationReps).Select(x => x.OrganizationRepId));
@@ -106,9 +108,9 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
                 throw new EventOrganizationNotFoundException(organization.OrganizationId);
             }
             
-            _eventDomainService.AddOrganization(@event, eventOrganization, organization.Role);
+            _eventDomainService.AddOrganization(@event, eventOrganization, organization.Role, dateTime);
             
-            AddRepresentative(@event, eventOrganization, organization, organizationRepresentatives);
+            AddRepresentative(@event, eventOrganization, organization, organizationRepresentatives, dateTime);
         }
     }
 
@@ -116,7 +118,8 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
         Event @event,
         EventOrganization eventOrganization,
         OrganizationInEventCreateDto organization, 
-        IList<EventOrganizationContact> organizationRepresentatives)
+        IList<EventOrganizationContact> organizationRepresentatives,
+        DateTime dateTime)
     {
         foreach (var representative in organization.OrganizationReps)
         {
@@ -130,7 +133,8 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
                 @event, 
                 eventOrganization,
                 organizationRepresentative, 
-                representative.Role);
+                representative.Role,
+                dateTime);
         }
     }
 }

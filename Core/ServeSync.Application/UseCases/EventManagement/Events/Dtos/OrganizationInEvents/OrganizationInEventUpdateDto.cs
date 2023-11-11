@@ -2,8 +2,10 @@
 
 namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.OrganizationInEvents;
 
-public class OrganizationInEventCreateDto
+public class OrganizationInEventUpdateDto
 {
+    public Guid? Id { get; set; }
+    
     [Required]
     public Guid OrganizationId { get; set; }
     
@@ -13,11 +15,13 @@ public class OrganizationInEventCreateDto
     
     [Required]
     [MinLength(1)]
-    public List<OrganizationRepInEventCreateDto> OrganizationReps { get; set; } = null!;
+    public List<OrganizationRepInEventUpdateDto> OrganizationReps { get; set; } = null!;
 }
 
-public class OrganizationRepInEventCreateDto
+public class OrganizationRepInEventUpdateDto
 {
+    public Guid? Id { get; set; }
+    
     [Required]
     public Guid OrganizationRepId { get; set; }
     

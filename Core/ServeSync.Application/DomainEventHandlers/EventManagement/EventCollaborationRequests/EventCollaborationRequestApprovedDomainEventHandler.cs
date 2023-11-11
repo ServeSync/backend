@@ -125,7 +125,9 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
         try
         {
             await _unitOfWork.BeginTransactionAsync();
-        
+
+            var dateTime = DateTime.UtcNow;
+            
             var @event = await _eventDomainService.CreateAsync(
                 notification.EventCollaborationRequest.Name,
                 notification.EventCollaborationRequest.Introduction,
@@ -148,22 +150,24 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
             _eventDomainService.AddAttendanceInfo(
                 @event, 
                 notification.EventCollaborationRequest.StartAt, 
-                notification.EventCollaborationRequest.StartAt.AddMinutes(15));
+                notification.EventCollaborationRequest.StartAt.AddMinutes(15),
+                dateTime);
 
-            await _eventDomainService.AddDefaultRoleAsync(@event, notification.EventCollaborationRequest.Capacity);
+            await _eventDomainService.AddDefaultRoleAsync(@event, notification.EventCollaborationRequest.Capacity, dateTime);
             
-            _eventDomainService.AddOrganization(@event, organization, "Nhà tổ chức");
+            _eventDomainService.AddOrganization(@event, organization, "Nhà tổ chức", dateTime);
             
             _eventDomainService.AddRepresentative(
                 @event, 
                 organization,
                 organization.Contacts.First(x => x.Email == notification.EventCollaborationRequest.OrganizationContact.Email),
-                "Diễn giả");
+                "Diễn giả",
+                dateTime);
             
             await _eventRepository.InsertAsync(@event);
             await _unitOfWork.CommitAsync();
 
-            _eventDomainService.SetRepresentativeOrganization(@event, organization.Id);
+            _eventDomainService.SetRepresentativeOrganization(@event, organization.Id, dateTime);
             @event.Create(organization.Contacts.First().IdentityId);
             _eventDomainService.ApproveEvent(@event, DateTime.UtcNow);
             

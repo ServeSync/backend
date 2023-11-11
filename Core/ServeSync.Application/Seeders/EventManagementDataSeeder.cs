@@ -171,7 +171,6 @@ public class EventManagementDataSeeder : IDataSeeder
             _logger.LogInformation("Events already seeded.");
             return;
         }
-
         
         var eventOrganizations = await _eventOrganizationRepository.FindAllAsync();
         var eventActivities = await _eventActivityRepository.FindAllAsync();
@@ -180,6 +179,7 @@ public class EventManagementDataSeeder : IDataSeeder
         {
             try
             {
+                var dateTime = DateTime.UtcNow;
                 var faker = new Faker();
                 await _unitOfWork.BeginTransactionAsync();
 
@@ -205,13 +205,15 @@ public class EventManagementDataSeeder : IDataSeeder
                         faker.Lorem.Sentence(),
                         faker.Random.Bool(),
                         faker.Random.Int(1, 10),
-                        faker.Random.Int(1, 10));
+                        faker.Random.Int(1, 10),
+                        dateTime);
                 }
 
                 _eventDomainService.AddAttendanceInfo(
                     @event,
                     faker.Date.Between(DateTime.UtcNow.AddMinutes(30), DateTime.UtcNow.AddDays(1)),
-                    faker.Date.Between(DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2)));
+                    faker.Date.Between(DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2)),
+                    dateTime);
 
                 _eventDomainService.AddRegistrationInfo(
                     @event,
@@ -224,13 +226,15 @@ public class EventManagementDataSeeder : IDataSeeder
                 _eventDomainService.AddOrganization(
                     @event,
                     organization,
-                    faker.Name.JobTitle());
+                    faker.Name.JobTitle(),
+                    dateTime);
 
                 _eventDomainService.AddRepresentative(
                     @event,
                     organization,
                     faker.PickRandom(organization.Contacts),
-                    faker.Name.JobTitle());
+                    faker.Name.JobTitle(),
+                    dateTime);
                 
                 @event.Approve(DateTime.UtcNow);
 
@@ -239,7 +243,8 @@ public class EventManagementDataSeeder : IDataSeeder
 
                 _eventDomainService.SetRepresentativeOrganization(
                     @event,
-                    faker.PickRandom(@event.Organizations).OrganizationId);
+                    faker.PickRandom(@event.Organizations).OrganizationId,
+                    dateTime);
 
                 _eventRepository.Update(@event);
                 await _unitOfWork.CommitTransactionAsync(false);
