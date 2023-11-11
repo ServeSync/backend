@@ -12,6 +12,8 @@ public static class StudentPermissions
         
         Permissions.Faculties.View,
         Permissions.HomeRooms.View,
-        Permissions.EducationPrograms.View
+        Permissions.EducationPrograms.View,
+        
+        Permissions.EventOrganizations.View
     };
 }

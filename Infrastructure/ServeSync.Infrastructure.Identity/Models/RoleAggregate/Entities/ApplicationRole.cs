@@ -45,6 +45,18 @@ public partial class ApplicationRole : IdentityRole
         Permissions.Add(new RolePermission(Id, permissionId));
         AddDomainEvent(new PermissionForRoleUpdatedDomainEvent(Name));
     }
+    
+    public void UnGrantPermission(Guid permissionId)
+    {
+        var permission = Permissions.FirstOrDefault(x => x.PermissionId == permissionId);
+        if (permission == null)
+        {
+            throw new PermissionHasNotGrantedToRoleException(Id, permissionId);
+        }
+        
+        Permissions.Remove(permission);
+        AddDomainEvent(new PermissionForRoleUpdatedDomainEvent(Name));
+    }
 
     public void Update(string name)
     {
@@ -73,7 +85,7 @@ public partial class ApplicationRole : IdentityRole
     private bool IsDefaultRole(string name)
     {
         return string.Equals(name, AppRole.Admin, StringComparison.CurrentCultureIgnoreCase)
-               || string.Equals(name, AppRole.EventOrganizer, StringComparison.CurrentCultureIgnoreCase)
+               || string.Equals(name, AppRole.EventOrganization, StringComparison.CurrentCultureIgnoreCase)
                || string.Equals(name, AppRole.StudentAffair, StringComparison.CurrentCultureIgnoreCase)
                || string.Equals(name, AppRole.Student, StringComparison.CurrentCultureIgnoreCase);
     }

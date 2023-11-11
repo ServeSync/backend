@@ -111,6 +111,25 @@ public class IdentityService : IIdentityService
         return createIdentityUserResult;
     }
 
+    public async Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationAsync(string fullname, string username, string avatarUrl, string email, string password, Guid organizationId, string? phone = null)
+    {
+        var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone, organizationId);
+        if (createIdentityUserResult.IsSuccess)
+        {
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.EventOrganization);
+            if (grantRoleResult.IsSuccess)
+            {
+                return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
+            }
+            else
+            {
+                return IdentityResult<IdentityUserDto>.Failed(grantRoleResult.Error!, grantRoleResult.ErrorCode!);
+            }
+        }
+
+        return createIdentityUserResult;
+    }
+
     public async Task<IdentityResult<bool>> UpdateAsync(string userId, string fullname, string email, string avatarUrl)
     {
         var user = await _userManager.FindByIdAsync(userId);

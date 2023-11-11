@@ -18,6 +18,8 @@ public interface IIdentityService
 
     Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationContactAsync(string fullname, string username, string avatarUrl, string email, string password, Guid contactId, string? phone = null);
     
+    Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationAsync(string fullname, string username, string avatarUrl, string email, string password, Guid organizationId, string? phone = null);
+    
     Task<IdentityResult<bool>> UpdateAsync(string userId, string fullname, string email, string avatarUrl);
     
     Task<IdentityResult<bool>> UpdateUserNameAsync(string userId, string username);

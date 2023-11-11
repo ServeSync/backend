@@ -15,6 +15,14 @@ public class PermissionDataSeeder : IDataSeeder
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<PermissionDataSeeder> _logger;
 
+    private Dictionary<string, IEnumerable<string>> PermissionsByRole => new Dictionary<string, IEnumerable<string>>()
+    {
+        {AppRole.StudentAffair, StudentAffairPermissions.Provider},
+        {AppRole.Student, StudentPermissions.Provider},
+        {AppRole.EventOrganization, EventOrganizationPermissions.Provider},
+        {AppRole.EventOrganizer, EventOrganizerPermissions.Provider}
+    };
+
     public PermissionDataSeeder(
         IRoleRepository roleRepository,
         IPermissionRepository permissionRepository,
@@ -31,9 +39,10 @@ public class PermissionDataSeeder : IDataSeeder
     {
         await SyncPermissionAsync();
         await SeedPermissionForAdminRoleAsync();
-        await SeedPermissionForStudentRoleAsync();
-        await SeedPermissionForStudentAffairRoleAsync();
-        await SeedPermissionForEventOrganizerRoleAsync();
+        await SeedPermissionForRoleAsync(AppRole.Student);
+        await SeedPermissionForRoleAsync(AppRole.StudentAffair);
+        await SeedPermissionForRoleAsync(AppRole.EventOrganization);
+        await SeedPermissionForRoleAsync(AppRole.EventOrganizer);
     }
 
     private async Task SyncPermissionAsync()
@@ -85,91 +94,41 @@ public class PermissionDataSeeder : IDataSeeder
         _roleRepository.Update(adminRole);
         await _unitOfWork.CommitAsync();
     }
-    
-    private async Task SeedPermissionForStudentAffairRoleAsync()
-    {
-        _logger.LogInformation("Begin seeding not granted permissions for student affair...");
 
-        var studentAffair = await _roleRepository.FindByNameAsync(AppRole.StudentAffair);
-        if (studentAffair == null)
+    private async Task SeedPermissionForRoleAsync(string name)
+    {
+        _logger.LogInformation("Begin seeding not granted permissions for {Role}...", name);
+
+        var role = await _roleRepository.FindByNameAsync(name);
+        if (role == null)
         {
-            _logger.LogWarning("Student affair role not found.");
+            _logger.LogWarning("{Role} role not found!", name);
             return;
         }
-        
-        var permissions = await _permissionRepository.FilterAsync(new PermissionByIncludedNameSpecification(StudentAffairPermissions.Provider));
-        var notGrantedPermissions = permissions.ExceptBy(studentAffair.Permissions.Select(x => x.PermissionId), x => x.Id);
 
-        if (!notGrantedPermissions.Any())
+        var permissions =
+            await _permissionRepository.FilterAsync(new PermissionByIncludedNameSpecification(PermissionsByRole[name]));
+        var notGrantedPermissions =
+            permissions.ExceptBy(role.Permissions.Select(x => x.PermissionId), x => x.Id).ToList();
+        var deletedPermissions = role.Permissions.ExceptBy(permissions.Select(x => x.Id), x => x.PermissionId).ToList();
+
+        if (!notGrantedPermissions.Any() && !deletedPermissions.Any())
         {
-            _logger.LogInformation("Student affair has all permissions.");
-            return;   
-        }
-        
-        foreach (var permission in notGrantedPermissions)
-        {
-            studentAffair.GrantPermission(permission.Id);
-        }
-
-        _roleRepository.Update(studentAffair);
-        await _unitOfWork.CommitAsync();
-    }
-
-    private async Task SeedPermissionForStudentRoleAsync()
-    {
-        _logger.LogInformation("Begin seeding not granted permissions for admin...");
-
-        var studentRole = await _roleRepository.FindByNameAsync(AppRole.Student);
-        if (studentRole == null)
-        {
-            _logger.LogWarning("Student role not found.");
+            _logger.LogInformation("{Role} permissions has already in sync!", name);
             return;
         }
-        
-        var permissions = await _permissionRepository.FilterAsync(new PermissionByIncludedNameSpecification(StudentPermissions.Provider));
-        var notGrantedPermissions = permissions.ExceptBy(studentRole.Permissions.Select(x => x.PermissionId), x => x.Id);
 
-        if (!notGrantedPermissions.Any())
-        {
-            _logger.LogInformation("Student role has all permissions.");
-            return;   
-        }
-        
         foreach (var permission in notGrantedPermissions)
         {
-            studentRole.GrantPermission(permission.Id);
+            role.GrantPermission(permission.Id);
         }
 
-        _roleRepository.Update(studentRole);
-        await _unitOfWork.CommitAsync();
-    }
-    
-    private async Task SeedPermissionForEventOrganizerRoleAsync()
-    {
-        _logger.LogInformation("Begin seeding not granted permissions for event organizer...");
-
-        var eventOrganizerRole = await _roleRepository.FindByNameAsync(AppRole.EventOrganizer);
-        if (eventOrganizerRole == null)
+        foreach (var permission in deletedPermissions)
         {
-            _logger.LogWarning("Event organizer role not found.");
-            return;
-        }
-        
-        var permissions = await _permissionRepository.FilterAsync(new PermissionByIncludedNameSpecification(EventOrganizerPermissions.Provider));
-        var notGrantedPermissions = permissions.ExceptBy(eventOrganizerRole.Permissions.Select(x => x.PermissionId), x => x.Id);
-
-        if (!notGrantedPermissions.Any())
-        {
-            _logger.LogInformation("Admin role has all permissions.");
-            return;   
-        }
-        
-        foreach (var permission in notGrantedPermissions)
-        {
-            eventOrganizerRole.GrantPermission(permission.Id);
+            role.UnGrantPermission(permission.PermissionId);
         }
 
-        _roleRepository.Update(eventOrganizerRole);
+        _roleRepository.Update(role);
         await _unitOfWork.CommitAsync();
     }
 }

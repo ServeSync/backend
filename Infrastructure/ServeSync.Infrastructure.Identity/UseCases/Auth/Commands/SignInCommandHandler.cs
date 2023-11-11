@@ -79,7 +79,7 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
             {
                 AppRole.Admin,
                 AppRole.StudentAffair,
-                AppRole.EventOrganizer
+                AppRole.EventOrganization
             });
         }
         

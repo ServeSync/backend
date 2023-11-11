@@ -32,9 +32,15 @@ public static class StudentAffairPermissions
         Permissions.Events.Create,
         Permissions.Events.Edit,
         Permissions.Events.Approve,
+        Permissions.Events.Reject,
         Permissions.Events.Cancel,
         Permissions.Events.ApproveRegistration,
         Permissions.Events.RejectRegistration,
+        
+        Permissions.EventOrganizations.View,
+        Permissions.EventOrganizations.Create,
+        Permissions.EventOrganizations.Update,
+        Permissions.EventOrganizations.Delete,
         
         Permissions.EventCollaborationRequests.View,
         Permissions.EventCollaborationRequests.Approve

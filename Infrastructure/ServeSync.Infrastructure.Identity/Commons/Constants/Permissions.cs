@@ -39,6 +39,7 @@ public static class Permissions
         new(Events.Edit, "Chỉnh sửa sự kiện."),
         new(Events.Approve, "Duyệt sự kiện."),
         new(Events.Cancel, "Hủy sự kiện."),
+        new(Events.Reject, "Từ chối sự kiện."),
         new(Events.ApproveRegistration, "Duyệt đơn đăng ký tham gia."),
         new(Events.RejectRegistration, "Từ chối đơn đăng ký tham gia."),
         
