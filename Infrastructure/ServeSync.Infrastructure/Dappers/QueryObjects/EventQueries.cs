@@ -120,41 +120,47 @@ public class EventQueries : IEventQueries
                 if (row.StudentEventRegisterStudentId != null)
                 {
                     var tempEventRole = @event.Roles.First(x => x.Id == row.EventRoleId);
-                    tempEventRole.RegisteredStudents.Add(new RegisteredStudentInEventRoleReadModel()
+                    if (tempEventRole.RegisteredStudents.All(x => row.StudentEventRegisterId != x.Id))
                     {
-                        Id  = row.StudentEventRegisterId,
-                        Code = row.StudentEventRegisterCode,
-                        StudentId = row.StudentEventRegisterStudentId,
-                        Status = (EventRegisterStatus)row.StudentEventRegisterStatus,
-                        Name = row.StudentEventRegisterFullName,
-                        ImageUrl = row.StudentEventRegisterImageUrl,
-                        RegisteredAt = row.StudentEventRegisterCreated,
-                        IdentityId = row.StudentEventRegisterIdentityId,
-                        Email = row.StudentEventRegisterEmail,
-                        Phone = row.StudentEventRegisterPhone,
-                        HomeRoomName = row.StudentEventRegisterHomeRoomName
-                    });
+                        tempEventRole.RegisteredStudents.Add(new RegisteredStudentInEventRoleReadModel()
+                        {
+                            Id  = row.StudentEventRegisterId,
+                            Code = row.StudentEventRegisterCode,
+                            StudentId = row.StudentEventRegisterStudentId,
+                            Status = (EventRegisterStatus)row.StudentEventRegisterStatus,
+                            Name = row.StudentEventRegisterFullName,
+                            ImageUrl = row.StudentEventRegisterImageUrl,
+                            RegisteredAt = row.StudentEventRegisterCreated,
+                            IdentityId = row.StudentEventRegisterIdentityId,
+                            Email = row.StudentEventRegisterEmail,
+                            Phone = row.StudentEventRegisterPhone,
+                            HomeRoomName = row.StudentEventRegisterHomeRoomName
+                        });    
+                    }
                 }
 
                 if (row.StudentEventAttendanceInEventAttendanceInfoId != null)
                 {
                     var tempEventAttendanceInfo = @event.AttendanceInfos.First(x => x.Id == row.StudentEventAttendanceInEventAttendanceInfoId);
                     tempEventAttendanceInfo.AttendanceStudents = tempEventAttendanceInfo.AttendanceStudents ?? new List<AttendanceStudentInEventRoleReadModel>();
-                    tempEventAttendanceInfo.AttendanceStudents.Add(new AttendanceStudentInEventRoleReadModel()
+                    if (tempEventAttendanceInfo.AttendanceStudents.All(x => x.Id != row.StudentEventAttendanceId))
                     {
-                        Id = row.StudentEventAttendanceId,
-                        Code = row.StudentEventRegisterCode,
-                        StudentId = row.StudentEventRegisterStudentId, 
-                        Name = row.StudentEventRegisterFullName,
-                        ImageUrl = row.StudentEventRegisterImageUrl,
-                        AttendanceAt = row.StudentEventAttendanceAttendanceAt,
-                        IdentityId = row.StudentEventRegisterIdentityId,
-                        Email = row.StudentEventRegisterEmail,
-                        Phone = row.StudentEventRegisterPhone,
-                        Role = row.EventRoleName,
-                        HomeRoomName = row.StudentEventRegisterHomeRoomName,
-                        Score = row.EventRoleScore
-                    });
+                        tempEventAttendanceInfo.AttendanceStudents.Add(new AttendanceStudentInEventRoleReadModel()
+                        {
+                            Id = row.StudentEventAttendanceId,
+                            Code = row.StudentEventRegisterCode,
+                            StudentId = row.StudentEventRegisterStudentId, 
+                            Name = row.StudentEventRegisterFullName,
+                            ImageUrl = row.StudentEventRegisterImageUrl,
+                            AttendanceAt = row.StudentEventAttendanceAttendanceAt,
+                            IdentityId = row.StudentEventRegisterIdentityId,
+                            Email = row.StudentEventRegisterEmail,
+                            Phone = row.StudentEventRegisterPhone,
+                            Role = row.EventRoleName,
+                            HomeRoomName = row.StudentEventRegisterHomeRoomName,
+                            Score = row.EventRoleScore
+                        });    
+                    }
                 }
 
                 return @event;
