@@ -55,6 +55,16 @@ public class EventController : ControllerBase
         return Ok(SimpleIdResponse<Guid>.Create(id));
     }
     
+    [HttpPut("{id:guid}")]
+    [HasPermission(Permissions.Events.Edit)]
+    [EventAccessControl(EventSourceAccessControl.Event)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] EventUpdateDto dto)
+    {
+        await _mediator.Send(new UpdateEventCommand(id, dto));
+        return NoContent();
+    }
+    
     [HttpPost("register")]
     [HasRole(AppRole.Student)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

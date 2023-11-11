@@ -54,19 +54,84 @@ public class EventDomainService : IEventDomainService
         return @event;
     }
 
-    public Event AddAttendanceInfo(Event @event, DateTime startAt, DateTime endAt)
+    public async Task<Event> UpdateAsync(
+        Event @event,
+        string name, 
+        string introduction, 
+        string description, 
+        string imageUrl, 
+        EventType type,
+        DateTime startAt, 
+        DateTime endAt, 
+        Guid activityId, 
+        string fullAddress, 
+        double longitude, 
+        double latitude,
+        DateTime dateTime)
     {
-        @event.AddAttendanceInfo(startAt, endAt);
+        if (@event.RegistrationInfos.Any(x => x.StartAt < dateTime))
+        {
+            throw new EventCanNotBeUpdatedException(@event.Id);
+        }
+        
+        if (@event.ActivityId != activityId)
+        {
+            await CheckValidEventActivityExistedAsync(activityId);
+        }
+        
+        @event.Update(
+            name,
+            introduction,
+            description,
+            imageUrl,
+            type,
+            startAt,
+            endAt,
+            activityId,
+            fullAddress,
+            longitude,
+            latitude);
+
         return @event;
     }
 
-    public Event AddRole(Event @event, string name, string description, bool isNeedApprove, double score, int quantity)
+    public Event AddAttendanceInfo(Event @event, DateTime startAt, DateTime endAt, DateTime dateTime)
     {
-        @event.AddRole(name, description, isNeedApprove, score, quantity);
+        @event.AddAttendanceInfo(startAt, endAt, dateTime);
         return @event;
     }
 
-    public async Task<Event> AddDefaultRoleAsync(Event @event, int quantity)
+    public Event RemoveAttendanceInfo(Event @event, Guid id, DateTime dateTime)
+    {
+        @event.RemoveAttendanceInfo(id, dateTime);
+        return @event;
+    }
+
+    public Event UpdateAttendanceInfo(Event @event, Guid id, DateTime startAt, DateTime endAt, DateTime dateTime)
+    {
+        @event.UpdateAttendanceInfo(id, startAt, endAt, dateTime);
+        return @event;
+    }
+
+    public Event AddRole(Event @event, string name, string description, bool isNeedApprove, double score, int quantity, DateTime dateTime)
+    {
+        @event.AddRole(name, description, isNeedApprove, score, quantity, dateTime);
+        return @event;
+    }
+
+    public Event UpdateRole(Event @event, Guid id, string name, string description, bool isNeedApprove, double score, int quantity, DateTime dateTime)
+    {
+        @event.UpdateRole(id, name, description, isNeedApprove, score, quantity, dateTime);
+        return @event;
+    }
+
+    public Event RemoveRole(Event @event, Guid id, DateTime dateTime)
+    {
+        @event.RemoveRole(id, dateTime);
+        return @event;
+    }
+
+    public async Task<Event> AddDefaultRoleAsync(Event @event, int quantity, DateTime dateTime)
     {
         var activity = await _eventActivityRepository.FindByIdAsync(@event.ActivityId);
         
@@ -75,20 +140,33 @@ public class EventDomainService : IEventDomainService
             "Người tham dự sự kiện",
             false, 
             activity!.MaxScore,
-            quantity);
+            quantity,
+            dateTime);
         
         return @event;
     }
 
-    public Event AddOrganization(Event @event, EventOrganization organization, string role)
+    public Event AddOrganization(Event @event, EventOrganization organization, string role, DateTime dateTime)
     {
-        @event.AddOrganization(organization.Id, role);
+        @event.AddOrganization(organization.Id, role, dateTime);
         return @event;
     }
 
-    public Event SetRepresentativeOrganization(Event @event, Guid organizationId)
+    public Event RemoveOrganization(Event @event, Guid id, DateTime dateTime)
     {
-        @event.SetRepresentativeOrganization(organizationId);
+        @event.RemoveOrganization(id, dateTime);
+        return @event;
+    }
+
+    public Event UpdateOrganization(Event @event, Guid id, EventOrganization eventOrganization, string role, DateTime dateTime)
+    {
+        @event.UpdateOrganization(id, eventOrganization.Id, role, dateTime);
+        return @event;
+    }
+
+    public Event SetRepresentativeOrganization(Event @event, Guid organizationId, DateTime dateTime)
+    {
+        @event.SetRepresentativeOrganization(organizationId, dateTime);
         return @event;
     }
 
@@ -96,20 +174,50 @@ public class EventDomainService : IEventDomainService
         Event @event, 
         EventOrganization organization, 
         EventOrganizationContact representative,
-        string role)
+        string role,
+        DateTime dateTime)
     {
         if (representative.EventOrganizationId != organization.Id)
         {
             throw new EventOrganizationContactDoesNotBelongToOrganizationException(organization.Id, representative.Id);
         }
         
-        @event.AddOrganizationRepresentative(organization.Id, representative.Id, role);
+        @event.AddOrganizationRepresentative(organization.Id, representative.Id, role, dateTime);
         return @event;
     }
 
-    public Event AddRegistrationInfo(Event @event, DateTime startAt, DateTime endAt, DateTime currentDateTime)
+    public Event UpdateRepresentative(Event @event, EventOrganization organization, Guid id, EventOrganizationContact representative, string role, DateTime dateTime)
     {
-        @event.AddRegistrationInfo(startAt, endAt, currentDateTime);
+        if (representative.EventOrganizationId != organization.Id)
+        {
+            throw new EventOrganizationContactDoesNotBelongToOrganizationException(organization.Id, representative.Id);
+        }
+        
+        @event.UpdateOrganizationRepresentative(organization.Id, id, representative.Id, role, dateTime);
+        return @event;
+    }
+
+    public Event RemoveRepresentative(Event @event, EventOrganization organization, Guid id, DateTime dateTime)
+    {
+        @event.RemoveOrganizationRepresentative(organization.Id, id, dateTime);
+        return @event;
+    }
+
+    public Event AddRegistrationInfo(Event @event, DateTime startAt, DateTime endAt, DateTime dateTime)
+    {
+        @event.AddRegistrationInfo(startAt, endAt, dateTime);
+        return @event;
+    }
+
+    public Event RemoveRegistrationInfo(Event @event, Guid id, DateTime dateTime)
+    {
+        @event.RemoveRegistrationInfo(id, dateTime);
+        return @event;
+    }
+
+    public Event UpdateRegistrationInfo(Event @event, Guid id, DateTime startAt, DateTime endAt, DateTime dateTime)
+    {
+        @event.UpdateRegistrationInfo(id, startAt, endAt, dateTime);
         return @event;
     }
 

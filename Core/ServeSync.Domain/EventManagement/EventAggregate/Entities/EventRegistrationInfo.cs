@@ -17,6 +17,12 @@ public class EventRegistrationInfo : Entity
         SetEndAt(endAt);
         EventId = Guard.NotNull(eventId, nameof(EventId));
     }
+
+    internal void Update(DateTime startAt, DateTime endAt)
+    {
+        StartAt = Guard.Range(startAt, nameof(StartAt), DateTime.UtcNow);
+        SetEndAt(endAt);
+    }
     
     public void SetEndAt(DateTime endAt)
     {
