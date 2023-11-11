@@ -119,6 +119,12 @@ public class EventDomainService : IEventDomainService
         return @event;
     }
 
+    public Event Reject(Event @event)
+    {
+        @event.Reject();
+        return @event;
+    }
+
     private async Task CheckValidEventActivityExistedAsync(Guid activityId)
     {
         if (!await _eventActivityRepository.AnyAsync(new EventActivityFromEventCategorySpecification(activityId)))

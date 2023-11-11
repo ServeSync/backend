@@ -24,7 +24,13 @@ public class IdentityService : IIdentityService
         _mapper = mapper;
         _userManager = userManager;
     }
-    
+
+    public async Task<IdentityUserDto?> GetByIdAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        return _mapper.Map<IdentityUserDto>(user);
+    }
+
     public async Task<IEnumerable<string>> GetPermissionsForUserAsync(string userId)
     {
         var permissions = await _mediator.Send(new GetAllPermissionForUserQuery(userId));

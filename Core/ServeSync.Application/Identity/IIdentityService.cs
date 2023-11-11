@@ -4,6 +4,8 @@ namespace ServeSync.Application.Identity;
 
 public interface IIdentityService
 {
+    Task<IdentityUserDto?> GetByIdAsync(string userId); 
+    
     Task<IEnumerable<string>> GetPermissionsForUserAsync(string userId);
 
     Task<IEnumerable<string>> GetRolesAsync(string userId);

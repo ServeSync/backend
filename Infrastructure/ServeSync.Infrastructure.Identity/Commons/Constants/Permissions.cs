@@ -125,6 +125,7 @@ public static class Permissions
         
         public const string Approve = $"{Group}.Approve";
         public const string Cancel = $"{Group}.Cancel";
+        public const string Reject = $"{Group}.Reject";
 
         public const string ApproveRegistration = $"{Group}.ApproveRegistration";
         public const string RejectRegistration = $"{Group}.RejectRegistration";
