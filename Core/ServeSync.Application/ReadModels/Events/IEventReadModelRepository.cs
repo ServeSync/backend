@@ -1,4 +1,5 @@
 ﻿using ServeSync.Application.ReadModels.Abstracts;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 
 namespace ServeSync.Application.ReadModels.Events;
 
@@ -8,7 +9,7 @@ public interface IEventReadModelRepository : IReadModelRepository<EventReadModel
     
     Task<List<EventRoleReadModel>?> GetEventRolesAsync(Guid eventId);
     
-    Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventAsync(Guid eventId, int page, int size); 
+    Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventAsync(Guid eventId, EventRegisterStatus? status, int page, int size); 
     
     Task<(List<AttendanceStudentInEventRoleReadModel>?, int?)> GetPagedAttendanceStudentsInEventAsync(Guid eventId, int page, int size);
 

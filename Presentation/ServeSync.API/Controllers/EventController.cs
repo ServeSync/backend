@@ -78,7 +78,7 @@ public class EventController : ControllerBase
     [ProducesResponseType(typeof(PagedResultDto<RegisteredStudentInEventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRegisteredStudentsAsync(Guid id, [FromQuery] RegisteredStudentFilterRequestDto dto)
     {
-        var registeredStudents = await _mediator.Send(new GetAllRegisteredStudentsQuery(id, dto.Page, dto.Size));
+        var registeredStudents = await _mediator.Send(new GetAllRegisteredStudentsQuery(id, dto.Status, dto.Page, dto.Size));
         return Ok(registeredStudents);
     }
     

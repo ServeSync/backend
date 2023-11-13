@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using ServeSync.Application.ReadModels.Events;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 
 namespace ServeSync.Infrastructure.MongoDb.Repositories;
 
@@ -29,7 +30,7 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
         return @event?.Roles;
     }
 
-    public async Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventAsync(Guid eventId, int page, int size)
+    public async Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventAsync(Guid eventId, EventRegisterStatus? status, int page, int size)
     {
         var registeredStudents = (await Collection.AsQueryable()
             .FirstOrDefaultAsync(x => x.Id == eventId))
@@ -42,12 +43,16 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
                 Name = registeredStudent.Name,
                 Email = registeredStudent.Email,
                 Phone = registeredStudent.Phone,
+                Description = registeredStudent.Description,
+                RejectReason = registeredStudent.RejectReason,
                 Status = registeredStudent.Status,
                 ImageUrl = registeredStudent.ImageUrl,
                 RegisteredAt = registeredStudent.RegisteredAt,
                 HomeRoomName = registeredStudent.HomeRoomName,
                 Role = role.Name,
+                IdentityId = registeredStudent.IdentityId
             })
+            .Where(x => !status.HasValue || x.Status == status.Value)
             .OrderBy(x => x.RegisteredAt)
             .Skip((page - 1) * size)
             .Take(size)
@@ -57,7 +62,7 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             .FirstOrDefaultAsync(x => x.Id == eventId))
             ?.Roles
             .SelectMany(x => x.RegisteredStudents)
-            .Count();
+            .Count(x => !status.HasValue || x.Status == status.Value);
 
         return (registeredStudents, total);
     }
