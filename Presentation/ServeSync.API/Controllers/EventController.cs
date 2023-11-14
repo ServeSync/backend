@@ -148,9 +148,9 @@ public class EventController : ControllerBase
     [HttpPost("sync")]
     [HasRole(AppRole.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> SyncEventsAsync()
+    public async Task<IActionResult> SyncEventsAsync([FromQuery] Guid[] ids)
     {
-        await _mediator.Send(new SyncEventsCommand());
+        await _mediator.Send(new SyncEventsCommand(ids));
         return NoContent();
     }
 }

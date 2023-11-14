@@ -21,7 +21,17 @@ public class SyncEventsCommandHandler : ICommandHandler<SyncEventsCommand>
     
     public async Task Handle(SyncEventsCommand request, CancellationToken cancellationToken)
     {
-        var events = await _eventRepository.FindAllAsync();
+        List<Event> events;
+        
+        if (request.EventIds.Length > 0)
+        {
+            events = (await _eventRepository.FindByIncludedIdsAsync(request.EventIds)).ToList();
+        }
+        else
+        {
+            events = (await _eventRepository.FindAllAsync()).ToList();
+        }
+        
         foreach (var @event in events)
         {
             SyncEventData(@event.Id);

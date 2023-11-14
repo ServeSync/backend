@@ -243,6 +243,11 @@ public class StudentDomainService : IStudentDomainService
         }
             
         student.ApproveEventRegister(eventRegisterId);
+        
+        foreach (var register in student.EventRegisters.Where(x => x.Id != eventRegisterId && @event.Roles.Any(y => y.Id == x.EventRoleId)))
+        {
+            register.Reject("Đã tham gia với vai trò khác!");
+        }
         return student;
     }
 

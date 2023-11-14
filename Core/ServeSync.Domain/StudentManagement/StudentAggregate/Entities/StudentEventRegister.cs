@@ -51,6 +51,7 @@ public class StudentEventRegister : AuditableEntity
         
         Status = EventRegisterStatus.Rejected;
         RejectReason = reason;
+        AddDomainEvent(new StudentEventRegisterRejectedDomainEvent(StudentId, EventRoleId, reason));
     }
     
     internal void Attendance(Guid eventAttendanceInfoId)
