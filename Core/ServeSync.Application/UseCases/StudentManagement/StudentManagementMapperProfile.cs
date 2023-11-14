@@ -25,23 +25,24 @@ public class StudentManagementMapperProfile : Profile
         CreateMap<Student, BasicStudentDto>();
         CreateMap<Student, FlatStudentDto>()
             .ForMember(dest => dest.FacultyId,
-                opt => opt.MapFrom(src => src.HomeRoom.FacultyId));
+                opt => opt.MapFrom(src => src.HomeRoom!.FacultyId));
 
         CreateMap<Student, StudentDetailDto>()
             .ForMember(dest => dest.HomeRoom,
                 opt => opt.MapFrom(src => new HomeRoomDto()
-                    { Id = src.HomeRoomId, Name = src.HomeRoom.Name, FacultyId = src.HomeRoom.FacultyId }))
+                    { Id = src.HomeRoomId, Name = src.HomeRoom!.Name, FacultyId = src.HomeRoom.FacultyId }))
             .ForMember(dest => dest.EducationProgram,
                 opt => opt.MapFrom(src => new EducationProgramDto()
-                    { Id = src.EducationProgramId, Name = src.EducationProgram.Name }))
+                    { Id = src.EducationProgramId, Name = src.EducationProgram!.Name }))
             .ForMember(dest => dest.Faculty,
                 opt => opt.MapFrom(src => new FacultyDto()
-                    { Id = src.HomeRoom.FacultyId, Name = src.HomeRoom.Faculty.Name }))
+                    { Id = src.HomeRoom!.FacultyId, Name = src.HomeRoom.Faculty!.Name }))
             .ForMember(dest => dest.EducationProgram, opt => opt.MapFrom(src => new EducationProgramDto()
                     {
-                        Id = src.EducationProgramId, Name = src.EducationProgram.Name,
+                        Id = src.EducationProgramId, Name = src.EducationProgram!.Name,
                         RequiredActivityScore = src.EducationProgram.RequiredActivityScore,
                         RequiredCredit = src.EducationProgram.RequiredCredit
-                    }));
+                    }))
+            .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.EventRegisters.Sum(x => x.StudentEventAttendance != null ? x.EventRole!.Score : 0)));
     }
 }

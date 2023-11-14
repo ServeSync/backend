@@ -30,7 +30,8 @@ public class EventManagementMapperProfile : Profile
 
         CreateMap<EventActivity, EventActivityDetailDto>();
 
-        CreateMap<EventOrganization, EventOrganizationDto>();
+        CreateMap<EventOrganization, EventOrganizationDto>()
+            .ForMember(dest => dest.HostedEvents, opt => opt.MapFrom(src => src.OrganizationInEvents.Count));
 
         CreateMap<EventCategory, EventCategoryDto>();
 
@@ -101,9 +102,10 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.UtcNow)));
 
         CreateMap<EventCollaborationRequest, EventCollaborationRequestDetailDto>()
-        .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.UtcNow)));
-
-        CreateMap<EventOrganization, EventOrganizationDetailDto>();
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.GetStatus(DateTime.UtcNow)));
+        
+        CreateMap<EventOrganization, EventOrganizationDetailDto>()
+            .ForMember(dest => dest.HostedEvents, opt => opt.MapFrom(src => src.OrganizationInEvents.Count));;
 
         CreateMap<EventOrganization, EventOrganizationUpdateDto>();
     }

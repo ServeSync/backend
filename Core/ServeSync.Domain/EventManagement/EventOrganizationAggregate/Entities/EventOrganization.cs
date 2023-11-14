@@ -1,4 +1,5 @@
-﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
+﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Models;
 
@@ -14,6 +15,7 @@ public class EventOrganization : AuditableAggregateRoot
     public string ImageUrl { get; private set; }
     public string? IdentityId { get; private set; }
     public List<EventOrganizationContact> Contacts { get; private set; }
+    public List<OrganizationInEvent> OrganizationInEvents { get; private set; } = new();
     
     internal EventOrganization(
         string name, 

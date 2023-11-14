@@ -18,8 +18,12 @@ public class FilterStudentSpecification : PagingAndSortingSpecification<Student,
         _search = search;
         _gender = gender;
         
-        AddInclude(x => x.HomeRoom);
-        AddInclude(x => x.EducationProgram);
+        AddInclude(x => x.EventRegisters);
+        AddInclude("EventRegisters.EventRole");
+        AddInclude("EventRegisters.StudentEventAttendance");
+        
+        AddInclude(x => x.HomeRoom!);
+        AddInclude(x => x.EducationProgram!);
         AddInclude("HomeRoom.Faculty");
     }
     
