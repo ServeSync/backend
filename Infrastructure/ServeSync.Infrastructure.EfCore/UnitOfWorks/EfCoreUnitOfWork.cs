@@ -24,13 +24,9 @@ public class EfCoreUnitOfWork : IUnitOfWork
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<int> CommitAsync()
+    public Task<int> CommitAsync()
     {
-        var result = await _dbContext.SaveChangesAsync();
-
-        await DispatchPersistedDomainEventsAsync();
-        
-        return result;
+        return _dbContext.SaveChangesAsync();
     }
 
     public async Task BeginTransactionAsync()
@@ -72,33 +68,5 @@ public class EfCoreUnitOfWork : IUnitOfWork
     {
         var scope = _serviceProvider.CreateScope();
         return scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-    }
-    
-    
-    private async Task DispatchPersistedDomainEventsAsync()
-    {
-        var domainEntities = _dbContext.ChangeTracker.Entries<IDomainModel>()
-            .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any())
-            .ToList();
-
-        var domainEvents = domainEntities
-            .SelectMany(x => x.Entity.DomainEvents)
-            .Distinct()
-            .ToList();
-
-        domainEntities.ToList()
-            .ForEach(entity => entity.Entity.ClearDomainEvents());
-
-        foreach (var domainEvent in domainEvents)
-        {
-            var domainEventHandlerType = typeof(IPersistedDomainEventHandler<>).MakeGenericType(domainEvent.GetType());
-            var domainEventHandlers = _serviceProvider.GetServices(domainEventHandlerType);
-            
-            foreach (var domainEventHandler in domainEventHandlers)
-            {
-                var handleMethod = domainEventHandlerType.GetMethod(nameof(IPersistedDomainEventHandler<IDomainEvent>.Handle));
-                await (Task) handleMethod!.Invoke(domainEventHandler, new object[] { domainEvent, default(CancellationToken) });
-            }
-        }
     }
 }

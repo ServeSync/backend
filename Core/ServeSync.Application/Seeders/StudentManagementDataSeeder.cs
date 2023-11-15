@@ -217,7 +217,7 @@ public class StudentManagementDataSeeder : IDataSeeder
         }
         catch (Exception e)
         {
-            await _unitOfWork.CommitTransactionAsync(true);
+            await _unitOfWork.RollbackTransactionAsync();
             _logger.LogError("Seeding students data failed: {Message}", e.Message);
         }
     }
