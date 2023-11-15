@@ -69,9 +69,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
             .Distinct()
             .ToList();
 
-        domainEntities.ToList()
-            .ForEach(entity => entity.Entity.ClearDomainEvents());
-
         foreach (var domainEvent in domainEvents)
         {
             _logger.LogInformation("Dispatching domain event: {EventName}", domainEvent.GetType().Name);

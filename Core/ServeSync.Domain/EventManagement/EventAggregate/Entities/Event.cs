@@ -375,7 +375,7 @@ public class Event : AuditableAggregateRoot
 
     public void Approve(DateTime dateTime)
     {
-        var startTime = RegistrationInfos.Min(x => x.StartAt); ;
+        var startTime = RegistrationInfos.Min(x => x.StartAt);
         if (Status == EventStatus.Pending && dateTime < startTime)
         {
             Status = EventStatus.Approved;

@@ -11,12 +11,12 @@ using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 namespace ServeSync.Application.DomainEventHandlers.EventManagement.Events;
 
 public class SyncEventReadModelDomainEventHandler : 
-    IDomainEventHandler<EventUpdatedDomainEvent>, 
-    IDomainEventHandler<NewEventCreatedDomainEvent>,
-    IDomainEventHandler<StudentEventRegisterApprovedDomainEvent>,
-    IDomainEventHandler<StudentEventRegisterRejectedDomainEvent>,
-    IDomainEventHandler<StudentAttendedToEventDomainEvent>,
-    IDomainEventHandler<StudentRegisteredToEventRoleDomainEvent>
+    IPersistedDomainEventHandler<EventUpdatedDomainEvent>, 
+    IPersistedDomainEventHandler<NewEventCreatedDomainEvent>,
+    IPersistedDomainEventHandler<StudentEventRegisterApprovedDomainEvent>,
+    IPersistedDomainEventHandler<StudentEventRegisterRejectedDomainEvent>,
+    IPersistedDomainEventHandler<StudentAttendedToEventDomainEvent>,
+    IPersistedDomainEventHandler<StudentRegisteredToEventRoleDomainEvent>
 {
     private readonly IBackGroundJobManager _backGroundJobManager;
     private readonly IBasicReadOnlyRepository<EventRole, Guid> _eventRoleRepository;
