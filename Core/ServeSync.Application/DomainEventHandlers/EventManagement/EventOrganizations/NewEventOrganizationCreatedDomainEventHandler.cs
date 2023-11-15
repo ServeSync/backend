@@ -31,7 +31,7 @@ public class NewEventOrganizationCreatedDomainEventHandler : IDomainEventHandler
     {
         var userName = Guid.NewGuid().ToString("n").Substring(0, 8);
         var password = Guid.NewGuid().ToString("n").Substring(0, 8);
-        var result = await _identityService.CreateEventOrganizationContactAsync(
+        var result = await _identityService.CreateEventOrganizationAsync(
             notification.Organization.Name,
             userName,
             notification.Organization.ImageUrl,

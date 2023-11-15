@@ -1,4 +1,5 @@
-﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
+﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Specifications;
 
@@ -79,6 +80,7 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         }
         
         _eventOrganizationRepository.Delete(eventOrganization);
+        eventOrganization.AddDomainEvent(new EventOrganizationDeletedDomainEvent(eventOrganization.Id, eventOrganization.IdentityId));
     }
 
     private async Task CheckDuplicateEmailAsync(string email)
