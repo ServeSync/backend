@@ -24,6 +24,7 @@ builder.Services
     .AddCloudinary(builder.Configuration)
     .AddQueryObjects()
     .AddMongoDB(builder.Configuration)
+    .AddPersistedDomainEventHandlers()
     .AddHangFireBackGroundJob(builder.Configuration);
 
 builder.Services.AddControllers()

@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Data;
+using ServeSync.Domain.SeedWorks.Events;
+using ServeSync.Domain.SeedWorks.Models.Interfaces;
 
 namespace ServeSync.Infrastructure.EfCore.UnitOfWorks;
 
@@ -23,9 +24,13 @@ public class EfCoreUnitOfWork : IUnitOfWork
         _serviceProvider = serviceProvider;
     }
 
-    public Task<int> CommitAsync()
+    public async Task<int> CommitAsync()
     {
-        return _dbContext.SaveChangesAsync();
+        var result = await _dbContext.SaveChangesAsync();
+
+        await DispatchPersistedDomainEventsAsync();
+        
+        return result;
     }
 
     public async Task BeginTransactionAsync()
@@ -67,5 +72,33 @@ public class EfCoreUnitOfWork : IUnitOfWork
     {
         var scope = _serviceProvider.CreateScope();
         return scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+    }
+    
+    
+    private async Task DispatchPersistedDomainEventsAsync()
+    {
+        var domainEntities = _dbContext.ChangeTracker.Entries<IDomainModel>()
+            .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any())
+            .ToList();
+
+        var domainEvents = domainEntities
+            .SelectMany(x => x.Entity.DomainEvents)
+            .Distinct()
+            .ToList();
+
+        domainEntities.ToList()
+            .ForEach(entity => entity.Entity.ClearDomainEvents());
+
+        foreach (var domainEvent in domainEvents)
+        {
+            var domainEventHandlerType = typeof(IPersistedDomainEventHandler<>).MakeGenericType(domainEvent.GetType());
+            var domainEventHandlers = _serviceProvider.GetServices(domainEventHandlerType);
+            
+            foreach (var domainEventHandler in domainEventHandlers)
+            {
+                var handleMethod = domainEventHandlerType.GetMethod(nameof(IPersistedDomainEventHandler<IDomainEvent>.Handle));
+                await (Task) handleMethod!.Invoke(domainEventHandler, new object[] { domainEvent, default(CancellationToken) });
+            }
+        }
     }
 }

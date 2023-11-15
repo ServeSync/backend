@@ -42,6 +42,7 @@ using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Settings;
 using ServeSync.Application.Caching;
 using ServeSync.Application.Caching.Interfaces;
+using ServeSync.Application.DomainEventHandlers.EventManagement.Events;
 using ServeSync.Application.Identity;
 using ServeSync.Application.ImageUploader;
 using ServeSync.Application.MailSender;
@@ -53,6 +54,7 @@ using ServeSync.Application.Seeders;
 using ServeSync.Application.SeedWorks.Behavior;
 using ServeSync.Application.SeedWorks.Schedulers;
 using ServeSync.Domain.EventManagement.EventAggregate;
+using ServeSync.Domain.EventManagement.EventAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.DomainServices;
@@ -60,6 +62,7 @@ using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
+using ServeSync.Domain.SeedWorks.Events;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.FacultyAggregate;
@@ -67,6 +70,7 @@ using ServeSync.Domain.StudentManagement.FacultyAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
+using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
 using ServeSync.Infrastructure.Caching;
 using ServeSync.Infrastructure.Cloudinary;
@@ -345,6 +349,18 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEventOrganizationDomainService, EventOrganizationDomainService>();
         services.AddScoped<IEventCollaborationRequestDomainService, EventCollaborationRequestDomainService>();
         services.AddScoped<IEventDomainService, EventDomainService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddPersistedDomainEventHandlers(this IServiceCollection services)
+    {
+        services.AddScoped<IPersistedDomainEventHandler<EventUpdatedDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<NewEventCreatedDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentEventRegisterApprovedDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentEventRegisterRejectedDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentAttendedToEventDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentRegisteredToEventRoleDomainEvent>, SyncEventReadModelDomainEventHandler>();
 
         return services;
     }
