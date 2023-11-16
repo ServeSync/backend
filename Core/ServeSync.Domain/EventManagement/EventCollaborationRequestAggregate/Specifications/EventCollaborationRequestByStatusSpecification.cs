@@ -8,10 +8,12 @@ namespace ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Sp
 public class EventCollaborationRequestByStatusSpecification : Specification<EventCollaborationRequest, Guid>
 {
     private readonly CollaborationRequestStatus _status;
+    private readonly DateTime _dateTime;
     
-    public EventCollaborationRequestByStatusSpecification(CollaborationRequestStatus status)
+    public EventCollaborationRequestByStatusSpecification(CollaborationRequestStatus status, DateTime dateTime)
     {
         _status = status;
+        _dateTime = dateTime;
     }
     
     public override Expression<Func<EventCollaborationRequest, bool>> ToExpression()
@@ -19,6 +21,11 @@ public class EventCollaborationRequestByStatusSpecification : Specification<Even
         if (_status == CollaborationRequestStatus.Expired)
         {
             return x => x.Status == CollaborationRequestStatus.Pending && x.StartAt.AddDays(-1) <= DateTime.UtcNow;
+        }
+
+        if (_status == CollaborationRequestStatus.Pending)
+        {
+            return x => x.Status == CollaborationRequestStatus.Pending && x.StartAt.AddDays(-1) > DateTime.UtcNow;
         }
         
         return x => x.Status == _status;
