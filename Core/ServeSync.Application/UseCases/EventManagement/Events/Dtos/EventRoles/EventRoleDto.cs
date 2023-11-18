@@ -14,6 +14,7 @@ public class BasicEventRoleDto
 
 public class EventRoleDto : BasicEventRoleDto
 {
+    public EventRegisterStatus? Status { get; set; }
     public bool IsRegistered { get; set; }
     public int Registered { get; set; }
     public int ApprovedRegistered { get; set; }

@@ -52,6 +52,7 @@ public class GetEventByIdQueryHandler : IQueryHandler<GetEventByIdQuery, EventDe
             eventDetailDto.Roles.ForEach(x =>
             {
                 x.IsRegistered = @event.Roles.Any(y => y.RegisteredStudents.Any(z => z.IdentityId == _currentUser.Id && y.Id == x.Id));
+                x.Status = @event.Roles.Where(y => y.Id == x.Id).SelectMany(y => y.RegisteredStudents).FirstOrDefault(y => y.IdentityId == _currentUser.Id)?.Status;
             });
         }
 
