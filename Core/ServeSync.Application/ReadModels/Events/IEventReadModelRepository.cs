@@ -1,4 +1,6 @@
 ﻿using ServeSync.Application.ReadModels.Abstracts;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 
 namespace ServeSync.Application.ReadModels.Events;
@@ -20,4 +22,8 @@ public interface IEventReadModelRepository : IReadModelRepository<EventReadModel
     Task<double> GetSumScoreOfAttendedEventsOfStudentAsync(Guid requestStudentId);
 
     Task<EventReadModel?> GetEventByStudentRegistrationAsync(Guid eventRegisterId);
+
+    Task UpdateStudentInEventsAsync(Student student);
+
+    Task UpdateOrganizationInEventsAsync(EventOrganization eventOrganization);
 }

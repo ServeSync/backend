@@ -69,6 +69,8 @@ public class EventOrganization : AuditableAggregateRoot
         ImageUrl = Guard.NotNullOrEmpty(imageUrl, nameof(ImageUrl));
         Description = description;
         Address = address;
+        
+        AddDomainEvent(new EventOrganizationUpdatedDomainEvent(this));
     }
     
     public void SetIdentityId(string identityId)
