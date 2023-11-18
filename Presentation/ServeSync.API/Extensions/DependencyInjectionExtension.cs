@@ -42,7 +42,9 @@ using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Settings;
 using ServeSync.Application.Caching;
 using ServeSync.Application.Caching.Interfaces;
+using ServeSync.Application.DomainEventHandlers.EventManagement.EventOrganizations;
 using ServeSync.Application.DomainEventHandlers.EventManagement.Events;
+using ServeSync.Application.DomainEventHandlers.StudentManagement;
 using ServeSync.Application.Identity;
 using ServeSync.Application.ImageUploader;
 using ServeSync.Application.MailSender;
@@ -53,6 +55,7 @@ using ServeSync.Application.ReadModels.Events;
 using ServeSync.Application.Seeders;
 using ServeSync.Application.SeedWorks.Behavior;
 using ServeSync.Application.SeedWorks.Schedulers;
+using ServeSync.Application.UseCases.StudentManagement.Students.Jobs;
 using ServeSync.Domain.EventManagement.EventAggregate;
 using ServeSync.Domain.EventManagement.EventAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
@@ -61,6 +64,7 @@ using ServeSync.Domain.EventManagement.EventCategoryAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
 using ServeSync.Domain.SeedWorks.Events;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
@@ -361,7 +365,9 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPersistedDomainEventHandler<StudentEventRegisterRejectedDomainEvent>, SyncEventReadModelDomainEventHandler>();
         services.AddScoped<IPersistedDomainEventHandler<StudentAttendedToEventDomainEvent>, SyncEventReadModelDomainEventHandler>();
         services.AddScoped<IPersistedDomainEventHandler<StudentRegisteredToEventRoleDomainEvent>, SyncEventReadModelDomainEventHandler>();
-
+        services.AddScoped<IPersistedDomainEventHandler<StudentContactInfoUpdatedDomainEvent>, SyncStudentReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentCodeUpdatedDomainEvent>, SyncStudentReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<EventOrganizationUpdatedDomainEvent>, SyncEventOrganizationReadModelDomainEventHandler>();
         return services;
     }
 

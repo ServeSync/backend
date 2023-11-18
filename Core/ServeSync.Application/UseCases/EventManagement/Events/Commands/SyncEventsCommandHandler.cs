@@ -1,8 +1,10 @@
-﻿using ServeSync.Application.SeedWorks.Cqrs;
+﻿using ServeSync.Application.ReadModels.Events;
+using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Schedulers;
 using ServeSync.Application.UseCases.EventManagement.Events.Jobs;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.SeedWorks.Repositories;
+using ServeSync.Domain.StudentManagement.StudentAggregate;
 
 namespace ServeSync.Application.UseCases.EventManagement.Events.Commands;
 
