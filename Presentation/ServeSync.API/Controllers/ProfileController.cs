@@ -1,10 +1,13 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Queries;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
+using ServeSync.Infrastructure.Identity.UseCases.Auth.Commands;
+using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Users.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Users.Queries;
 
@@ -28,6 +31,15 @@ public class ProfileController : ControllerBase
     {
         var userInfo = await _mediator.Send(new GetUserInfoQuery());
         return Ok(userInfo);
+    }
+    
+    [HttpPost("change-password")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ChangePasswordAsync(ChangePasswordDto dto)
+    {
+        await _mediator.Send(new ChangePasswordCommand(dto.CurrentPassword, dto.NewPassword));
+        return NoContent();
     }
     
     [HttpGet("student")]
