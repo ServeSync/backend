@@ -32,10 +32,14 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
 
     public async Task<(List<RegisteredStudentInEventReadModel>?, int?)> GetPagedRegisteredStudentsInEventAsync(Guid eventId, EventRegisterStatus? status, int page, int size)
     {
-        var registeredStudents = (await Collection.AsQueryable()
-            .FirstOrDefaultAsync(x => x.Id == eventId))
-            ?.Roles
-            .SelectMany(x => x.RegisteredStudents, (role, registeredStudent) => new RegisteredStudentInEventReadModel()
+        var queryable = Collection.AsQueryable()
+            .Where(x => x.Id == eventId)
+            .SelectMany(x => x.Roles, (eventReadModel, role) => new
+            {
+                Role = role,
+                RegisteredStudents = role.RegisteredStudents
+            })
+            .SelectMany(x => x.RegisteredStudents, (row, registeredStudent) => new RegisteredStudentInEventReadModel()
             {
                 Id = registeredStudent.Id,
                 Code = registeredStudent.Code,
@@ -49,53 +53,48 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
                 ImageUrl = registeredStudent.ImageUrl,
                 RegisteredAt = registeredStudent.RegisteredAt,
                 HomeRoomName = registeredStudent.HomeRoomName,
-                Role = role.Name,
+                Role = row.Role.Name,
                 IdentityId = registeredStudent.IdentityId
             })
-            .Where(x => !status.HasValue || x.Status == status.Value)
+            .Where(x => !status.HasValue || x.Status == status.Value);
+            
+        var registeredStudents = await queryable
             .OrderBy(x => x.RegisteredAt)
             .Skip((page - 1) * size)
             .Take(size)
-            .ToList();
+            .ToListAsync();
 
-        var total = (await Collection.AsQueryable()
-            .FirstOrDefaultAsync(x => x.Id == eventId))
-            ?.Roles
-            .SelectMany(x => x.RegisteredStudents)
-            .Count(x => !status.HasValue || x.Status == status.Value);
+        var total = await queryable.CountAsync();
 
         return (registeredStudents, total);
     }
 
     public async Task<(List<AttendanceStudentInEventRoleReadModel>?, int?)> GetPagedAttendanceStudentsInEventAsync(Guid eventId, int page, int size)
     {
-        var attendanceStudents = (await Collection.AsQueryable()
-            .FirstOrDefaultAsync(x => x.Id == eventId))
-            ?.AttendanceInfos
-            .SelectMany(x => x.AttendanceStudents, (attendanceInfo, attendanceStudent) => new AttendanceStudentInEventRoleReadModel()
+        var queryable = Collection.AsQueryable()
+            .Where(x => x.Id == eventId)
+            .SelectMany(x => x.AttendanceInfos)
+            .SelectMany(x => x.AttendanceStudents, (row, attendanceStudent)  => new AttendanceStudentInEventRoleReadModel()
             {
-                    Id = attendanceStudent.Id,
-                    Code = attendanceStudent.Code,
-                    StudentId = attendanceStudent.StudentId,
-                    Name = attendanceStudent.Name,
-                    Email = attendanceStudent.Email,
-                    Phone = attendanceStudent.Phone,
-                    ImageUrl = attendanceStudent.ImageUrl,
-                    AttendanceAt = attendanceStudent.AttendanceAt,
-                    HomeRoomName = attendanceStudent.HomeRoomName,
-                    Role = attendanceStudent.Role,
-                    Score = attendanceStudent.Score
-            })
+                Id = attendanceStudent.Id,
+                Code = attendanceStudent.Code,
+                StudentId = attendanceStudent.StudentId,
+                Name = attendanceStudent.Name,
+                Email = attendanceStudent.Email,
+                Phone = attendanceStudent.Phone,
+                ImageUrl = attendanceStudent.ImageUrl,
+                AttendanceAt = attendanceStudent.AttendanceAt,
+                HomeRoomName = attendanceStudent.HomeRoomName,
+                Role = attendanceStudent.Role,
+                Score = attendanceStudent.Score
+            });
+        var attendanceStudents = await queryable
             .OrderBy(x => x.AttendanceAt)
             .Skip((page - 1) * size)
             .Take(size)
-            .ToList();
+            .ToListAsync();
         
-        var total = (await Collection.AsQueryable()
-            .FirstOrDefaultAsync(x => x.Id == eventId))
-            ?.AttendanceInfos
-            .SelectMany(x => x.AttendanceStudents)
-            .Count();
+        var total = await queryable.CountAsync();
 
         return (attendanceStudents, total);
     }
@@ -120,11 +119,9 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
 
     public Task<int> GetCountNumberOfAttendedEventsOfStudentAsync(Guid studentId)
     {
-        return Task.FromResult(
-            Collection
-            .AsQueryable()
-            .Count(x => x.AttendanceInfos.Any(y => 
-                y.AttendanceStudents.Any(z => z.StudentId == studentId))));
+        return Collection.AsQueryable()
+                         .CountAsync(x => x.AttendanceInfos.Any(y => 
+                                            y.AttendanceStudents.Any(z => z.StudentId == studentId)));
     }
 
     public Task<double> GetSumScoreOfAttendedEventsOfStudentAsync(Guid studentId)
