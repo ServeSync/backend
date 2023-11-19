@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using MediatR;
 using ServeSync.Application.SeedWorks.Sessions;
+using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.UseCases.Roles.Queries;
 
@@ -8,9 +9,22 @@ namespace ServeSync.API.Authorization;
 
 public class CurrentUser : ICurrentUser
 {
-    public string Id => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.UserId);
-    public string Name => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.UserName);
-    public string Email => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.Email);
+    public string Id 
+        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.UserId) 
+           ?? throw new ResourceInvalidDataException("Invalid Claim");
+    
+    public string ReferenceId 
+        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.ReferenceId) 
+           ?? throw new ResourceInvalidDataException("Invalid Claim");
+    
+    public string Name 
+        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.UserName) 
+           ?? throw new ResourceInvalidDataException("Invalid Claim");
+    
+    public string Email 
+        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.Email)
+           ?? throw new ResourceInvalidDataException("Invalid Claim");
+    
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -41,6 +55,16 @@ public class CurrentUser : ICurrentUser
     public Task<bool> IsStudentAffairAsync()
     {
         return IsInRoleAsync(AppRole.StudentAffair);
+    }
+
+    public Task<bool> IsOrganizationAsync()
+    {
+        return IsInRoleAsync(AppRole.EventOrganization);
+    }
+
+    public Task<bool> IsOrganizationContactAsync()
+    {
+        return IsInRoleAsync(AppRole.EventOrganizer);
     }
 
     public Task<bool> IsAdminAsync()

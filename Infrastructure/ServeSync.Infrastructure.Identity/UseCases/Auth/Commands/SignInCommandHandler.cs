@@ -96,7 +96,8 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
         {
             new (AppClaim.UserId, user.Id),
             new (AppClaim.UserName, user.UserName),
-            new (AppClaim.Email, user.Email)
+            new (AppClaim.Email, user.Email),
+            new (AppClaim.ReferenceId, user.ExternalId!.ToString())
         };
 
         if (loginPortal == LoginPortal.Student)
