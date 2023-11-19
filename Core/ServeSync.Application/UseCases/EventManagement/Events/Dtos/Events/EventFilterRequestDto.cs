@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.Common.Validations;
+using ServeSync.Application.UseCases.EventManagement.Events.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 
@@ -17,6 +18,9 @@ public class EventFilterRequestDto : PagingAndSortingRequestDto
     
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public EventStatus? EventStatus { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public IEnumerable<EventDefaultFilter>? DefaultFilters { get; set; }
 
     [SortConstraint(Fields = $"{nameof(Event.Name)}, {nameof(Event.Address)}, {nameof(Event.StartAt)}, {nameof(Event.EndAt)}, {nameof(Event.Type)}, RepresentativeOrganization")]
     public override string? Sorting { get; set; } = string.Empty;
