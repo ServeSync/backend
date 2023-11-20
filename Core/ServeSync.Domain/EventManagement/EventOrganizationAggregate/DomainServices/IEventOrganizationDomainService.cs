@@ -33,4 +33,6 @@ public interface IEventOrganizationDomainService
         string? address);
     
     Task DeleteAsync(EventOrganization eventOrganization);
+    
+    Task DeleteContactAsync(EventOrganization eventOrganization, Guid eventOrganizationContactId);
 }

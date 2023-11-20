@@ -73,6 +73,17 @@ public class EventOrganization : AuditableAggregateRoot
         AddDomainEvent(new EventOrganizationUpdatedDomainEvent(this));
     }
     
+    internal void DeleteEventOrganizationContact(Guid eventOrganizationContactId)
+    {
+        var eventOrganizationContact = Contacts.FirstOrDefault(x => x.Id == eventOrganizationContactId);
+        if (eventOrganizationContact == null)
+        {
+            throw new EventOrganizationContactNotFoundException(eventOrganizationContactId);
+        }
+        Contacts.Remove(eventOrganizationContact);
+        AddDomainEvent(new EventOrganizationContactDeletedDomainEvent(eventOrganizationContactId, eventOrganizationContact.IdentityId));
+    }
+    
     public void SetIdentityId(string identityId)
     {
         IdentityId = identityId;
