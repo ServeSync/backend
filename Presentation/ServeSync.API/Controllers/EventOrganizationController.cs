@@ -77,4 +77,13 @@ public class EventOrganizationController : ControllerBase
         await _mediator.Send(new DeleteEventOrganizationCommand(id));
         return NoContent();
     }
+    
+    [HttpDelete("{id:guid}/contacts/{contactId:guid}")]
+    [HasPermission(Permissions.EventOrganizations.Delete)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteEventOrganizationContactByIdAsync(Guid id, Guid contactId)
+    {
+        await _mediator.Send(new DeleteEventOrganizationContactCommand(id, contactId));
+        return NoContent();
+    }
 }

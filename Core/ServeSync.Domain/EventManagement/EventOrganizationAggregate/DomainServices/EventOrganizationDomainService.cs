@@ -1,17 +1,23 @@
-﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
+﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Specifications;
+using ServeSync.Domain.SeedWorks.Repositories;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
 
 public class EventOrganizationDomainService : IEventOrganizationDomainService
 {
     private readonly IEventOrganizationRepository _eventOrganizationRepository;
+    private readonly IBasicReadOnlyRepository<OrganizationRepInEvent, Guid> _organizationRepInEventRepository;
     
-    public EventOrganizationDomainService(IEventOrganizationRepository eventOrganizationRepository)
+    public EventOrganizationDomainService(
+        IEventOrganizationRepository eventOrganizationRepository,
+        IBasicReadOnlyRepository<OrganizationRepInEvent, Guid> organizationRepInEventRepository)
     {
         _eventOrganizationRepository = eventOrganizationRepository;
+        _organizationRepInEventRepository = organizationRepInEventRepository;
     }
     
     public async Task<EventOrganization> CreateAsync(
@@ -81,6 +87,24 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         
         _eventOrganizationRepository.Delete(eventOrganization);
         eventOrganization.AddDomainEvent(new EventOrganizationDeletedDomainEvent(eventOrganization.Id, eventOrganization.IdentityId));
+    }
+
+    public async Task DeleteContactAsync(EventOrganization eventOrganization, Guid eventOrganizationContactId)
+    {
+        var eventOrganizationContact = eventOrganization.Contacts.FirstOrDefault(x => x.Id == eventOrganizationContactId);
+        
+        if (eventOrganizationContact == null)
+        {
+            throw new EventOrganizationContactNotFoundException(eventOrganizationContactId);
+        }
+        
+        var hasAnyEventBeenAttendedByContact = await _organizationRepInEventRepository.FindAsync(x => x.OrganizationRep == eventOrganizationContact);
+        if (hasAnyEventBeenAttendedByContact != null)
+        {
+            throw new EventOrganizationContactHasAttendAnEventException(eventOrganizationContact.Id);
+        }
+
+        eventOrganization.DeleteEventOrganizationContact(eventOrganizationContactId);
     }
 
     private async Task CheckDuplicateEmailAsync(string email)
