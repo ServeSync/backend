@@ -15,10 +15,6 @@ public class EventOrganizationContactUpdateDto
     public DateTime? Birth { get; set; }
     
     [Required]
-    [EmailAddress]
-    public string Email { get; set; } = null!;
-    
-    [Required]
     [Phone]
     public string PhoneNumber { get; set; } = null!;
     
@@ -28,7 +24,4 @@ public class EventOrganizationContactUpdateDto
     public string ImageUrl { get; set; } = null!;
     
     public string? Position { get; set; }
-
-    [Required]
-    public Guid EventOrganizationId { get; set; }
 }

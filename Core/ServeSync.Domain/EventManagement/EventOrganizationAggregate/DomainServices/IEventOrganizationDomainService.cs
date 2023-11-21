@@ -32,6 +32,17 @@ public interface IEventOrganizationDomainService
         string? description, 
         string? address);
     
+    Task<EventOrganization> UpdateContactAsync(
+        EventOrganization eventOrganization,
+        Guid eventOrganizationContactId, 
+        string name,
+        string phoneNumber,
+        string imageUrl,
+        bool? gender,
+        DateTime? birth,
+        string? address,
+        string? position);
+    
     Task DeleteAsync(EventOrganization eventOrganization);
     
     Task DeleteContactAsync(EventOrganization eventOrganization, Guid eventOrganizationContactId);

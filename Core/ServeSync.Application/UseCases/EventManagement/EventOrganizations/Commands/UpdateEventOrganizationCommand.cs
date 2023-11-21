@@ -6,12 +6,12 @@ namespace ServeSync.Application.UseCases.EventManagement.EventOrganizations.Comm
 public class UpdateEventOrganizationCommand : ICommand
 {
     public Guid Id { get; set; }
-    public string Name { get; private set; }
-    public string? Description { get; private set; }
-    public string Email { get; private set; }
-    public string PhoneNumber { get; private set; }
-    public string? Address { get; private set; }
-    public string ImageUrl { get; private set; }
+    public string Name { get; set; }
+    public string? Description { get; set; }
+    public string Email { get; set; }
+    public string PhoneNumber { get; set; }
+    public string? Address { get; set; }
+    public string ImageUrl { get; set; }
     
     public UpdateEventOrganizationCommand(
         Guid id,

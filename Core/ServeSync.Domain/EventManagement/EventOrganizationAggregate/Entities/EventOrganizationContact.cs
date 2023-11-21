@@ -42,6 +42,24 @@ public class EventOrganizationContact : Entity
         
         AddDomainEvent(new NewOrganizationContactCreatedDomainEvent(this));
     }
+
+    internal void Update(
+        string name,
+        string phoneNumber,
+        string imageUrl,
+        bool? gender,
+        DateTime? birth,
+        string? address,
+        string? position)
+    {
+        Name = Guard.NotNullOrEmpty(name, nameof(Name));
+        Gender = gender;
+        Birth = birth;
+        PhoneNumber = Guard.NotNullOrEmpty(phoneNumber, nameof(PhoneNumber));
+        Address = address;
+        ImageUrl = Guard.NotNullOrEmpty(imageUrl, nameof(ImageUrl));
+        Position = position;
+    }
     
     public void SetIdentityId(string identityId)
     {

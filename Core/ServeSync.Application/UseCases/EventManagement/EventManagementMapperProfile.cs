@@ -108,5 +108,7 @@ public class EventManagementMapperProfile : Profile
             .ForMember(dest => dest.HostedEvents, opt => opt.MapFrom(src => src.OrganizationInEvents.Count));;
 
         CreateMap<EventOrganization, EventOrganizationUpdateDto>();
+
+        CreateMap<EventOrganizationContact, EventOrganizationContactUpdateDto>();
     }
 }

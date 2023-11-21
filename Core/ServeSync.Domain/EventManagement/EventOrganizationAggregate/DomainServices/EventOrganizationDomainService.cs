@@ -76,6 +76,28 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         return eventOrganization;
     }
 
+    public async Task<EventOrganization> UpdateContactAsync(
+        EventOrganization eventOrganization, 
+        Guid eventOrganizationContactId, 
+        string name,
+        string phoneNumber, 
+        string imageUrl, 
+        bool? gender = null, 
+        DateTime? birth = null, 
+        string? address = null,
+        string? position = null)
+    {
+        var eventOrganizationContact = eventOrganization.Contacts.FirstOrDefault(x => x.Id == eventOrganizationContactId);
+        if (eventOrganizationContact == null)
+        {
+            throw new EventOrganizationContactNotFoundException(eventOrganizationContactId);
+        }
+
+        eventOrganization.UpdateEventOrganizationContact(eventOrganizationContactId, name, phoneNumber, imageUrl,
+            gender, birth, address, position);
+        return eventOrganization;
+    }
+
     public async Task DeleteAsync(EventOrganization eventOrganization)
     {
         var hasHostAnyEvent = await _eventOrganizationRepository.HasHostAnyEventAsync(eventOrganization.Id);
