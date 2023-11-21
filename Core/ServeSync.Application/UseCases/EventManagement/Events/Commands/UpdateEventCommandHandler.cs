@@ -221,11 +221,12 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
         DateTime dateTime)
     {
         var newRepresentatives = organization.OrganizationReps.Where(x => !x.Id.HasValue).ToList();
-        var updateRepresentatives = organization.OrganizationReps.Where(x => x.Id.HasValue).ToList();
-        var deletedRepresentatives = @event.Organizations.First(x => x.Id == eventOrganization.Id).Representatives.ExceptBy(updateRepresentatives.Select(x => x.Id), x => x.Id).ToList();
 
         if (!isUpdateOrganization)
         {
+            var updateRepresentatives = organization.OrganizationReps.Where(x => x.Id.HasValue).ToList();
+            var deletedRepresentatives = @event.Organizations.First(x => x.OrganizationId == eventOrganization.Id).Representatives.ExceptBy(updateRepresentatives.Select(x => x.Id), x => x.Id).ToList();
+            
             foreach (var representative in deletedRepresentatives)
             {
                 _eventDomainService.RemoveRepresentative(@event, eventOrganization, representative.Id, dateTime);
