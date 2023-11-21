@@ -6,6 +6,7 @@ public interface ICurrentUser
     public string ReferenceId { get; }
     public string Name { get; }
     public string Email { get; }
+    public Guid? TenantId { get; }
     public bool IsAuthenticated { get; }
 
     Task<bool> IsInRoleAsync(string role);

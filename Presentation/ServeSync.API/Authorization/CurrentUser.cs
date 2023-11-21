@@ -21,6 +21,9 @@ public class CurrentUser : ICurrentUser
     public string Email 
         => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.Email);
     
+    public Guid? TenantId
+        => Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.TenantId), out var tenantId) ? tenantId : null;
+    
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
     private readonly IHttpContextAccessor _httpContextAccessor;

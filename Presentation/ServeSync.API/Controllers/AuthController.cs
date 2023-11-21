@@ -56,4 +56,12 @@ public class AuthController : ControllerBase
         var authCredential = await _mediator.Send(new RefreshTokenCommand(dto.RefreshToken, dto.AccessToken));
         return Ok(authCredential);
     }
+    
+    [HttpPost("exchange-tenant-access-token")]
+    [ProducesResponseType(typeof(AuthCredentialDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExchangeTenantAccessTokenAsync(ExchangeTenantAccessTokenDto dto)
+    {
+        var authCredential = await _mediator.Send(new ExchangeTenantAccessTokenCommand(dto.TenantId));
+        return Ok(authCredential);
+    }
 }
