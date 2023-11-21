@@ -5,5 +5,5 @@ namespace ServeSync.Infrastructure.Identity.Models.TenantAggregate;
 
 public interface ITenantRepository : IRepository<Tenant, Guid>
 {
-    
+    Task<IList<Tenant>> FindByUserAsync(string userId);
 }

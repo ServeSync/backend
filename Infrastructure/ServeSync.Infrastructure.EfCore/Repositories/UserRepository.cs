@@ -25,7 +25,7 @@ public class UserRepository : EfCoreRepository<ApplicationUser, string>, IUserRe
         var rolesQueryable = DbContext.Set<ApplicationRole>().Where(x => roles.Any(r => r == x.Name));
         var userRolesQueryable = DbContext.Set<IdentityUserRole<string>>().Where(x => rolesQueryable.Any(r => r.Id == x.RoleId));
 
-        return DbSet.FirstOrDefaultAsync(x => (x.UserName == username || x.Email == email) && userRolesQueryable.Any(r => r.UserId == x.Id));
+        return GetQueryable().FirstOrDefaultAsync(x => (x.UserName == username || x.Email == email) && userRolesQueryable.Any(r => r.UserId == x.Id));
     }
 
     public async Task<ApplicationUser?> FindByRefreshTokenAsync(string refreshToken)

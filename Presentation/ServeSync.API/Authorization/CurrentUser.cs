@@ -10,20 +10,16 @@ namespace ServeSync.API.Authorization;
 public class CurrentUser : ICurrentUser
 {
     public string Id 
-        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.UserId) 
-           ?? throw new ResourceInvalidDataException("Invalid Claim");
+        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.UserId);
     
     public string ReferenceId 
-        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.ReferenceId) 
-           ?? throw new ResourceInvalidDataException("Invalid Claim");
+        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.ReferenceId);
     
     public string Name 
-        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.UserName) 
-           ?? throw new ResourceInvalidDataException("Invalid Claim");
+        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.UserName);
     
     public string Email 
-        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.Email)
-           ?? throw new ResourceInvalidDataException("Invalid Claim");
+        => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.Email);
     
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 

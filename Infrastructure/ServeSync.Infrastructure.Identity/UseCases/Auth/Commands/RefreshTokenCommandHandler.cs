@@ -9,6 +9,7 @@ using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Exceptions;
+using ServeSync.Infrastructure.Identity.Services;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 
 namespace ServeSync.Infrastructure.Identity.UseCases.Auth.Commands;
@@ -48,7 +49,7 @@ public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, A
         
         user.UseRefreshToken(accessTokenId, request.RefreshToken);
         
-        var accessToken = _tokenProvider.GenerateAccessToken(GetUserAuthenticateClaimsAsync(user));
+        var accessToken = _tokenProvider.GenerateAccessToken(IdentityUserClaimGenerator.Generate(user));
         var credential = new AuthCredentialDto()
         {
             AccessToken = accessToken.Value,
@@ -61,17 +62,5 @@ public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, A
         await _unitOfWork.CommitAsync();
 
         return credential;
-    }
-    
-    private IEnumerable<Claim> GetUserAuthenticateClaimsAsync(ApplicationUser user)
-    {
-        var claims = new List<Claim>()
-        {
-            new (AppClaim.UserId, user.Id),
-            new (AppClaim.UserName, user.UserName),
-            new (AppClaim.Email, user.Email)
-        };
-        
-        return claims;
     }
 }
