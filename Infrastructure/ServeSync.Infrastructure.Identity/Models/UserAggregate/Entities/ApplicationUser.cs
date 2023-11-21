@@ -10,12 +10,15 @@ public partial class ApplicationUser : IdentityUser
     public string AvatarUrl { get; private set; }
     public Guid? ExternalId { get; private set; }
     public List<RefreshToken> RefreshToken { get; set; }
+    public List<UserInTenant> Tenants { get; set; }
 
     public ApplicationUser(string fullname, string? avatarUrl = null, Guid? externalId = null)
     {
         FullName = Guard.NotNullOrEmpty(fullname, nameof(FullName));
         AvatarUrl = string.IsNullOrWhiteSpace(avatarUrl) ? "https://static.thenounproject.com/png/5034901-200.png" : avatarUrl;
         ExternalId = externalId;
+        RefreshToken = new List<RefreshToken>();
+        Tenants = new List<UserInTenant>();
     }
 
     public void UpdateFullName(string fullName)
@@ -44,6 +47,40 @@ public partial class ApplicationUser : IdentityUser
         {
             RefreshToken.Remove(GetRefreshToken(accessTokenId, refreshToken));
         }
+    }
+
+    public void AddToTenant(string fullName, string avatarUrl, Guid tenantId, bool isOwner)
+    {
+        if (Tenants.Any(x => x.TenantId == tenantId))
+        {
+            throw new UserAlreadyInTenantException(Id, tenantId);
+        }
+        
+        Tenants.Add(new UserInTenant(tenantId, Id, fullName, avatarUrl, isOwner));
+    }
+    
+    public void UpdateProfileInTenant(string fullName, string avatarUrl, Guid tenantId)
+    {
+        var tenant = Tenants.FirstOrDefault(x => x.TenantId == tenantId);
+
+        if (tenant == null)
+        {
+            throw new UserNotInTenantException(Id, tenantId);
+        }
+
+        tenant.Update(fullName, avatarUrl);
+    }
+    
+    public void RemoveFromTenant(Guid tenantId)
+    {
+        var tenant = Tenants.FirstOrDefault(x => x.TenantId == tenantId);
+
+        if (tenant == null)
+        {
+            throw new UserNotInTenantException(Id, tenantId);
+        }
+
+        Tenants.Remove(tenant);
     }
 
     private bool CanRefreshToken(string accessTokenId, string refreshToken)

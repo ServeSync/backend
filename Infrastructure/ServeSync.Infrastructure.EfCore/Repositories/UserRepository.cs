@@ -12,6 +12,7 @@ public class UserRepository : EfCoreRepository<ApplicationUser, string>, IUserRe
     public UserRepository(AppDbContext dbContext) : base(dbContext)
     {
         AddInclude(x => x.RefreshToken);
+        AddInclude(x => x.Tenants);
     }
 
     public Task<ApplicationUser?> FindByUserNameOrEmailAsync(string username, string email)
