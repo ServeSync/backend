@@ -84,6 +84,8 @@ using ServeSync.Infrastructure.HangFire;
 using ServeSync.Infrastructure.Identity.Caching;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
+using ServeSync.Infrastructure.Identity.Models.TenantAggregate;
+using ServeSync.Infrastructure.Identity.Models.TenantAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Services;
 using ServeSync.Infrastructure.MongoDb;
 using ServeSync.Infrastructure.MongoDb.Repositories;
@@ -184,6 +186,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped(typeof(ISpecificationRepository<,>), typeof(EfCoreSpecificationRepository<,>));
         
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IStudentRepository, StudentRepository>();
