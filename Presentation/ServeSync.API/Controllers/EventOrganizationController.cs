@@ -59,6 +59,15 @@ public class EventOrganizationController : ControllerBase
         await _mediator.Send(command);
         return NoContent();
     }
+    
+    [HttpDelete("{id:guid}")]
+    [HasPermission(Permissions.EventOrganizations.Delete)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteEventOrganizationByIdAsync(Guid id)
+    {
+        await _mediator.Send(new DeleteEventOrganizationCommand(id));
+        return NoContent();
+    }
 
     [HttpGet("{id:guid}/contacts")]
     [HasPermission(Permissions.EventOrganizations.View)]
@@ -68,13 +77,14 @@ public class EventOrganizationController : ControllerBase
         var contacts = await _mediator.Send(new GetAllEventOrganizationContactQuery(id, dto.Search, dto.Page, dto.Size, dto.Sorting));
         return Ok(contacts);
     }
-    
-    [HttpDelete("{id:guid}")]
-    [HasPermission(Permissions.EventOrganizations.Delete)]
+
+    [HttpPut("{id:guid}/contacts/{contactId:guid}")]
+    [HasPermission(Permissions.EventOrganizations.Update)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteEventOrganizationByIdAsync(Guid id)
+    public async Task<IActionResult> UpdateEventOrganizationContactByIdAsync(Guid id, Guid contactId,
+        [FromBody] EventOrganizationContactUpdateDto dto)
     {
-        await _mediator.Send(new DeleteEventOrganizationCommand(id));
+        await _mediator.Send(new UpdateEventOrganizationContactCommand(id, contactId, dto.Name, dto.Gender, dto.Birth, dto.PhoneNumber, dto.Address, dto.ImageUrl, dto.Position));
         return NoContent();
     }
     
