@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using ServeSync.Infrastructure.Identity.UseCases.Tenants.Dtos;
 
 namespace ServeSync.Infrastructure.Identity.UseCases.Users.Dtos;
 
@@ -10,4 +10,5 @@ public class UserInfoDto
     public string AvatarUrl { get; set; } = null!;
     public IEnumerable<string> Roles { get; set; } = null!;
     public IEnumerable<string> Permissions { get; set; } = null!;
+    public IEnumerable<TenantDto> Tenants { get; set; } = null!;
 }
