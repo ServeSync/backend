@@ -76,7 +76,7 @@ public class EventOrganizationController : Controller
     [ProducesResponseType(typeof(PagedResultDto<EventOrganizationContactDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetContactByOrganizationAsync(Guid id, [FromQuery] EventOrganizationContactFilterRequestDto dto)
     {
-        var contacts = await _mediator.Send(new GetAllEventOrganizationContactQuery(id, dto.Search, dto.Page, dto.Size, dto.Sorting));
+        var contacts = await _mediator.Send(new GetAllEventOrganizationContactQuery(id, dto.Status, dto.Search, dto.Page, dto.Size, dto.Sorting));
         return Ok(contacts);
     }
 

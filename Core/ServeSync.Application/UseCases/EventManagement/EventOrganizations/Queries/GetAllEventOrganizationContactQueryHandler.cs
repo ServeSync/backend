@@ -46,7 +46,8 @@ public class GetAllEventOrganizationContactQueryHandler : IQueryHandler<GetAllEv
     private IPagingAndSortingSpecification<EventOrganizationContact, Guid> GetSpecification(GetAllEventOrganizationContactQuery request)
     {
         var specification = new FilterEventOrganizationContactSpecification(request.Page, request.Size, request.Sorting, request.Search)
-            .And(new EventOrganizationContactByOrganizationSpecification(request.EventOrganizationId));
+            .And(new EventOrganizationContactByOrganizationSpecification(request.EventOrganizationId))
+            .AndIf(request.Status.HasValue, new EventOrganizationContactByStatusSpecification(request.Status.GetValueOrDefault()));
 
         return specification;
     }
