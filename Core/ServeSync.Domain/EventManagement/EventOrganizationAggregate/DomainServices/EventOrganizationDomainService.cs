@@ -87,12 +87,6 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         string? address = null,
         string? position = null)
     {
-        var eventOrganizationContact = eventOrganization.Contacts.FirstOrDefault(x => x.Id == eventOrganizationContactId);
-        if (eventOrganizationContact == null)
-        {
-            throw new EventOrganizationContactNotFoundException(eventOrganizationContactId);
-        }
-
         eventOrganization.UpdateEventOrganizationContact(eventOrganizationContactId, name, phoneNumber, imageUrl,
             gender, birth, address, position);
         return eventOrganization;
