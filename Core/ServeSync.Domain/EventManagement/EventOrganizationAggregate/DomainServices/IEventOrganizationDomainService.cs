@@ -26,7 +26,6 @@ public interface IEventOrganizationDomainService
     Task<EventOrganization> UpdateInfoAsync(
         EventOrganization eventOrganization,
         string name, 
-        string email, 
         string phoneNumber, 
         string imageUrl, 
         string? description, 

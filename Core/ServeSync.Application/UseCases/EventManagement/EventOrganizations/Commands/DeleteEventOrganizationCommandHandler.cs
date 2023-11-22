@@ -34,8 +34,9 @@ public class DeleteEventOrganizationCommandHandler : ICommandHandler<DeleteEvent
             throw new EventOrganizationNotFoundException(request.Id);
         }
 
+        await _unitOfWork.BeginTransactionAsync();
         await _eventOrganizationDomainService.DeleteAsync(eventOrganization);
-        await _unitOfWork.CommitAsync();
+        await _unitOfWork.CommitTransactionAsync(true);
         
         _logger.LogInformation("Event organization with id {EventOrganizationId} was deleted!", request.Id);
     }

@@ -6,10 +6,12 @@ public class EventOrganizationDeletedDomainEvent : IDomainEvent
 {
     public Guid Id { get; set; }
     public string IdentityId { get; set; }
+    public Guid TenantId { get; set; }
     
-    public EventOrganizationDeletedDomainEvent(Guid id, string identityId)
+    public EventOrganizationDeletedDomainEvent(Guid id, string identityId, Guid tenantId)
     {
         Id = id;
         IdentityId = identityId;
+        TenantId = tenantId;
     }
 }

@@ -58,23 +58,17 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
     public async Task<EventOrganization> UpdateInfoAsync(
         EventOrganization eventOrganization, 
         string name, 
-        string email, 
         string phoneNumber, 
         string imageUrl,
         string? description = null, 
         string? address = null)
     {
-        if (eventOrganization.Email != email)
-        {
-            await CheckDuplicateEmailAsync(email);
-        }
-        
         if (eventOrganization.Name != name)
         {
             await CheckDuplicateNameAsync(name);
         }
         
-        eventOrganization.Update(name, email, phoneNumber, imageUrl, description, address);
+        eventOrganization.Update(name, phoneNumber, imageUrl, description, address);
         _eventOrganizationRepository.Update(eventOrganization);
         return eventOrganization;
     }
@@ -90,8 +84,15 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         string? address = null,
         string? position = null)
     {
-        eventOrganization.UpdateEventOrganizationContact(eventOrganizationContactId, name, phoneNumber, imageUrl,
-            gender, birth, address, position);
+        eventOrganization.UpdateEventOrganizationContact(
+            eventOrganizationContactId, 
+            name, 
+            phoneNumber, 
+            imageUrl,
+            gender, 
+            birth, 
+            address, 
+            position);
         return eventOrganization;
     }
 
@@ -105,7 +106,7 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         }
         
         _eventOrganizationRepository.Delete(eventOrganization);
-        eventOrganization.AddDomainEvent(new EventOrganizationDeletedDomainEvent(eventOrganization.Id, eventOrganization.IdentityId!));
+        eventOrganization.AddDomainEvent(new EventOrganizationDeletedDomainEvent(eventOrganization.Id, eventOrganization.IdentityId!, eventOrganization.TenantId.GetValueOrDefault()));
     }
 
     public async Task DeleteContactAsync(EventOrganization eventOrganization, Guid eventOrganizationContactId)

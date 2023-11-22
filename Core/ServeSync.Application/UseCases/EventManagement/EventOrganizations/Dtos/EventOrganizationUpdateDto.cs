@@ -9,10 +9,6 @@ public class EventOrganizationUpdateDto
     public string Name { get; set; }
     
     public string? Description { get; set; }
-
-    [Required] 
-    [EmailAddress]
-    public string Email { get; set; } = null!;
     
     [Required]
     [Phone]

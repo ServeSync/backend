@@ -34,16 +34,17 @@ public class UpdateEventOrganizationCommandHandler : ICommandHandler<UpdateEvent
             throw new EventOrganizationNotFoundException(request.Id);
         }
 
+        await _unitOfWork.BeginTransactionAsync();
+        
         await _eventOrganizationDomainService.UpdateInfoAsync(
             eventOrganization,
             request.Name,
-            request.Email,
             request.PhoneNumber,
             request.ImageUrl,
             request.Description,
             request.Address);
         
-        await _unitOfWork.CommitAsync();
+        await _unitOfWork.CommitTransactionAsync(true);
         _logger.LogInformation("Updated event organization information with id '{EventOrganizationId}'", eventOrganization.Id);
     }
 }

@@ -62,7 +62,7 @@ public class EventOrganizationInvitationApprovedDomainEventHandler : IDomainEven
 
     private async Task<string> InitIdentityAsync(EventOrganization organization)
     {
-        var password = Guid.NewGuid().ToString("n").Substring(0, 8);
+        var password = "servesync@123";
         var result = await _identityService.CreateEventOrganizationAsync(
             organization.Name,
             organization.Email,
