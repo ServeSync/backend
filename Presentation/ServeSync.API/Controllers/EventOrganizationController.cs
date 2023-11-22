@@ -54,7 +54,7 @@ public class EventOrganizationController : Controller
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateEventOrganizationAsync(Guid id, [FromBody] EventOrganizationUpdateDto dto)
     {
-        var command = new UpdateEventOrganizationCommand(id, dto.Name, dto.Description, dto.Email, dto.PhoneNumber, dto.Address, dto.ImageUrl);
+        var command = new UpdateEventOrganizationCommand(id, dto.Name, dto.Description, dto.PhoneNumber, dto.Address, dto.ImageUrl);
 
         await _mediator.Send(command);
         return NoContent();

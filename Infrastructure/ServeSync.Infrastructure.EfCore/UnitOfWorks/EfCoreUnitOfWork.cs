@@ -51,6 +51,10 @@ public class EfCoreUnitOfWork : IUnitOfWork
                 {
                     await RollbackTransactionAsync();
                 }
+                else
+                {
+                    throw;
+                }
             }
         }
     }

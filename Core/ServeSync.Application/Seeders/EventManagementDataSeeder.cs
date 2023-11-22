@@ -75,12 +75,12 @@ public class EventManagementDataSeeder : IDataSeeder
 
     public async Task SeedAsync()
     {
-        // await SeedEventCategoriesAsync();
-        // await SeedEventOrganizationsAsync();
-        // await SeedEventsAsync();
-        // await SeedRegisterEventAsync();
-        // await SeedAttendanceEventsForStudentAsync();
-        // await SeedEventCollaborationRequestsAsync();
+        await SeedEventCategoriesAsync();
+        await SeedEventOrganizationsAsync();
+        await SeedEventsAsync();
+        await SeedRegisterEventAsync();
+        await SeedAttendanceEventsForStudentAsync();
+        await SeedEventCollaborationRequestsAsync();
     }
 
     private async Task SeedEventCategoriesAsync()
@@ -125,6 +125,8 @@ public class EventManagementDataSeeder : IDataSeeder
 
         try
         {
+            await _unitOfWork.BeginTransactionAsync();
+            
             for (var i = 0; i < 5; i++)
             {
                 var faker = new Faker();
@@ -135,6 +137,8 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Image.PicsumUrl(),
                     faker.Lorem.Sentence(),
                     faker.Address.FullAddress());
+                
+                eventOrganization.ApproveInvitation();
                 
                 await _eventOrganizationRepository.InsertAsync(eventOrganization);
 
@@ -154,12 +158,13 @@ public class EventManagementDataSeeder : IDataSeeder
                 }
             }
         
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitTransactionAsync();
         
             _logger.LogInformation("Seeded event organizations successfully!");
         }
         catch (Exception e)
         {
+            await _unitOfWork.RollbackTransactionAsync();
             _logger.LogInformation("Seeded event organizations failed: {Message}", e.Message);
         }
     }

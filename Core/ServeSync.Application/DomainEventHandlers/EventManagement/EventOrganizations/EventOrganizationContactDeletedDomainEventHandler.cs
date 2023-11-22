@@ -5,8 +5,7 @@ using ServeSync.Domain.SeedWorks.Events;
 
 namespace ServeSync.Application.DomainEventHandlers.EventManagement.EventOrganizations;
 
-public class
-    EventOrganizationContactDeletedDomainEventHandler : IDomainEventHandler<EventOrganizationContactDeletedDomainEvent>
+public class EventOrganizationContactDeletedDomainEventHandler : IDomainEventHandler<EventOrganizationContactDeletedDomainEvent>
 {
     private readonly IIdentityService _identityService;
     private readonly ILogger<EventOrganizationDeletedDomainEventHandler> _logger;

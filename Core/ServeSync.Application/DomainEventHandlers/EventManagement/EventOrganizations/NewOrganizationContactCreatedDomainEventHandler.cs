@@ -29,30 +29,30 @@ public class NewOrganizationContactCreatedDomainEventHandler : IDomainEventHandl
     
     public async Task Handle(NewOrganizationContactCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var userName = Guid.NewGuid().ToString("n").Substring(0, 8);
-        var password = Guid.NewGuid().ToString("n").Substring(0, 8);
-        var result = await _identityService.CreateEventOrganizationContactAsync(
-            notification.Contact.Name,
-            userName,
-            notification.Contact.ImageUrl,
-            notification.Contact.Email,
-            password,
-            notification.Contact.Id);
-
-        if (!result.IsSuccess)
-        {
-            _logger.LogError("Can not create identity user for event organizer {EventOrganizerId}: {Message}", notification.Contact.Id, result.Error);
-            throw new ResourceInvalidOperationException(result.Error!, result.ErrorCode!);
-        }
-
-        notification.Contact.SetIdentityId(result.Data!.Id);
-        _logger.LogInformation("Created new identity user {IdentityUserId} for event organizer {EventOrganizerId}", notification.Contact.IdentityId, notification.Contact.Id);
-
-        _emailSender.Push(new EmailMessage()
-        {
-            ToAddress = notification.Contact.Email,
-            Subject = "[ServeSync] Thông báo thông tin tài khoản",
-            Body = _emailTemplateGenerator.GetGrantAccountToEventOrganizer(notification.Contact.Name, notification.Contact.Email, userName, password)
-        });
+        // var userName = Guid.NewGuid().ToString("n").Substring(0, 8);
+        // var password = Guid.NewGuid().ToString("n").Substring(0, 8);
+        // var result = await _identityService.CreateEventOrganizationContactAsync(
+        //     notification.Contact.Name,
+        //     userName,
+        //     notification.Contact.ImageUrl,
+        //     notification.Contact.Email,
+        //     password,
+        //     notification.Contact.Id);
+        //
+        // if (!result.IsSuccess)
+        // {
+        //     _logger.LogError("Can not create identity user for event organizer {EventOrganizerId}: {Message}", notification.Contact.Id, result.Error);
+        //     throw new ResourceInvalidOperationException(result.Error!, result.ErrorCode!);
+        // }
+        //
+        // notification.Contact.SetIdentityId(result.Data!.Id);
+        // _logger.LogInformation("Created new identity user {IdentityUserId} for event organizer {EventOrganizerId}", notification.Contact.IdentityId, notification.Contact.Id);
+        //
+        // _emailSender.Push(new EmailMessage()
+        // {
+        //     ToAddress = notification.Contact.Email,
+        //     Subject = "[ServeSync] Thông báo thông tin tài khoản",
+        //     Body = _emailTemplateGenerator.GetGrantAccountToEventOrganizer(notification.Contact.Name, notification.Contact.Email, userName, password)
+        // });
     }
 }
