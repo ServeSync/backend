@@ -46,4 +46,6 @@ public interface IEventOrganizationDomainService
     Task DeleteAsync(EventOrganization eventOrganization);
     
     Task DeleteContactAsync(EventOrganization eventOrganization, Guid eventOrganizationContactId);
+
+    void ProcessInvitation(OrganizationInvitation invitation);
 }

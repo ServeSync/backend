@@ -72,7 +72,7 @@ public class TenantService : ITenantService
             throw new UserNotFoundException(userId);
         }
 
-        if (await _tenantRepository.IsExistingAsync(tenantId))
+        if (!await _tenantRepository.IsExistingAsync(tenantId))
         {
             throw new TenantNotFoundException(tenantId);
         }

@@ -17,4 +17,6 @@ public interface IEmailTemplateGenerator
     string GetRejectCollaborationRequest(string name, string eventName);
 
     string GetRejectEvent(string name, string eventName);
+
+    string GetOrganizationInvitation(string name, string approveUrlCallBack, string rejectUrlCallBack);
 }

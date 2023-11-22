@@ -12,7 +12,7 @@ namespace ServeSync.API.Controllers;
 
 [ApiController]
 [Route("api/event-organizations")]
-public class EventOrganizationController : ControllerBase
+public class EventOrganizationController : Controller
 {
     private readonly IMediator _mediator;
     
@@ -26,7 +26,7 @@ public class EventOrganizationController : ControllerBase
     [ProducesResponseType(typeof(PagedResultDto<EventOrganizationDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventOrganizationsAsync([FromQuery] EventOrganizationFilterRequestDto dto)
     {
-        var query = new GetAllEventOrganizationQuery(dto.Search, dto.Page, dto.Size, dto.Sorting);
+        var query = new GetAllEventOrganizationQuery(dto.Status, dto.Search, dto.Page, dto.Size, dto.Sorting);
         var organizations = await _mediator.Send(query);
         return Ok(organizations);
     }
@@ -95,5 +95,33 @@ public class EventOrganizationController : ControllerBase
     {
         await _mediator.Send(new DeleteEventOrganizationContactCommand(id, contactId));
         return NoContent();
+    }
+    
+    [HttpGet("invitations/approve")]
+    public async Task<ActionResult> ApproveEventOrganizationInvitationAsync([FromQuery] string code)
+    {
+        try
+        {
+            await _mediator.Send(new ApproveEventOrganizationInvitationCommand(code));
+            return View("ApproveEventOrganizationInvitation");
+        }
+        catch
+        {
+            return View("ProcessEventOrganizationInvitationFailed");
+        }
+    }
+    
+    [HttpGet("invitations/reject")]
+    public async Task<ActionResult> RejectEventOrganizationInvitationAsync([FromQuery] string code)
+    {
+        try
+        {
+            await _mediator.Send(new RejectEventOrganizationInvitationCommand(code));
+            return View("RejectEventOrganizationInvitation");
+        }
+        catch
+        {
+            return View("ProcessEventOrganizationInvitationFailed");
+        }
     }
 }

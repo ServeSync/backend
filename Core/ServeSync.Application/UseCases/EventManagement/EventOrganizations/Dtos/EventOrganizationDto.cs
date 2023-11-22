@@ -1,3 +1,5 @@
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
+
 namespace ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
 
 public class EventOrganizationDto
@@ -9,10 +11,11 @@ public class EventOrganizationDto
     public string PhoneNumber { get; set; } = null!;
     public string? Address { get; set; }
     public string ImageUrl { get; set; } = null!;
-    public string? IdentityId { get; private set; }
+    public string? IdentityId { get; set; }
+    public OrganizationStatus Status { get; set; }
     public int HostedEvents { get; set; }
-    public DateTime Created { get; protected set; }
-    public DateTime? LastModified { get; protected set; }
+    public DateTime Created { get; set; }
+    public DateTime? LastModified { get; set; }
 }
 
 public class EventOrganizationDetailDto : EventOrganizationDto
