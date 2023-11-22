@@ -44,7 +44,7 @@ public class EventOrganization : AuditableAggregateRoot
         }
     }
 
-    internal void AddContact(
+    internal EventOrganizationContact AddContact(
         string name, 
         string email, 
         string phoneNumber, 
@@ -54,6 +54,11 @@ public class EventOrganization : AuditableAggregateRoot
         string? address, 
         string? position)
     {
+        if (Status != OrganizationStatus.Active)
+        {
+            throw new EventOrganizationNotActiveException(Id);
+        }
+        
         if (Contacts.Any(x => x.Email == email))
         {
             throw new EventOrganizationContactAlreadyExistedException(Id, email);
@@ -61,6 +66,8 @@ public class EventOrganization : AuditableAggregateRoot
         
         var contact = new EventOrganizationContact(name, email, phoneNumber, imageUrl, Id, gender, birth, address, position);
         Contacts.Add(contact);
+
+        return contact;
     }
     
     internal void Update(
@@ -105,8 +112,9 @@ public class EventOrganization : AuditableAggregateRoot
         {
             throw new EventOrganizationContactNotFoundException(eventOrganizationContactId);
         }
+        
         Contacts.Remove(eventOrganizationContact);
-        AddDomainEvent(new EventOrganizationContactDeletedDomainEvent(eventOrganizationContactId, eventOrganizationContact.IdentityId));
+        AddDomainEvent(new EventOrganizationContactDeletedDomainEvent(eventOrganizationContactId, eventOrganizationContact.IdentityId, TenantId.GetValueOrDefault()));
     }
 
     public void ApproveInvitation()
@@ -128,6 +136,29 @@ public class EventOrganization : AuditableAggregateRoot
         }
         
         Status = OrganizationStatus.Rejected;
+    }
+    
+    public void ApproveContactInvitation(Guid eventOrganizationContactId)
+    {
+        var eventOrganizationContact = Contacts.FirstOrDefault(x => x.Id == eventOrganizationContactId);
+        if (eventOrganizationContact == null)
+        {
+            throw new EventOrganizationContactNotFoundException(eventOrganizationContactId);
+        }
+        
+        eventOrganizationContact.ApproveInvitation();
+        AddDomainEvent(new OrganizationContactInvitationApprovedDomainEvent(eventOrganizationContact, this));
+    }
+    
+    public void RejectContactInvitation(Guid eventOrganizationContactId)
+    {
+        var eventOrganizationContact = Contacts.FirstOrDefault(x => x.Id == eventOrganizationContactId);
+        if (eventOrganizationContact == null)
+        {
+            throw new EventOrganizationContactNotFoundException(eventOrganizationContactId);
+        }
+        
+        eventOrganizationContact.RejectInvitation();
     }
     
     public void SetIdentityId(string identityId)

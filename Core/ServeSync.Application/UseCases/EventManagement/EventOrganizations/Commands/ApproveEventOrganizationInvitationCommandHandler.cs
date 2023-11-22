@@ -6,6 +6,7 @@ using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Specifications;
 
 namespace ServeSync.Application.UseCases.EventManagement.EventOrganizations.Commands;
 
@@ -35,7 +36,7 @@ public class ApproveEventOrganizationInvitationCommandHandler : ICommandHandler<
     {
         await _unitOfWork.BeginTransactionAsync();
         
-        var invitation = await _organizationInvitationRepository.FindByCodeAsync(request.Code, InvitationType.Organization);
+        var invitation = await _organizationInvitationRepository.FindByCodeAsync(request.Code);
         if (invitation == null)
         {
             throw new OrganizationInvitationNotFoundException(request.Code);
@@ -48,7 +49,7 @@ public class ApproveEventOrganizationInvitationCommandHandler : ICommandHandler<
         }
         else
         {
-            
+            await ApproveEventOrganizationContactAsync(invitation);
         }
         
         await _unitOfWork.CommitTransactionAsync(true);
@@ -65,6 +66,20 @@ public class ApproveEventOrganizationInvitationCommandHandler : ICommandHandler<
         }
 
         organization.ApproveInvitation();
+        _eventOrganizationRepository.Update(organization);
         _logger.LogInformation("Approved invitation {InvitationCode} for organization {OrganizationId}!", invitation.Code, invitation.ReferenceId);
+    }
+
+    private async Task ApproveEventOrganizationContactAsync(OrganizationInvitation invitation)
+    {
+        var organization = await _eventOrganizationRepository.FindAsync(new EventOrganizationByContactSpecification(invitation.ReferenceId));
+        if (organization == null)
+        {
+            throw new EventOrganizationContactNotFoundException(invitation.ReferenceId);
+        }
+
+        organization.ApproveContactInvitation(invitation.ReferenceId);
+        _eventOrganizationRepository.Update(organization);
+        _logger.LogInformation("Approved invitation {InvitationCode} for organization contact {OrganizationContactId}!", invitation.Code, invitation.ReferenceId);
     }
 }

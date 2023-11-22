@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using ServeSync.Application.Common;
 using ServeSync.Application.Identity;
 using ServeSync.Application.Identity.Dtos;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
@@ -28,6 +29,12 @@ public class IdentityService : IIdentityService
     public async Task<IdentityUserDto?> GetByIdAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
+        return _mapper.Map<IdentityUserDto>(user);
+    }
+
+    public async Task<IdentityUserDto?> GetByUserNameAsync(string username)
+    {
+        var user = await _userManager.FindByNameAsync(username);
         return _mapper.Map<IdentityUserDto>(user);
     }
 
@@ -187,6 +194,30 @@ public class IdentityService : IIdentityService
         
         var error = result.Errors.First();
         return IdentityResult<bool>.Failed(error.Code, error.Description);
+    }
+
+    public async Task<bool> IsOrganizationContactAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        return roles.Contains(AppRole.EventOrganizer);
+    }
+
+    public async Task<bool> IsEventOrganizationAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        return roles.Contains(AppRole.EventOrganization);
     }
 
     public async Task<IdentityResult<bool>> GrantToRoleAsync(string userId, string role)

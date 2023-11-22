@@ -6,5 +6,5 @@ namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate;
 
 public interface IOrganizationInvitationRepository : IRepository<OrganizationInvitation>
 {
-    Task<OrganizationInvitation> FindByCodeAsync(string code, InvitationType type);
+    Task<OrganizationInvitation?> FindByCodeAsync(string code);
 }

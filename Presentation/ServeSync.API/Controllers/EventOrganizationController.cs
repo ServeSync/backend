@@ -15,10 +15,12 @@ namespace ServeSync.API.Controllers;
 public class EventOrganizationController : Controller
 {
     private readonly IMediator _mediator;
+    private ILogger<EventOrganizationController> _logger;
     
-    public EventOrganizationController(IMediator mediator)
+    public EventOrganizationController(IMediator mediator, ILogger<EventOrganizationController> logger)
     {
         _mediator = mediator;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -78,6 +80,15 @@ public class EventOrganizationController : Controller
         return Ok(contacts);
     }
 
+    [HttpPost("{id:guid}/contacts")]
+    [HasPermission(Permissions.EventOrganizations.Create)]
+    [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateEventOrganizationContactAsync(Guid id, EventOrganizationContactCreateDto dto)
+    {
+        var contactId = await _mediator.Send(new CreateEventOrganizationContactCommand(id, dto));
+        return Ok(SimpleIdResponse<Guid>.Create(contactId));
+    }
+
     [HttpPut("{id:guid}/contacts/{contactId:guid}")]
     [HasPermission(Permissions.EventOrganizations.Update)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -105,8 +116,9 @@ public class EventOrganizationController : Controller
             await _mediator.Send(new ApproveEventOrganizationInvitationCommand(code));
             return View("ApproveEventOrganizationInvitation");
         }
-        catch
+        catch (Exception e)
         {
+            _logger.LogError(e.Message);
             return View("ProcessEventOrganizationInvitationFailed");
         }
     }
@@ -119,8 +131,9 @@ public class EventOrganizationController : Controller
             await _mediator.Send(new RejectEventOrganizationInvitationCommand(code));
             return View("RejectEventOrganizationInvitation");
         }
-        catch
+        catch (Exception e)
         {
+            _logger.LogError(e.Message);
             return View("ProcessEventOrganizationInvitationFailed");
         }
     }

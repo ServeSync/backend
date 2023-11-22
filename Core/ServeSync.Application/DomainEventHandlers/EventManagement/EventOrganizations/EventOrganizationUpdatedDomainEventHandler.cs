@@ -20,7 +20,19 @@ public class EventOrganizationUpdatedDomainEventHandler : IDomainEventHandler<Ev
     
     public async Task Handle(EventOrganizationUpdatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        await _tenantService.UpdateAsync(notification.EventOrganization.TenantId.GetValueOrDefault(), notification.EventOrganization.Name, notification.EventOrganization.ImageUrl);
+        await _tenantService.UpdateUserInTenantAsync(
+            notification.EventOrganization.IdentityId!,
+            notification.EventOrganization.TenantId.GetValueOrDefault(), 
+            notification.EventOrganization.Name,
+            notification.EventOrganization.ImageUrl);
+        
+        await _tenantService.UpdateAsync(
+            notification.EventOrganization.TenantId.GetValueOrDefault(), 
+            notification.EventOrganization.Name, 
+            notification.EventOrganization.ImageUrl);
+        
         _logger.LogInformation("Updated tenant {TenantId} with name {Name} and image {ImageUrl}", notification.EventOrganization.TenantId, notification.EventOrganization.Name, notification.EventOrganization.ImageUrl);
     }
+    
+    
 }

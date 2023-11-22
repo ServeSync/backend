@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using ServeSync.Application.Common;
 using ServeSync.Application.Identity;
 using ServeSync.Application.MailSender;
 using ServeSync.Application.MailSender.Interfaces;
@@ -63,6 +64,21 @@ public class EventOrganizationInvitationApprovedDomainEventHandler : IDomainEven
     private async Task<string> InitIdentityAsync(EventOrganization organization)
     {
         var password = "servesync@123";
+        var user = await _identityService.GetByUserNameAsync(organization.Email);
+        if (user != null)
+        {
+            _logger.LogInformation("Identity user {IdentityUserId} already exists for event organization contact {EventOrganizationContactId}", user.Id, organization.Id);
+            
+            if (!await _identityService.IsEventOrganizationAsync(organization.IdentityId!))
+            {
+                await _identityService.GrantToRoleAsync(user.Id, AppRole.EventOrganization);
+                _logger.LogInformation("Granted identity user {IdentityUserId} to role {RoleName}", user.Id, AppRole.EventOrganization);
+            }
+            
+            organization.SetIdentityId(user.Id);
+            return password;
+        }
+        
         var result = await _identityService.CreateEventOrganizationAsync(
             organization.Name,
             organization.Email,

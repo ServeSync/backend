@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using ServeSync.Application.Common;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.Models.PermissionAggregate;
