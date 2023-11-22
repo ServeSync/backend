@@ -6,6 +6,8 @@ public interface IIdentityService
 {
     Task<IdentityUserDto?> GetByIdAsync(string userId); 
     
+    Task<IdentityUserDto?> GetByUserNameAsync(string username);
+    
     Task<IEnumerable<string>> GetPermissionsForUserAsync(string userId);
 
     Task<IEnumerable<string>> GetRolesAsync(string userId);
@@ -25,6 +27,10 @@ public interface IIdentityService
     Task<IdentityResult<bool>> UpdateUserNameAsync(string userId, string username);
     
     Task<IdentityResult<bool>> DeleteAsync(string userId);
+    
+    Task<bool> IsOrganizationContactAsync(string userId);
+    
+    Task<bool> IsEventOrganizationAsync(string userId);
     
     Task<IdentityResult<bool>> GrantToRoleAsync(string userId, string role);
     

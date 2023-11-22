@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
+using ServeSync.Application.Common;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Students.Queries;

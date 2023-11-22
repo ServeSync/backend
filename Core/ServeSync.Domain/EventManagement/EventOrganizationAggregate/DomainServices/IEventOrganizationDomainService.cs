@@ -12,7 +12,7 @@ public interface IEventOrganizationDomainService
         string? description, 
         string? address);
 
-    EventOrganization AddContact(
+    EventOrganizationContact AddContact(
         EventOrganization eventOrganization,
         string name, 
         string email, 

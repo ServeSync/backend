@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using MediatR;
+using ServeSync.Application.Common;
 using ServeSync.Application.SeedWorks.Sessions;
 using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 using ServeSync.Infrastructure.Identity.Commons.Constants;

@@ -12,8 +12,8 @@ public class OrganizationInvitationRepository : EfCoreRepository<OrganizationInv
     {
     }
 
-    public Task<OrganizationInvitation?> FindByCodeAsync(string code, InvitationType type)
+    public Task<OrganizationInvitation?> FindByCodeAsync(string code)
     {
-        return GetQueryable().FirstOrDefaultAsync(x => x.Code == code && x.Type == type);
+        return GetQueryable().FirstOrDefaultAsync(x => x.Code == code);
     }
 }

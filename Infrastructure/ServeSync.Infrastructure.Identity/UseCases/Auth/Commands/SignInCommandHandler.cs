@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using ServeSync.Application.Common;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.Common.Settings;
 using ServeSync.Application.SeedWorks.Cqrs;

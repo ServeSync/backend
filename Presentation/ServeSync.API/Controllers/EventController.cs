@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
 using ServeSync.API.Common.Enums;
+using ServeSync.Application.Common;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Commands;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;

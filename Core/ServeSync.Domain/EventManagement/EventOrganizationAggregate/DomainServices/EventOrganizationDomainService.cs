@@ -38,7 +38,7 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         return eventOrganization;
     }
 
-    public EventOrganization AddContact(
+    public EventOrganizationContact AddContact(
         EventOrganization eventOrganization,
         string name, 
         string email, 
@@ -49,10 +49,7 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         string? address, 
         string? position)
     {
-        eventOrganization.AddContact(name, email, phoneNumber, imageUrl, gender, birth, address, position);
-        
-        // _eventOrganizationRepository.Update(eventOrganization);
-        return eventOrganization;
+        return eventOrganization.AddContact(name, email, phoneNumber, imageUrl, gender, birth, address, position);
     }
 
     public async Task<EventOrganization> UpdateInfoAsync(

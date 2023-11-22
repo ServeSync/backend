@@ -1,5 +1,6 @@
 ﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
@@ -30,7 +31,8 @@ public class EventOrganizationContact : Entity
         bool? gender, 
         DateTime? birth, 
         string? address, 
-        string? position)
+        string? position,
+        OrganizationStatus status = OrganizationStatus.Pending)
     {
         Name = Guard.NotNullOrEmpty(name, nameof(Name));
         Email = Guard.NotNullOrEmpty(email, nameof(Email));
@@ -41,9 +43,12 @@ public class EventOrganizationContact : Entity
         Birth = birth;
         Address = address;
         Position = position;
-        Status = OrganizationStatus.Pending;
-        
-        AddDomainEvent(new NewOrganizationContactCreatedDomainEvent(this));
+        Status = status;
+
+        if (Status == OrganizationStatus.Pending)
+        {
+            AddDomainEvent(new NewPendingOrganizationContactCreatedDomainEvent(this));    
+        }
     }
 
     internal void Update(
@@ -62,6 +67,26 @@ public class EventOrganizationContact : Entity
         Address = address;
         ImageUrl = Guard.NotNullOrEmpty(imageUrl, nameof(ImageUrl));
         Position = position;
+    }
+    
+    public void ApproveInvitation()
+    {
+        if (Status != OrganizationStatus.Pending)
+        {
+            throw new EventOrganizationContactNotPendingException(Id);
+        }
+        
+        Status = OrganizationStatus.Active;
+    }
+    
+    public void RejectInvitation()
+    {
+        if (Status != OrganizationStatus.Pending)
+        {
+            throw new EventOrganizationContactNotPendingException(Id);
+        }
+        
+        Status = OrganizationStatus.Rejected;
     }
     
     public void SetIdentityId(string identityId)
