@@ -131,10 +131,11 @@ public class StudentController : ControllerBase
         return Ok(program);
     }
     
-    [HttpGet("{id:guid}/attendance-events/export")]
-    public async Task<IActionResult> ExportStudentAttendanceEventsAsync(Guid id)
+    [HttpPost("{id:guid}/attendance-events/export")]
+    [HasPermission(Permissions.Students.View)]
+    public async Task<IActionResult> ExportStudentAttendanceEventsAsync(Guid id, ExportStudentAttendanceEventsDto dto)
     {
-        var byteArray = await _mediator.Send(new ExportStudentAttendanceEventsCommand(id));
+        var byteArray = await _mediator.Send(new ExportStudentAttendanceEventsCommand(id, dto.FromDate, dto.ToDate));
         return File(byteArray, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "student.xlsx");
     }
 }
