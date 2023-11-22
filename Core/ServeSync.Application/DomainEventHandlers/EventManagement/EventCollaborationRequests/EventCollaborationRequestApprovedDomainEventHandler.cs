@@ -79,6 +79,8 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
                 notification.EventCollaborationRequest.Organization.Description,
                 notification.EventCollaborationRequest.Organization.Address);
             
+            organization.ApproveInvitation();
+            
             _eventOrganizationDomainService.AddContact(
                 organization,
                 notification.EventCollaborationRequest.OrganizationContact.Name,

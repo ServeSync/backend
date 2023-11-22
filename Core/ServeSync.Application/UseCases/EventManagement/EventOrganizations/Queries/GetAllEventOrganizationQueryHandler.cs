@@ -34,7 +34,8 @@ public class GetAllEventOrganizationQueryHandler : IQueryHandler<GetAllEventOrga
 
     private IPagingAndSortingSpecification<EventOrganization, Guid> GetSpecification(GetAllEventOrganizationQuery request)
     {
-        var specification = new FilterEventOrganizationSpecification(request.Page, request.Size, request.Sorting, request.Search);
+        var specification = new FilterEventOrganizationSpecification(request.Page, request.Size, request.Sorting, request.Search)
+            .AndIf(request.Status.HasValue, new EventOrganizationByStatusSpecification(request.Status.GetValueOrDefault()));
 
         return specification;
     }

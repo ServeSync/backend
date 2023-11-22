@@ -10,13 +10,16 @@ namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServ
 public class EventOrganizationDomainService : IEventOrganizationDomainService
 {
     private readonly IEventOrganizationRepository _eventOrganizationRepository;
+    private readonly IOrganizationInvitationRepository _organizationInvitationRepository;
     private readonly IBasicReadOnlyRepository<OrganizationRepInEvent, Guid> _organizationRepInEventRepository;
     
     public EventOrganizationDomainService(
         IEventOrganizationRepository eventOrganizationRepository,
+        IOrganizationInvitationRepository organizationInvitationRepository,
         IBasicReadOnlyRepository<OrganizationRepInEvent, Guid> organizationRepInEventRepository)
     {
         _eventOrganizationRepository = eventOrganizationRepository;
+        _organizationInvitationRepository = organizationInvitationRepository;
         _organizationRepInEventRepository = organizationRepInEventRepository;
     }
     
@@ -102,7 +105,7 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         }
         
         _eventOrganizationRepository.Delete(eventOrganization);
-        eventOrganization.AddDomainEvent(new EventOrganizationDeletedDomainEvent(eventOrganization.Id, eventOrganization.IdentityId));
+        eventOrganization.AddDomainEvent(new EventOrganizationDeletedDomainEvent(eventOrganization.Id, eventOrganization.IdentityId!));
     }
 
     public async Task DeleteContactAsync(EventOrganization eventOrganization, Guid eventOrganizationContactId)
@@ -121,6 +124,11 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         }
 
         eventOrganization.DeleteEventOrganizationContact(eventOrganizationContactId);
+    }
+
+    public void ProcessInvitation(OrganizationInvitation invitation)
+    {
+        _organizationInvitationRepository.Delete(invitation);
     }
 
     private async Task CheckDuplicateEmailAsync(string email)

@@ -1,5 +1,6 @@
 ﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Models;
 
@@ -14,6 +15,8 @@ public class EventOrganization : AuditableAggregateRoot
     public string? Address { get; private set; }
     public string ImageUrl { get; private set; }
     public string? IdentityId { get; private set; }
+    public Guid? TenantId { get; private set; }
+    public OrganizationStatus Status { get; private set; }
     public List<EventOrganizationContact> Contacts { get; private set; }
     public List<OrganizationInEvent> OrganizationInEvents { get; private set; } = new();
     
@@ -23,7 +26,8 @@ public class EventOrganization : AuditableAggregateRoot
         string phoneNumber, 
         string imageUrl, 
         string? description, 
-        string? address)
+        string? address,
+        OrganizationStatus status = OrganizationStatus.Pending)
     {
         Name = Guard.NotNullOrEmpty(name, nameof(Name));
         Email = Guard.NotNullOrEmpty(email, nameof(Email));
@@ -31,9 +35,13 @@ public class EventOrganization : AuditableAggregateRoot
         ImageUrl = Guard.NotNullOrEmpty(imageUrl, nameof(ImageUrl));
         Description = description;
         Address = address;
+        Status = OrganizationStatus.Pending;
         Contacts = new List<EventOrganizationContact>();
-        
-        AddDomainEvent(new NewEventOrganizationCreatedDomainEvent(this));
+
+        if (Status == OrganizationStatus.Pending)
+        {
+            AddDomainEvent(new NewPendingEventOrganizationCreatedDomainEvent(this));    
+        }
     }
 
     internal void AddContact(
@@ -102,10 +110,36 @@ public class EventOrganization : AuditableAggregateRoot
         Contacts.Remove(eventOrganizationContact);
         AddDomainEvent(new EventOrganizationContactDeletedDomainEvent(eventOrganizationContactId, eventOrganizationContact.IdentityId));
     }
+
+    public void ApproveInvitation()
+    {
+        if (Status != OrganizationStatus.Pending)
+        {
+            throw new EventOrganizationNotPendingException(Id);
+        }
+        
+        Status = OrganizationStatus.Active;
+        AddDomainEvent(new EventOrganizationInvitationApprovedDomainEvent(this));
+    }
+    
+    public void RejectInvitation()
+    {
+        if (Status != OrganizationStatus.Pending)
+        {
+            throw new EventOrganizationNotPendingException(Id);
+        }
+        
+        Status = OrganizationStatus.Rejected;
+    }
     
     public void SetIdentityId(string identityId)
     {
         IdentityId = identityId;
+    }
+    
+    public void SetTenantId(Guid tenantId)
+    {
+        TenantId = tenantId;
     }
 
     private EventOrganization()

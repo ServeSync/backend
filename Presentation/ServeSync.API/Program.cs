@@ -1,7 +1,5 @@
 using Newtonsoft.Json.Converters;
 using ServeSync.API.Extensions;
-using ServeSync.Application.ReadModels.Abstracts;
-using ServeSync.Application.ReadModels.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +25,7 @@ builder.Services
     .AddPersistedDomainEventHandlers()
     .AddHangFireBackGroundJob(builder.Configuration);
 
-builder.Services.AddControllers()
+builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options => options.SerializerSettings.Converters.Add(new StringEnumConverter()));
 
 builder.Services.AddSwaggerGenNewtonsoftSupport();

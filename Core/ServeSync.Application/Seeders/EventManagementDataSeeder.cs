@@ -75,12 +75,12 @@ public class EventManagementDataSeeder : IDataSeeder
 
     public async Task SeedAsync()
     {
-        await SeedEventCategoriesAsync();
-        await SeedEventOrganizationsAsync();
-        await SeedEventsAsync();
-        await SeedRegisterEventAsync();
-        await SeedAttendanceEventsForStudentAsync();
-        await SeedEventCollaborationRequestsAsync();
+        // await SeedEventCategoriesAsync();
+        // await SeedEventOrganizationsAsync();
+        // await SeedEventsAsync();
+        // await SeedRegisterEventAsync();
+        // await SeedAttendanceEventsForStudentAsync();
+        // await SeedEventCollaborationRequestsAsync();
     }
 
     private async Task SeedEventCategoriesAsync()

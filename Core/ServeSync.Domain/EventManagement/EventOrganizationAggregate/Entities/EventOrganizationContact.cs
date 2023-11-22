@@ -1,4 +1,5 @@
 ﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
@@ -13,6 +14,7 @@ public class EventOrganizationContact : Entity
     public string? Address { get; private set; }
     public string ImageUrl { get; private set; }
     public string? Position { get; private set; }
+    public OrganizationStatus Status { get; private set; }
     
     public Guid EventOrganizationId { get; private set; }
     public EventOrganization? EventOrganization { get; private set; }
@@ -39,6 +41,7 @@ public class EventOrganizationContact : Entity
         Birth = birth;
         Address = address;
         Position = position;
+        Status = OrganizationStatus.Pending;
         
         AddDomainEvent(new NewOrganizationContactCreatedDomainEvent(this));
     }

@@ -197,6 +197,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEventCollaborationRequestRepository, EventCollaborationRequestRepository>();
         services.AddScoped<IEventOrganizationRepository, EventOrganizationRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
+        services.AddScoped<IOrganizationInvitationRepository, OrganizationInvitationRepository>();
         
         return services;
     }
@@ -274,6 +275,7 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<ITenantService, TenantService>();
         
         services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
