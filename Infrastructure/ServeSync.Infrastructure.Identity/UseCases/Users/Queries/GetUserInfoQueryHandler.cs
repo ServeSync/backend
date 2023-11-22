@@ -60,14 +60,15 @@ public class GetUserInfoQueryHandler : IQueryHandler<GetUserInfoQuery, UserInfoD
         
         if (_currentUser.TenantId.HasValue)
         {
-            var userInTenant = tenants.FirstOrDefault(x => x.Id == _currentUser.TenantId);
+            var userInTenant = user.Tenants.FirstOrDefault(x => x.TenantId == _currentUser.TenantId);
             if (userInTenant == null)
             {
                 throw new UserNotInTenantException(_currentUser.Id, _currentUser.TenantId!.Value);
             }
 
-            userInfo.FullName = userInTenant.Name;
+            userInfo.FullName = userInTenant.FullName;
             userInfo.AvatarUrl = userInTenant.AvatarUrl;
+            userInfo.IsTenantOwner = userInTenant.IsOwner;
         }
 
         return userInfo;
