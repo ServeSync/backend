@@ -16,7 +16,6 @@ public class NewPendingEventOrganizationCreatedDomainEventHandler : IDomainEvent
     private readonly IEmailSender _emailSender;
     private readonly IEmailTemplateGenerator _emailTemplateGenerator;
     private readonly IOrganizationInvitationRepository _organizationInvitationRepository;
-    private readonly HttpContext? _httpContext;
     private readonly IConfiguration _configuration;
     private readonly ILogger<NewPendingEventOrganizationCreatedDomainEventHandler> _logger;
     
@@ -24,14 +23,12 @@ public class NewPendingEventOrganizationCreatedDomainEventHandler : IDomainEvent
         IEmailSender emailSender,
         IEmailTemplateGenerator emailTemplateGenerator,
         IOrganizationInvitationRepository organizationInvitationRepository,
-        IHttpContextAccessor httpContextAccessor,
         IConfiguration configuration,
         ILogger<NewPendingEventOrganizationCreatedDomainEventHandler> logger)
     {
         _emailSender = emailSender;
         _emailTemplateGenerator = emailTemplateGenerator;
         _organizationInvitationRepository = organizationInvitationRepository;
-        _httpContext = httpContextAccessor.HttpContext;
         _configuration = configuration;
         _logger = logger;
     }
@@ -41,7 +38,7 @@ public class NewPendingEventOrganizationCreatedDomainEventHandler : IDomainEvent
         var invitation = new OrganizationInvitation(notification.Organization.Id, InvitationType.Organization, Guid.NewGuid().ToString());
         await _organizationInvitationRepository.InsertAsync(invitation);
 
-        var baseUrl = $"{_httpContext?.Request.Scheme}://{_httpContext?.Request.Host}/api";
+        var baseUrl = $"{_configuration["Urls:Api"]}/api";
         var approveUrlCallBack = $"{baseUrl}/{_configuration["Urls:OrganizationInvitation:Approve"]}?Code={invitation.Code}";
         var rejectUrlCallBack = $"{baseUrl}/{_configuration["Urls:OrganizationInvitation:Reject"]}?Code={invitation.Code}";
         
