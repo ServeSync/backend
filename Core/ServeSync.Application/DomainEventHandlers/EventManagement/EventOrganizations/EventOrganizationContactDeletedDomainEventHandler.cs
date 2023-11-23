@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using ServeSync.Application.Identity;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.SeedWorks.Events;
 
 namespace ServeSync.Application.DomainEventHandlers.EventManagement.EventOrganizations;
@@ -21,6 +22,9 @@ public class EventOrganizationContactDeletedDomainEventHandler : IDomainEventHan
 
     public async Task Handle(EventOrganizationContactDeletedDomainEvent notification, CancellationToken cancellationToken)
     {
-        await _tenantService.RemoveUserFromTenantAsync(notification.IdentityId, notification.TenantId);
+        if (notification.Status == OrganizationStatus.Active)
+        {
+            await _tenantService.RemoveUserFromTenantAsync(notification.IdentityId, notification.TenantId);    
+        }
     }
 }

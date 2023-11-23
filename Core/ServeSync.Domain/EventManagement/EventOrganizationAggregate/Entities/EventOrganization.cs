@@ -114,7 +114,7 @@ public class EventOrganization : AuditableAggregateRoot
         }
         
         Contacts.Remove(eventOrganizationContact);
-        AddDomainEvent(new EventOrganizationContactDeletedDomainEvent(eventOrganizationContactId, eventOrganizationContact.IdentityId, TenantId.GetValueOrDefault()));
+        AddDomainEvent(new EventOrganizationContactDeletedDomainEvent(eventOrganizationContactId, eventOrganizationContact.Status, eventOrganizationContact.IdentityId, TenantId.GetValueOrDefault()));
     }
 
     public void ApproveInvitation()

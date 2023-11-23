@@ -103,7 +103,7 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         }
         
         _eventOrganizationRepository.Delete(eventOrganization);
-        eventOrganization.AddDomainEvent(new EventOrganizationDeletedDomainEvent(eventOrganization.Id, eventOrganization.IdentityId!, eventOrganization.TenantId.GetValueOrDefault()));
+        eventOrganization.AddDomainEvent(new EventOrganizationDeletedDomainEvent(eventOrganization.Id, eventOrganization.Status, eventOrganization.IdentityId!, eventOrganization.TenantId.GetValueOrDefault()));
     }
 
     public async Task DeleteContactAsync(EventOrganization eventOrganization, Guid eventOrganizationContactId)
