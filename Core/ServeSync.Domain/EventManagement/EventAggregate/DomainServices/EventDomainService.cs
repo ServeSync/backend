@@ -5,6 +5,7 @@ using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Specifications;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Repositories;
 
@@ -148,6 +149,11 @@ public class EventDomainService : IEventDomainService
 
     public Event AddOrganization(Event @event, EventOrganization organization, string role, DateTime dateTime)
     {
+        if (organization.Status != OrganizationStatus.Active)
+        {
+            throw new EventOrganizationNotActiveException(organization.Id);
+        }
+        
         @event.AddOrganization(organization.Id, role, dateTime);
         return @event;
     }
@@ -177,6 +183,11 @@ public class EventDomainService : IEventDomainService
         string role,
         DateTime dateTime)
     {
+        if (representative.Status != OrganizationStatus.Active)
+        {
+            throw new EventOrganizationContactNotActiveException(representative.Id);
+        }
+        
         if (representative.EventOrganizationId != organization.Id)
         {
             throw new EventOrganizationContactDoesNotBelongToOrganizationException(organization.Id, representative.Id);

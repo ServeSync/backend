@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using ServeSync.Application.Identity;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Sessions;
 using ServeSync.Infrastructure.Identity.Models.TenantAggregate;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate;
-using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Exceptions;
 using ServeSync.Infrastructure.Identity.UseCases.Tenants.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Users.Dtos;
@@ -42,8 +40,8 @@ public class GetUserInfoQueryHandler : IQueryHandler<GetUserInfoQuery, UserInfoD
             throw new UserNotFoundException(_currentUser.Id);
         }
 
-        var roles = await _identityService.GetRolesAsync(user.Id);
-        var permissions = await _identityService.GetPermissionsForUserAsync(user.Id);
+        var roles = await _identityService.GetRolesAsync(user.Id, _currentUser.TenantId);
+        var permissions = await _identityService.GetPermissionsForUserAsync(user.Id, _currentUser.TenantId);
         var tenants = await _tenantRepository.FindByUserAsync(user.Id);
 
         var userInfo = new UserInfoDto()
@@ -58,18 +56,15 @@ public class GetUserInfoQueryHandler : IQueryHandler<GetUserInfoQuery, UserInfoD
             Tenants = _mapper.Map<IEnumerable<TenantDto>>(tenants)
         };
         
-        if (_currentUser.TenantId.HasValue)
+        var userInTenant = user.Tenants.FirstOrDefault(x => x.TenantId == _currentUser.TenantId);
+        if (userInTenant == null)
         {
-            var userInTenant = user.Tenants.FirstOrDefault(x => x.TenantId == _currentUser.TenantId);
-            if (userInTenant == null)
-            {
-                throw new UserNotInTenantException(_currentUser.Id, _currentUser.TenantId!.Value);
-            }
-
-            userInfo.FullName = userInTenant.FullName;
-            userInfo.AvatarUrl = userInTenant.AvatarUrl;
-            userInfo.IsTenantOwner = userInTenant.IsOwner;
+            throw new UserNotInTenantException(_currentUser.Id, _currentUser.TenantId);
         }
+
+        userInfo.FullName = userInTenant.FullName;
+        userInfo.AvatarUrl = userInTenant.AvatarUrl;
+        userInfo.IsTenantOwner = userInTenant.IsOwner;
 
         return userInfo;
     }

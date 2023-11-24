@@ -14,6 +14,20 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
         {
             migrationBuilder.AlterDatabase()
                 .Annotation("MySQL:Charset", "utf8mb4");
+            
+            migrationBuilder.CreateTable(
+                name: "Tenant",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Name = table.Column<string>(type: "longtext", nullable: false),
+                    AvatarUrl = table.Column<string>(type: "longtext", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tenant", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "ApplicationPermission",
@@ -69,6 +83,39 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
+            
+            migrationBuilder.CreateTable(
+                    name: "UserInTenant",
+                    columns: table => new
+                    {
+                        TenantId = table.Column<Guid>(type: "char(36)", nullable: false),
+                        UserId = table.Column<string>(type: "varchar(255)", nullable: false),
+                        FullName = table.Column<string>(type: "longtext", nullable: false),
+                        AvatarUrl = table.Column<string>(type: "longtext", nullable: false),
+                        IsOwner = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    },
+                    constraints: table =>
+                    {
+                        table.PrimaryKey("PK_UserInTenant", x => new { x.TenantId, x.UserId });
+                        table.ForeignKey(
+                            name: "FK_UserInTenant_AspNetUsers_UserId",
+                            column: x => x.UserId,
+                            principalTable: "AspNetUsers",
+                            principalColumn: "Id",
+                            onDelete: ReferentialAction.Cascade);
+                        table.ForeignKey(
+                            name: "FK_UserInTenant_Tenant_TenantId",
+                            column: x => x.TenantId,
+                            principalTable: "Tenant",
+                            principalColumn: "Id",
+                            onDelete: ReferentialAction.Cascade);
+                    })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserInTenant_UserId",
+                table: "UserInTenant",
+                column: "UserId");
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
@@ -165,11 +212,12 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false),
-                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
+                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false),
+                    TenantId = table.Column<string>(type: "char(36)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId, x.TenantId });
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
                         column: x => x.RoleId,
@@ -180,6 +228,12 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenant",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -262,6 +316,11 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                        ('68d37338-7b29-4ece-bcfe-f6e1bdcdf9e3', 'Tổ chức', 'TỔ CHỨC'),
                        ('68d37338-7b29-4ece-bcfe-f6e1bdcdf9e4', 'Thành viên tổ chức', 'THÀNH VIÊN TỔ CHỨC');
             ");
+            
+            migrationBuilder.Sql(@"
+                INSERT INTO Tenant(Id, Name, AvatarUrl)
+                VALUES('5671c8d5-4f0e-4b85-b9a9-832280f4dd6f', 'Trường Đại học Bách khoa, Đại học Đà Nẵng', 'https://res.cloudinary.com/dboijruhe/image/upload/v1700832514/Assets/ddxrzqclm5ysut4o9qie.png')
+            ");
         }
 
         /// <inheritdoc />
@@ -284,6 +343,9 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "RolePermission");
+            
+            migrationBuilder.DropTable(
+                name: "UserInTenant");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
@@ -293,6 +355,9 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Tenant");
         }
     }
 }

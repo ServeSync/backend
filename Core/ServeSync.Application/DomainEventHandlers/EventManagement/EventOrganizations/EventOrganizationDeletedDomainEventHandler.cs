@@ -26,7 +26,7 @@ public class EventOrganizationDeletedDomainEventHandler : IDomainEventHandler<Ev
     {
         if (@event.Status == OrganizationStatus.Active)
         {
-            await RemoveIdentityAsync(@event.IdentityId);
+            await RemoveIdentityAsync(@event.IdentityId, @event.TenantId);
             await RemoveTenantAsync(@event.TenantId);    
         }
     }
@@ -37,16 +37,9 @@ public class EventOrganizationDeletedDomainEventHandler : IDomainEventHandler<Ev
         _logger.LogInformation("Tenant with id {TenantId} was deleted!", tenantId);
     }
 
-    private async Task RemoveIdentityAsync(string identityId)
+    private async Task RemoveIdentityAsync(string identityId, Guid tenantId)
     {
-        var result = await _identityService.DeleteAsync(identityId);
-        if (result.IsSuccess)
-        {
-            _logger.LogInformation("Identity with id {IdentityId} was deleted!", identityId);
-        }
-        else
-        {
-            _logger.LogError("Identity with id {IdentityId} was not deleted: {Message}", identityId, result.Error);
-        }
+        await _tenantService.RemoveUserFromTenantAsync(identityId, tenantId);
+        _logger.LogInformation("Removed user '{IdentityId} from tenant {tenantId}'!", identityId, tenantId);
     }
 }

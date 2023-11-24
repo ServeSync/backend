@@ -13,4 +13,18 @@ public class UpdateEventCommand : ICommand
         Id = id;
         Event = eventUpdateDto;
     }
+
+    public bool IsUpdateBasicInfo()
+    {
+        return !string.IsNullOrEmpty(Event.Name) &&
+               !string.IsNullOrEmpty(Event.Introduction) &&
+               !string.IsNullOrEmpty(Event.Description) &&
+               !string.IsNullOrEmpty(Event.ImageUrl) &&
+               Event is { StartAt: not null, EndAt: not null } &&
+               Event.Type.HasValue &&
+               Event.ActivityId.HasValue &&
+               Event.RepresentativeOrganizationId.HasValue &&
+               Event.Address != null;
+
+    }
 }

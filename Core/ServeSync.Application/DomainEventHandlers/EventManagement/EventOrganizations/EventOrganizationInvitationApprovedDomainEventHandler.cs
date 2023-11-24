@@ -69,9 +69,9 @@ public class EventOrganizationInvitationApprovedDomainEventHandler : IDomainEven
         {
             _logger.LogInformation("Identity user {IdentityUserId} already exists for event organization contact {EventOrganizationContactId}", user.Id, organization.Id);
             
-            if (!await _identityService.IsEventOrganizationAsync(organization.IdentityId!))
+            if (!await _identityService.IsEventOrganizationAsync(organization.IdentityId!, organization.TenantId!.Value))
             {
-                await _identityService.GrantToRoleAsync(user.Id, AppRole.EventOrganization);
+                await _identityService.GrantToRoleAsync(user.Id, AppRole.EventOrganization, organization.TenantId!.Value);
                 _logger.LogInformation("Granted identity user {IdentityUserId} to role {RoleName}", user.Id, AppRole.EventOrganization);
             }
             
@@ -85,7 +85,8 @@ public class EventOrganizationInvitationApprovedDomainEventHandler : IDomainEven
             organization.ImageUrl,
             organization.Email,
             password,
-            organization.Id);
+            organization.Id,
+            organization.TenantId!.Value);
 
         if (!result.IsSuccess)
         {

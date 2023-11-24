@@ -6,9 +6,11 @@ namespace ServeSync.Infrastructure.Identity.UseCases.Permissions.Queries;
 public class GetAllPermissionForUserQuery : IQuery<IEnumerable<PermissionDto>>
 {
     public string UserId { get; set; }
-    
-    public GetAllPermissionForUserQuery(string userId)
+    public Guid TenantId { get; set; }
+
+    public GetAllPermissionForUserQuery(string userId, Guid tenantId)
     {
         UserId = userId;
+        TenantId = tenantId;
     }
 }

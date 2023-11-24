@@ -8,19 +8,49 @@ public interface IIdentityService
     
     Task<IdentityUserDto?> GetByUserNameAsync(string username);
     
-    Task<IEnumerable<string>> GetPermissionsForUserAsync(string userId);
+    Task<IEnumerable<string>> GetPermissionsForUserAsync(string userId, Guid tenantId);
 
-    Task<IEnumerable<string>> GetRolesAsync(string userId);
+    Task<IEnumerable<string>> GetRolesAsync(string userId, Guid tenantId);
 
-    Task<bool> HasPermissionAsync(string userId, string permission);
+    Task<bool> HasPermissionAsync(string userId, Guid tenantId, string permission);
 
-    Task<IdentityResult<IdentityUserDto>> CreateUserAsync(string fullname, string username, string avatarUrl, string email, string password, string? phone = null, Guid? externalId = null);
+    Task<IdentityResult<IdentityUserDto>> CreateUserAsync(
+        string fullname, 
+        string username, 
+        string avatarUrl, 
+        string email, 
+        string password, 
+        string? phone = null, 
+        Guid? externalId = null);
 
-    Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string avatarUrl, string email, string password, Guid studentId, string? phone = null);
+    Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(
+        string fullname, 
+        string username, 
+        string avatarUrl, 
+        string email, 
+        string password, 
+        Guid studentId, 
+        string? phone = null);
 
-    Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationContactAsync(string fullname, string username, string avatarUrl, string email, string password, Guid contactId, string? phone = null);
+    Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationContactAsync(
+        string fullname, 
+        string username, 
+        string avatarUrl, 
+        string email, 
+        string password, 
+        Guid contactId, 
+        Guid tenantId,
+        string? phone = null);
     
-    Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationAsync(string fullname, string username, string avatarUrl, string email, string password, Guid organizationId, string? phone = null);
+    Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationAsync(
+        string fullname, 
+        string username, 
+        string avatarUrl, 
+        string email, 
+        string password, 
+        Guid organizationId,
+        Guid tenantId,
+        string? phone = null);
     
     Task<IdentityResult<bool>> UpdateAsync(string userId, string fullname, string email, string avatarUrl);
     
@@ -28,11 +58,11 @@ public interface IIdentityService
     
     Task<IdentityResult<bool>> DeleteAsync(string userId);
     
-    Task<bool> IsOrganizationContactAsync(string userId);
+    Task<bool> IsOrganizationContactAsync(string userId, Guid tenantId);
     
-    Task<bool> IsEventOrganizationAsync(string userId);
+    Task<bool> IsEventOrganizationAsync(string userId, Guid tenantId);
     
-    Task<IdentityResult<bool>> GrantToRoleAsync(string userId, string role);
+    Task<IdentityResult<bool>> GrantToRoleAsync(string userId, string role, Guid tenantId);
     
-    Task<IdentityResult<bool>> UnGrantFromRoleAsync(string userId, string role);
+    Task<IdentityResult<bool>> UnGrantFromRoleAsync(string userId, string role, Guid tenantId);
 }

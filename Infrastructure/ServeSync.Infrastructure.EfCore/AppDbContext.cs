@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,15 @@ using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 
 namespace ServeSync.Infrastructure.EfCore;
 
-public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+public class AppDbContext : IdentityDbContext<
+    ApplicationUser, 
+    ApplicationRole, 
+    string, 
+    IdentityUserClaim<string>, 
+    ApplicationUserInRole,
+    IdentityUserLogin<string>, 
+    IdentityRoleClaim<string>, 
+    IdentityUserToken<string>>
 {
     private readonly ICurrentUser _currentUser;
     private readonly IMediator _mediator;

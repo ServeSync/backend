@@ -22,6 +22,25 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                 .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.TenantAggregate.Entities.Tenant", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
+
+                b.Property<string>("AvatarUrl")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.HasKey("Id");
+
+                b.ToTable("Tenant");
+            });
+            
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -97,8 +116,11 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
                     b.Property<string>("RoleId")
                         .HasColumnType("varchar(255)");
+                    
+                    b.Property<string>("TenantId")
+                        .HasColumnType("varchar(255)");
 
-                    b.HasKey("UserId", "RoleId");
+                    b.HasKey("UserId", "RoleId", "TenantId");
 
                     b.HasIndex("RoleId");
 

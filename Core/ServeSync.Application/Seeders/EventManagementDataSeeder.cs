@@ -154,7 +154,7 @@ public class EventManagementDataSeeder : IDataSeeder
                         faker.Random.Bool(),
                         faker.Person.DateOfBirth,
                         faker.Person.Address.City,
-                        faker.Commerce.Department());
+                        faker.Commerce.Department()).ApproveInvitation();
                 }
             }
         

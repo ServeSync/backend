@@ -12,7 +12,6 @@ public class EventOrganizationContactDeletedDomainEventHandler : IDomainEventHan
     private readonly ILogger<EventOrganizationDeletedDomainEventHandler> _logger;
 
     public EventOrganizationContactDeletedDomainEventHandler(
-        IIdentityService identityService,
         ITenantService tenantService,
         ILogger<EventOrganizationDeletedDomainEventHandler> logger)
     {
@@ -25,6 +24,7 @@ public class EventOrganizationContactDeletedDomainEventHandler : IDomainEventHan
         if (notification.Status == OrganizationStatus.Active)
         {
             await _tenantService.RemoveUserFromTenantAsync(notification.IdentityId, notification.TenantId);    
+            _logger.LogInformation("Removed user '{IdentityId} from tenant {tenantId}'!", notification.IdentityId, notification.TenantId);
         }
     }
 }

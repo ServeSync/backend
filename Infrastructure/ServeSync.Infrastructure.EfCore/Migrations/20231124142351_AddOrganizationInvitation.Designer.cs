@@ -11,8 +11,8 @@ using ServeSync.Infrastructure.EfCore;
 namespace ServeSync.Infrastructure.EfCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231121142410_AddTenant")]
-    partial class AddTenant
+    [Migration("20231124142351_AddOrganizationInvitation")]
+    partial class AddOrganizationInvitation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -88,21 +88,6 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -475,6 +460,12 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("char(36)");
+
                     b.HasKey("Id");
 
                     b.ToTable("EventOrganization");
@@ -520,11 +511,35 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Property<string>("Position")
                         .HasColumnType("longtext");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EventOrganizationId");
 
                     b.ToTable("EventOrganizationContact");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities.OrganizationInvitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("ReferenceId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrganizationInvitation");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.EducationProgramAggregate.Entities.EducationProgram", b =>
@@ -891,6 +906,24 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.ApplicationUserInRole", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("char(36)");
+                    
+                    b.HasKey("UserId", "RoleId", "TenantId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
             modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -971,21 +1004,6 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities.ApplicationRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -1340,6 +1358,33 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.ApplicationUserInRole", b =>
+                {
+                    b.HasOne("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.ApplicationUser", null)
+                        .WithMany("Roles")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities.ApplicationRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServeSync.Infrastructure.Identity.Models.TenantAggregate.Entities.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.RefreshToken", b =>
                 {
                     b.HasOne("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.ApplicationUser", "User")
@@ -1421,6 +1466,8 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
             modelBuilder.Entity("ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("RefreshToken");
+
+                    b.Navigation("Roles");
 
                     b.Navigation("Tenants");
                 });

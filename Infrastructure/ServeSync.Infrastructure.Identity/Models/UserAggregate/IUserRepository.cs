@@ -10,4 +10,6 @@ public interface IUserRepository : IRepository<ApplicationUser, string>
     Task<ApplicationUser?> FindByUserNameOrEmailAndRoles(string username, string email, IEnumerable<string> roles);
     
     Task<ApplicationUser?> FindByRefreshTokenAsync(string refreshToken);
+
+    Task<IList<string>> GetRolesAsync(string id, Guid tenantId);
 }

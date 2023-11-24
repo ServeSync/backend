@@ -4,7 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using ServeSync.Application.Common;
 using ServeSync.Application.Identity;
 using ServeSync.Application.Identity.Dtos;
+using ServeSync.Domain.SeedWorks.Exceptions;
+using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
+using ServeSync.Infrastructure.Identity.Models.RoleAggregate;
+using ServeSync.Infrastructure.Identity.Models.TenantAggregate;
+using ServeSync.Infrastructure.Identity.Models.UserAggregate;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Queries;
 
@@ -14,15 +19,27 @@ public class IdentityService : IIdentityService
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly ITenantRepository _tenantRepository;
+    private readonly ITenantService _tenantService;
+    private readonly IRoleRepository _roleRepository;
+    private readonly IUserRepository _userRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     
     public IdentityService(
         IMediator mediator, 
         IMapper mapper,
+        ITenantRepository tenantRepository,
+        ITenantService tenantService,
+        IRoleRepository roleRepository,
+        IUserRepository userRepository,
         UserManager<ApplicationUser> userManager)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _tenantRepository = tenantRepository;
+        _tenantService = tenantService;
+        _roleRepository = roleRepository;
+        _userRepository = userRepository;
         _userManager = userManager;
     }
 
@@ -38,13 +55,13 @@ public class IdentityService : IIdentityService
         return _mapper.Map<IdentityUserDto>(user);
     }
 
-    public async Task<IEnumerable<string>> GetPermissionsForUserAsync(string userId)
+    public async Task<IEnumerable<string>> GetPermissionsForUserAsync(string userId, Guid tenantId)
     {
-        var permissions = await _mediator.Send(new GetAllPermissionForUserQuery(userId));
+        var permissions = await _mediator.Send(new GetAllPermissionForUserQuery(userId, tenantId));
         return permissions.Select(x => x.Name);
     }
 
-    public async Task<IEnumerable<string>> GetRolesAsync(string userId)
+    public async Task<IEnumerable<string>> GetRolesAsync(string userId, Guid tenantId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -52,12 +69,12 @@ public class IdentityService : IIdentityService
             return Array.Empty<string>();
         }
 
-        return await _userManager.GetRolesAsync(user);
+        return await _userRepository.GetRolesAsync(userId, tenantId);
     }
 
-    public async Task<bool> HasPermissionAsync(string userId, string permission)
+    public async Task<bool> HasPermissionAsync(string userId, Guid tenantId, string permission)
     {
-        var permissions = await GetPermissionsForUserAsync(userId);
+        var permissions = await GetPermissionsForUserAsync(userId, tenantId);
         return permissions.Contains(permission);
     }
 
@@ -80,12 +97,21 @@ public class IdentityService : IIdentityService
         return IdentityResult<IdentityUserDto>.Failed(error.Code, error.Description);
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(string fullname, string username, string avatarUrl, string email, string password, Guid studentId, string? phone = null)
+    public async Task<IdentityResult<IdentityUserDto>> CreateStudentAsync(
+        string fullname, 
+        string username, 
+        string avatarUrl, 
+        string email, 
+        string password, 
+        Guid studentId, 
+        string? phone = null)
     {
         var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone, studentId);
         if (createIdentityUserResult.IsSuccess)
         {
-            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.Student);
+            var tenant = await _tenantRepository.FindByIdAsync(AppTenant.Default);
+            await _tenantService.AddUserToTenantAsync(createIdentityUserResult.Data!.Id, fullname, avatarUrl, false, tenant!.Id);
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.Student, tenant!.Id);
             if (grantRoleResult.IsSuccess)
             {
                 return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
@@ -99,12 +125,26 @@ public class IdentityService : IIdentityService
         return createIdentityUserResult;
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationContactAsync(string fullname, string username, string avatarUrl, string email, string password, Guid contactId, string? phone = null)
+    public async Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationContactAsync(
+        string fullname, 
+        string username, 
+        string avatarUrl, 
+        string email, 
+        string password, 
+        Guid contactId, 
+        Guid tenantId,
+        string? phone = null)
     {
         var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone, contactId);
         if (createIdentityUserResult.IsSuccess)
         {
-            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.EventOrganizer);
+            var tenant = await _tenantRepository.FindByIdAsync(tenantId);
+            if (tenant == null)
+            {
+                return IdentityResult<IdentityUserDto>.Failed(IdentityErrorCodes.IdentityTenantNotFound, $"Tenant with id {tenantId} not found!");
+            }
+            
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.EventOrganizer, tenantId);
             if (grantRoleResult.IsSuccess)
             {
                 return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
@@ -118,12 +158,26 @@ public class IdentityService : IIdentityService
         return createIdentityUserResult;
     }
 
-    public async Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationAsync(string fullname, string username, string avatarUrl, string email, string password, Guid organizationId, string? phone = null)
+    public async Task<IdentityResult<IdentityUserDto>> CreateEventOrganizationAsync(
+        string fullname, 
+        string username, 
+        string avatarUrl, 
+        string email, 
+        string password, 
+        Guid organizationId, 
+        Guid tenantId,
+        string? phone = null)
     {
         var createIdentityUserResult = await CreateUserAsync(fullname, username, avatarUrl, email, password, phone, organizationId);
         if (createIdentityUserResult.IsSuccess)
         {
-            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.EventOrganization);
+            var tenant = await _tenantRepository.FindByIdAsync(tenantId);
+            if (tenant == null)
+            {
+                return IdentityResult<IdentityUserDto>.Failed(IdentityErrorCodes.IdentityTenantNotFound, $"Tenant with id {tenantId} not found!");
+            }
+            
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.EventOrganizer, tenantId);
             if (grantRoleResult.IsSuccess)
             {
                 return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
@@ -196,7 +250,7 @@ public class IdentityService : IIdentityService
         return IdentityResult<bool>.Failed(error.Code, error.Description);
     }
 
-    public async Task<bool> IsOrganizationContactAsync(string userId)
+    public async Task<bool> IsOrganizationContactAsync(string userId, Guid tenantId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -204,11 +258,11 @@ public class IdentityService : IIdentityService
             return false;
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await GetRolesAsync(userId, tenantId);
         return roles.Contains(AppRole.EventOrganizer);
     }
 
-    public async Task<bool> IsEventOrganizationAsync(string userId)
+    public async Task<bool> IsEventOrganizationAsync(string userId, Guid tenantId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -216,11 +270,11 @@ public class IdentityService : IIdentityService
             return false;
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await GetRolesAsync(userId, tenantId);
         return roles.Contains(AppRole.EventOrganization);
     }
 
-    public async Task<IdentityResult<bool>> GrantToRoleAsync(string userId, string role)
+    public async Task<IdentityResult<bool>> GrantToRoleAsync(string userId, string roleName, Guid tenantId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -230,7 +284,15 @@ public class IdentityService : IIdentityService
 
         try
         {
-            var result = await _userManager.AddToRoleAsync(user, role);
+            var role = await _roleRepository.FindByNameAsync(roleName);
+            if (role == null)
+            {
+                return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityRoleNotFound, $"Role with name {roleName} not found!");
+            }
+            
+            user.GrantRole(role.Id, tenantId);
+            
+            var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
                 return IdentityResult<bool>.Success(true);
@@ -239,13 +301,13 @@ public class IdentityService : IIdentityService
             var error = result.Errors.First();
             return IdentityResult<bool>.Failed(error.Code, error.Description);
         }
-        catch
+        catch (CoreException e)
         {
-            return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityRoleNotFound, $"Role with name {role} not found!");
+            return IdentityResult<bool>.Failed(e.ErrorCode, e.Message);
         }
     }
 
-    public async Task<IdentityResult<bool>> UnGrantFromRoleAsync(string userId, string role)
+    public async Task<IdentityResult<bool>> UnGrantFromRoleAsync(string userId, string roleName, Guid tenantId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -255,7 +317,15 @@ public class IdentityService : IIdentityService
 
         try
         {
-            var result = await _userManager.RemoveFromRoleAsync(user, role);
+            var role = await _roleRepository.FindByNameAsync(roleName);
+            if (role == null)
+            {
+                return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityRoleNotFound, $"Role with name {roleName} not found!");
+            }
+            
+            user.UnGrantRole(role.Id, tenantId);
+            
+            var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
                 return IdentityResult<bool>.Success(true);
@@ -266,7 +336,7 @@ public class IdentityService : IIdentityService
         }
         catch
         {
-            return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityRoleNotFound, $"Role with name {role} not found!");
+            return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityRoleNotFound, $"Role with name {roleName} not found!");
         }
     }
 }

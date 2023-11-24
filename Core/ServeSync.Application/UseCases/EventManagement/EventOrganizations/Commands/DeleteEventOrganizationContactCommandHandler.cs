@@ -34,9 +34,13 @@ public class DeleteEventOrganizationContactCommandHandler : ICommandHandler<Dele
             throw new EventOrganizationNotFoundException(request.EventOrganizationId);
         }
         
+        await _unitOfWork.BeginTransactionAsync();
+        
         await _eventOrganizationDomainService.DeleteContactAsync(eventOrganization, request.EventOrganizationContactId);
         _eventOrganizationRepository.Update(eventOrganization);
-        await _unitOfWork.CommitAsync();
+        
+        await _unitOfWork.CommitTransactionAsync(true);
+        
         _logger.LogInformation("Event organization contact with id {EventOrganizationContactId} was deleted!", request.EventOrganizationContactId);
     }
 }

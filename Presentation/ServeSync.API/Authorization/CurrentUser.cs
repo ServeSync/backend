@@ -22,8 +22,8 @@ public class CurrentUser : ICurrentUser
     public string Email 
         => _httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.Email);
     
-    public Guid? TenantId
-        => Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.TenantId), out var tenantId) ? tenantId : null;
+    public Guid TenantId
+        => Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirstValue(AppClaim.TenantId), out var tenantId) ? tenantId : Guid.Empty;
     
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
@@ -40,7 +40,7 @@ public class CurrentUser : ICurrentUser
     {
         if (IsAuthenticated)
         {
-            var roles = await _mediator.Send(new GetAllRoleForUserQuery(Id));
+            var roles = await _mediator.Send(new GetAllRoleForUserQuery(Id, TenantId));
             return roles.Contains(role);    
         }
 

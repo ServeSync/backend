@@ -17,20 +17,20 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
-
+            
+            migrationBuilder.AddColumn<int>(
+                name: "TenantId",
+                table: "EventOrganization",
+                type: "char(36)",
+                nullable: true);
+            
             migrationBuilder.AddColumn<int>(
                 name: "Status",
                 table: "EventOrganization",
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "TenantId",
-                table: "EventOrganization",
-                type: "char(36)",
-                nullable: true);
-
+            
             migrationBuilder.CreateTable(
                 name: "OrganizationInvitation",
                 columns: table => new
@@ -60,7 +60,7 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
             migrationBuilder.DropColumn(
                 name: "Status",
                 table: "EventOrganization");
-
+            
             migrationBuilder.DropColumn(
                 name: "TenantId",
                 table: "EventOrganization");

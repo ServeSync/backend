@@ -34,14 +34,23 @@ public class RejectEventOrganizationInvitationCommandHandler : ICommandHandler<R
     
     public async Task Handle(RejectEventOrganizationInvitationCommand request, CancellationToken cancellationToken)
     {
-        await _unitOfWork.BeginTransactionAsync();
-        
         var invitation = await _organizationInvitationRepository.FindByCodeAsync(request.Code);
         if (invitation == null)
         {
             throw new OrganizationInvitationNotFoundException(request.Code);
         }
+        
+        await _unitOfWork.BeginTransactionAsync();
+        
+        await ProcessInvitationAsync(invitation);
+        
+        await _unitOfWork.CommitTransactionAsync(true);
+        
+        _logger.LogInformation("Approved invitation {InvitationCode}!", request.Code);
+    }
 
+    private async Task ProcessInvitationAsync(OrganizationInvitation invitation)
+    {
         _eventOrganizationDomainService.ProcessInvitation(invitation);
         if (invitation.Type == InvitationType.Organization)
         {
@@ -51,10 +60,6 @@ public class RejectEventOrganizationInvitationCommandHandler : ICommandHandler<R
         {
             await RejectEventOrganizationContactAsync(invitation);
         }
-        
-        await _unitOfWork.CommitTransactionAsync(true);
-        
-        _logger.LogInformation("Approved invitation {InvitationCode}!", request.Code);
     }
 
     private async Task RejectEventOrganizationAsync(OrganizationInvitation invitation)

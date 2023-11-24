@@ -34,7 +34,7 @@ public class OrganizationContactInvitationApprovedDomainEventHandler : IDomainEv
     
     public async Task Handle(OrganizationContactInvitationApprovedDomainEvent notification, CancellationToken cancellationToken)
     {
-        await InitIdentityAsync(notification.Contact);
+        await InitIdentityAsync(notification.Contact, notification.Organization.TenantId.GetValueOrDefault());
 
         await AddToTenantAsync(notification.Contact, notification.Organization.TenantId.GetValueOrDefault());
         
@@ -46,16 +46,16 @@ public class OrganizationContactInvitationApprovedDomainEventHandler : IDomainEv
         });
     }
     
-    private async Task InitIdentityAsync(EventOrganizationContact contact)
+    private async Task InitIdentityAsync(EventOrganizationContact contact, Guid tenantId)
     {
         var user = await _identityService.GetByUserNameAsync(contact.Email);
         if (user != null)
         {
             _logger.LogInformation("Identity user {IdentityUserId} already exists for event organization contact {EventOrganizationContactId}", user.Id, contact.Id);
             
-            if (!await _identityService.IsOrganizationContactAsync(contact.IdentityId))
+            if (!await _identityService.IsOrganizationContactAsync(contact.IdentityId, tenantId))
             {
-                await _identityService.GrantToRoleAsync(user.Id, AppRole.EventOrganizer);
+                await _identityService.GrantToRoleAsync(user.Id, AppRole.EventOrganizer, tenantId);
                 _logger.LogInformation("Granted identity user {IdentityUserId} to role {RoleName}", user.Id, AppRole.EventOrganizer);
             }
             
@@ -70,7 +70,8 @@ public class OrganizationContactInvitationApprovedDomainEventHandler : IDomainEv
             contact.ImageUrl,
             contact.Email,
             password,
-            contact.Id);
+            contact.Id,
+            tenantId);
 
         if (!result.IsSuccess)
         {

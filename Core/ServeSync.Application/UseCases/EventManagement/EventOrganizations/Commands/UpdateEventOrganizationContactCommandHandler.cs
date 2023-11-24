@@ -33,6 +33,8 @@ public class UpdateEventOrganizationContactCommandHandler : ICommandHandler<Upda
         {
             throw new EventOrganizationNotFoundException(request.OrganizationId);
         }
+
+        await _unitOfWork.BeginTransactionAsync();
         
         await _eventOrganizationDomainService.UpdateContactAsync(
             eventOrganization, 
@@ -45,7 +47,8 @@ public class UpdateEventOrganizationContactCommandHandler : ICommandHandler<Upda
             request.Address,
             request.Position);
         
-        await _unitOfWork.CommitAsync();
+        await _unitOfWork.CommitTransactionAsync(true);
+        
         _logger.LogInformation("Updated event organization contact information with id '{EventOrganizationContactId}'", request.OrganizationContactId);
     }
 }

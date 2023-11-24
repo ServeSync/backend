@@ -33,6 +33,4 @@ public class EventOrganizationUpdatedDomainEventHandler : IDomainEventHandler<Ev
         
         _logger.LogInformation("Updated tenant {TenantId} with name {Name} and image {ImageUrl}", notification.EventOrganization.TenantId, notification.EventOrganization.Name, notification.EventOrganization.ImageUrl);
     }
-    
-    
 }

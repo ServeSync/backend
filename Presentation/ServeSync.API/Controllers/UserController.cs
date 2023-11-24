@@ -22,9 +22,9 @@ public class UserController : ControllerBase
     [HttpGet("{id}/permissions")]
     [HasPermission(Permissions.Users.ViewPermissions)]
     [ProducesResponseType(typeof(IEnumerable<PermissionDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetPermissionsForUserAsync(string id)
+    public async Task<IActionResult> GetPermissionsForUserAsync(string id, [FromQuery] Guid tenantId)
     {
-        var permissions = await _mediator.Send(new GetAllPermissionForUserQuery(id));
+        var permissions = await _mediator.Send(new GetAllPermissionForUserQuery(id, tenantId));
         return Ok(permissions);
     }
 }

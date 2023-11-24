@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ServeSync.Application.Common.Validations;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRegistrationInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
@@ -10,45 +11,34 @@ namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 
 public class EventUpdateDto
 {
-    [Required]
     [MinLength(10)]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; }
     
-    [Required]
     [MinLength(10)]
-    public string Introduction { get; set; } = null!;
+    public string? Introduction { get; set; }
     
-    [Required]
     [MinLength(256)]
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
     
-    [Required]
-    public string ImageUrl { get; set; } = null!;
+    public string? ImageUrl { get; set; }
     
-    [Required]
-    public DateTime StartAt { get; set; }
+    public DateTime? StartAt { get; set; }
+    public DateTime? EndAt { get; set; }
     
-    [Required]
-    public DateTime EndAt { get; set; }
-    public EventType Type { get; set; }
-    public Guid ActivityId { get; set; }
-    public Guid RepresentativeOrganizationId { get; set; }
+    public EventType? Type { get; set; }
+    public Guid? ActivityId { get; set; }
+    public Guid? RepresentativeOrganizationId { get; set; }
+    public EventAddressDto? Address { get; set; }
     
-    public EventAddressDto Address { get; set; } = null!;
-    
-    [Required]
     [MinLength(1)]
-    public List<EventRoleUpdateDto> Roles { get; set; } = null!;
+    public List<EventRoleUpdateDto>? Roles { get; set; }
     
-    [Required]
     [MinLength(1)]
-    public List<EventAttendanceInfoUpdateDto> AttendanceInfos { get; set; } = null!;
+    public List<EventAttendanceInfoUpdateDto>? AttendanceInfos { get; set; }
     
-    [Required]
     [MinLength(1)]
-    public List<OrganizationInEventUpdateDto> Organizations { get; set; } = null!;
+    public List<OrganizationInEventUpdateDto>? Organizations { get; set; }
     
-    [Required]
     [MinLength(1)]
-    public List<EventRegistrationUpdateDto> RegistrationInfos { get; set; } = null!;
+    public List<EventRegistrationUpdateDto>? RegistrationInfos { get; set; }
 }

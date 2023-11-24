@@ -1,24 +1,28 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 using ServeSync.Domain.SeedWorks.Models;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Exceptions;
 
 namespace ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 
-public partial class ApplicationUser : IdentityUser
+public partial class ApplicationUser : IdentityUser<string>
 {
     public string FullName { get; private set; }
     public string AvatarUrl { get; private set; }
     public Guid? ExternalId { get; private set; }
     public List<RefreshToken> RefreshToken { get; set; }
     public List<UserInTenant> Tenants { get; set; }
+    public List<ApplicationUserInRole> Roles { get; set; }
 
     public ApplicationUser(string fullname, string? avatarUrl = null, Guid? externalId = null)
     {
+        Id = Guid.NewGuid().ToString();
         FullName = Guard.NotNullOrEmpty(fullname, nameof(FullName));
         AvatarUrl = string.IsNullOrWhiteSpace(avatarUrl) ? "https://static.thenounproject.com/png/5034901-200.png" : avatarUrl;
         ExternalId = externalId;
         RefreshToken = new List<RefreshToken>();
         Tenants = new List<UserInTenant>();
+        Roles = new List<ApplicationUserInRole>();
     }
 
     public void UpdateFullName(string fullName)
@@ -47,6 +51,28 @@ public partial class ApplicationUser : IdentityUser
         {
             RefreshToken.Remove(GetRefreshToken(accessTokenId, refreshToken));
         }
+    }
+
+    public void GrantRole(string roleId, Guid tenantId)
+    {
+        if (Roles.Any(x => x.RoleId == roleId && x.TenantId == tenantId))
+        {
+            throw new ResourceAlreadyExistException("Role has already granted to user in this tenant!");
+        }
+        
+        Roles.Add(new ApplicationUserInRole(Id, roleId, tenantId));
+    }
+    
+    public void UnGrantRole(string roleId, Guid tenantId)
+    {
+        var role = Roles.FirstOrDefault(x => x.RoleId == roleId && x.TenantId == tenantId);
+
+        if (role == null)
+        {
+            throw new ResourceNotFoundException("Role not found!");
+        }
+
+        Roles.Remove(role);
     }
 
     public void AddToTenant(string fullName, string avatarUrl, Guid tenantId, bool isOwner)

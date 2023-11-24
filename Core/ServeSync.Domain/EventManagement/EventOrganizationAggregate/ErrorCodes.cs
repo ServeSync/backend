@@ -14,6 +14,7 @@ public static class ErrorCodes
     public const string EventOrganizationContactAlreadyExisted = "EventOrganizationContact:000003";
     public const string EventOrganizationContactHasAttendAnEvent = "EventOrganizationContact:000004";
     public const string EventOrganizationContactNotPending = "EventOrganizationContact:000005";
+    public const string EventOrganizationContactNotActive = "EventOrganizationContact:000006";
     
     public const string OrganizationInvitationNotFound = "OrganizationInvitation:000001";
 }

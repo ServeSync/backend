@@ -50,20 +50,23 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
 
         var dateTime = DateTime.UtcNow;
 
-        await _eventDomainService.UpdateAsync(
-            @event,
-            request.Event.Name,
-            request.Event.Introduction,
-            request.Event.Description,
-            request.Event.ImageUrl,
-            request.Event.Type,
-            request.Event.StartAt,
-            request.Event.EndAt,
-            request.Event.ActivityId,
-            request.Event.Address.FullAddress,
-            request.Event.Address.Longitude,
-            request.Event.Address.Latitude,
-            dateTime);
+        if (request.IsUpdateBasicInfo())
+        {
+            await _eventDomainService.UpdateAsync(
+                @event,
+                request.Event.Name!,
+                request.Event.Introduction!,
+                request.Event.Description!,
+                request.Event.ImageUrl!,
+                request.Event.Type!.Value,
+                request.Event.StartAt!.Value,
+                request.Event.EndAt!.Value,
+                request.Event.ActivityId!.Value,
+                request.Event.Address!.FullAddress,
+                request.Event.Address.Longitude,
+                request.Event.Address.Latitude,
+                dateTime);    
+        }
         
         UpdateEventRoles(@event, request, dateTime);
         UpdateRegistrationInfos(@event, request, dateTime);
@@ -72,8 +75,11 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
         
         _eventRepository.Update(@event);
         await _unitOfWork.CommitAsync();
-        
-        _eventDomainService.SetRepresentativeOrganization(@event, request.Event.RepresentativeOrganizationId, dateTime);
+
+        if (request.Event.RepresentativeOrganizationId.HasValue && request.Event.Organizations != null)
+        {
+            _eventDomainService.SetRepresentativeOrganization(@event, request.Event.RepresentativeOrganizationId.Value, dateTime);    
+        }
         
         await _unitOfWork.CommitTransactionAsync(true);
         
@@ -82,6 +88,11 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
 
     private void UpdateEventRoles(Event @event, UpdateEventCommand request, DateTime dateTime)
     {
+        if (request.Event.Roles == null)
+        {
+            return;
+        }
+        
         var newRoles = request.Event.Roles.Where(x => !x.Id.HasValue).ToList();
         var updateRoles = request.Event.Roles.Where(x => x.Id.HasValue).ToList();
         var deletedRoles = @event.Roles.ExceptBy(updateRoles.Select(x => x.Id), x => x.Id).ToList();
@@ -104,6 +115,11 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
 
     private void UpdateRegistrationInfos(Event @event, UpdateEventCommand request, DateTime dateTime)
     {
+        if (request.Event.RegistrationInfos == null)
+        {
+            return;
+        }
+        
         var newRegistrationInfos = request.Event.RegistrationInfos.Where(x => !x.Id.HasValue).ToList();
         var updateRegistrationInfos = request.Event.RegistrationInfos.Where(x => x.Id.HasValue).ToList();
         var deletedRegistrationInfos = @event.RegistrationInfos.ExceptBy(updateRegistrationInfos.Select(x => x.Id), x => x.Id).ToList();
@@ -126,6 +142,11 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
 
     private void UpdateAttendanceInfos(Event @event, UpdateEventCommand request, DateTime dateTime)
     {
+        if (request.Event.AttendanceInfos == null)
+        {
+            return;
+        }
+        
         var newAttendanceInfos = request.Event.AttendanceInfos.Where(x => !x.Id.HasValue).ToList();
         var updateAttendanceInfos = request.Event.AttendanceInfos.Where(x => x.Id.HasValue).ToList();
         var deletedAttendanceInfos = @event.AttendanceInfos.ExceptBy(updateAttendanceInfos.Select(x => x.Id), x => x.Id).ToList();
@@ -148,6 +169,11 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
 
     private async Task UpdateOrganizationAsync(Event @event, UpdateEventCommand request, DateTime dateTime)
     {
+        if (request.Event.Organizations == null)
+        {
+            return;
+        }
+        
         var eventOrganizations = await _eventOrganizationRepository.FindByIncludedIdsAsync(request.Event.Organizations.Select(x => x.OrganizationId));
         var organizationRepresentatives = await _eventOrganizationContactRepository.FindByIncludedIdsAsync(request.Event.Organizations.SelectMany(x => x.OrganizationReps).Select(x => x.OrganizationRepId));
         
