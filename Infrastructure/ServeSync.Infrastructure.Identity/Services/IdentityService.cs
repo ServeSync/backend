@@ -276,7 +276,7 @@ public class IdentityService : IIdentityService
 
     public async Task<IdentityResult<bool>> GrantToRoleAsync(string userId, string roleName, Guid tenantId)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userRepository.FindByIdAsync(userId);
         if (user == null)
         {
             return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityUserNotFound, $"User with id {userId} not found!");
@@ -309,7 +309,7 @@ public class IdentityService : IIdentityService
 
     public async Task<IdentityResult<bool>> UnGrantFromRoleAsync(string userId, string roleName, Guid tenantId)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userRepository.FindByIdAsync(userId);
         if (user == null)
         {
             return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityUserNotFound, $"User with id {userId} not found!");
