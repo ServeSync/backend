@@ -90,7 +90,7 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
                 notification.EventCollaborationRequest.OrganizationContact.Gender,
                 notification.EventCollaborationRequest.OrganizationContact.Birth,
                 notification.EventCollaborationRequest.OrganizationContact.Address,
-                notification.EventCollaborationRequest.OrganizationContact.Position);
+                notification.EventCollaborationRequest.OrganizationContact.Position).ApproveInvitation();
             
             await _eventOrganizationRepository.InsertAsync(organization);
             _logger.LogInformation("Created new organization {Email}", notification.EventCollaborationRequest.Organization.Email);
@@ -108,7 +108,7 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
                     notification.EventCollaborationRequest.OrganizationContact.Gender,
                     notification.EventCollaborationRequest.OrganizationContact.Birth,
                     notification.EventCollaborationRequest.OrganizationContact.Address,
-                    notification.EventCollaborationRequest.OrganizationContact.Position);
+                    notification.EventCollaborationRequest.OrganizationContact.Position).ApproveInvitation();
                 _eventOrganizationRepository.Update(organization);
             }
             catch (EventOrganizationContactAlreadyExistedException e)
