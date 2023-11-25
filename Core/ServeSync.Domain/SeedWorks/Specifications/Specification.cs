@@ -86,3 +86,15 @@ public class EmptySpecification<TEntity, TKey> : Specification<TEntity, TKey>
         return x => true;
     }
 }
+
+public class EmptyFalseSpecification<TEntity, TKey> : Specification<TEntity, TKey>
+    where TEntity : IEntity<TKey> 
+    where TKey : IEquatable<TKey> 
+{
+    public static EmptyFalseSpecification<TEntity, TKey> Instance { get; } = new();
+    
+    public override Expression<Func<TEntity, bool>> ToExpression()
+    {
+        return x => false;
+    }
+}

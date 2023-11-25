@@ -131,6 +131,16 @@ public class AppDbContext : IdentityDbContext<
                     break;
             }
         }
+        
+        foreach (var entry in ChangeTracker.Entries<IHasTenant>())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.Entity.TenantId = _currentUser.TenantId == Guid.Empty ? null : _currentUser.TenantId;
+                    break;
+            }
+        }
 
         foreach (var entry in ChangeTracker.Entries<IHasSoftDelete>())
         {

@@ -8,7 +8,7 @@ using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventAggregate.Entities;
 
-public class Event : AuditableAggregateRoot
+public class Event : AuditableTenantAggregateRoot
 {
     public string Name { get; private set; }
     public string Introduction { get; private set; }
