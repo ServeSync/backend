@@ -32,7 +32,7 @@ public class ImageController : ControllerBase
     [HttpPost("assets")]
     public async Task<IActionResult> UploadAssetImageAsync([FromForm] IFormFile file)
     {
-        var result = await _imageUploader.UploadAsync(file.FileName, file.OpenReadStream());
+        var result = await _imageUploader.UploadAssetAsync(file.FileName, file.OpenReadStream());
         if (!result.IsSuccess)
         {
             throw new ResourceInvalidOperationException(result.ErrorMessage!, "UploadImageFailed");
