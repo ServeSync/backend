@@ -19,6 +19,7 @@ public class EventReadModel : BaseReadModel<Guid>
 
     public AuditReadModel Created { get; set; } = null!;
     public AuditReadModel? Modified { get; set; }
+    public Guid? TenantId { get; set; }
     
     public EventAddressReadModel Address { get; set; } = null!;
     
