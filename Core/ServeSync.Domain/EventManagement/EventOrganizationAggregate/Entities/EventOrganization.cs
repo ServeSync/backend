@@ -52,7 +52,8 @@ public class EventOrganization : AuditableAggregateRoot
         bool? gender, 
         DateTime? birth, 
         string? address, 
-        string? position)
+        string? position,
+        OrganizationStatus status = OrganizationStatus.Pending)
     {
         if (Status != OrganizationStatus.Active)
         {
@@ -64,7 +65,7 @@ public class EventOrganization : AuditableAggregateRoot
             throw new EventOrganizationContactAlreadyExistedException(Id, email);
         }
         
-        var contact = new EventOrganizationContact(name, email, phoneNumber, imageUrl, Id, gender, birth, address, position);
+        var contact = new EventOrganizationContact(name, email, phoneNumber, imageUrl, Id, gender, birth, address, position, status);
         Contacts.Add(contact);
 
         return contact;

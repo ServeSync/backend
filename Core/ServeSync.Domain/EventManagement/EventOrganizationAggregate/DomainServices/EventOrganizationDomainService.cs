@@ -1,6 +1,7 @@
 ﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Specifications;
 using ServeSync.Domain.SeedWorks.Repositories;
@@ -29,11 +30,12 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         string phoneNumber, 
         string imageUrl, 
         string? description, 
-        string? address)
+        string? address,
+        OrganizationStatus status = OrganizationStatus.Pending)
     {
         await CheckDuplicateNameAsync(name);
         await CheckDuplicateEmailAsync(email);
-        var eventOrganization = new EventOrganization(name, email, phoneNumber, imageUrl, description, address);
+        var eventOrganization = new EventOrganization(name, email, phoneNumber, imageUrl, description, address, status);
         
         return eventOrganization;
     }
@@ -47,9 +49,10 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
         bool? gender, 
         DateTime? birth, 
         string? address, 
-        string? position)
+        string? position,
+        OrganizationStatus status = OrganizationStatus.Pending)
     {
-        return eventOrganization.AddContact(name, email, phoneNumber, imageUrl, gender, birth, address, position);
+        return eventOrganization.AddContact(name, email, phoneNumber, imageUrl, gender, birth, address, position, status);
     }
 
     public async Task<EventOrganization> UpdateInfoAsync(

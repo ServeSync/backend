@@ -34,10 +34,12 @@ public class ApproveEventCollaborationRequestCommandHandler : ICommandHandler<Ap
             throw new EventCollaborationRequestNotFoundException(request.Id);
         }
 
+        await _unitOfWork.BeginTransactionAsync();
+        
         _eventCollaborationRequestDomainService.Approve(eventCollaborationRequest, DateTime.UtcNow);
         _eventCollaborationRequestRepository.Update(eventCollaborationRequest);
         
-        await _unitOfWork.CommitAsync();
+        await _unitOfWork.CommitTransactionAsync(true);
         
         _logger.LogInformation("Event collaboration request {Id} approved successfully!", request.Id);
         return eventCollaborationRequest.EventId!.Value;

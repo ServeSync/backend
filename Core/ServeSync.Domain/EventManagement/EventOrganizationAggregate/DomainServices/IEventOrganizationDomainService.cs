@@ -1,4 +1,5 @@
 ﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
 
@@ -10,7 +11,8 @@ public interface IEventOrganizationDomainService
         string phoneNumber, 
         string imageUrl, 
         string? description, 
-        string? address);
+        string? address, 
+        OrganizationStatus status = OrganizationStatus.Pending);
 
     EventOrganizationContact AddContact(
         EventOrganization eventOrganization,
@@ -21,7 +23,8 @@ public interface IEventOrganizationDomainService
         bool? gender, 
         DateTime? birth, 
         string? address, 
-        string? position);
+        string? position,
+        OrganizationStatus status = OrganizationStatus.Pending);
     
     Task<EventOrganization> UpdateInfoAsync(
         EventOrganization eventOrganization,
