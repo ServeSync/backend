@@ -74,13 +74,13 @@ public class EventQueries : IEventQueries
                         FullName = row.CreatedUserFullName,
                         ImageUrl = row.CreatedUserAvatarUrl
                     },
-                    Modified = new AuditReadModel()
+                    Modified = row.LastModified != null ? new AuditReadModel()
                     {
                         Id = row.LastModifiedBy,
                         At = row.LastModified,
                         FullName = row.ModifiedUserFullName,
                         ImageUrl = row.ModifiedUserAvatarUrl
-                    },
+                    } : null,
                     Roles = new List<EventRoleReadModel>(),
                     Organizations = new List<EventOrganizationInEventReadModel>(),
                     AttendanceInfos = new List<EventAttendanceInfoReadModel>(),

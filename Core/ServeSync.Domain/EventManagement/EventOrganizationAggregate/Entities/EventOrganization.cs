@@ -35,12 +35,16 @@ public class EventOrganization : AuditableAggregateRoot
         ImageUrl = Guard.NotNullOrEmpty(imageUrl, nameof(ImageUrl));
         Description = description;
         Address = address;
-        Status = OrganizationStatus.Pending;
+        Status = status;
         Contacts = new List<EventOrganizationContact>();
 
         if (Status == OrganizationStatus.Pending)
         {
             AddDomainEvent(new NewPendingEventOrganizationCreatedDomainEvent(this));    
+        }
+        else if (Status == OrganizationStatus.Active)
+        {
+            AddDomainEvent(new EventOrganizationInvitationApprovedDomainEvent(this));
         }
     }
 
@@ -66,6 +70,11 @@ public class EventOrganization : AuditableAggregateRoot
         }
         
         var contact = new EventOrganizationContact(name, email, phoneNumber, imageUrl, Id, gender, birth, address, position, status);
+        if (status == OrganizationStatus.Active)
+        {
+            AddDomainEvent(new OrganizationContactInvitationApprovedDomainEvent(contact, this));
+        }
+        
         Contacts.Add(contact);
 
         return contact;

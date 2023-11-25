@@ -34,19 +34,26 @@ public class OrganizationContactInvitationApprovedDomainEventHandler : IDomainEv
     
     public async Task Handle(OrganizationContactInvitationApprovedDomainEvent notification, CancellationToken cancellationToken)
     {
-        await InitIdentityAsync(notification.Contact, notification.Organization.TenantId.GetValueOrDefault());
+        var isNewIdentity = await InitIdentityAsync(notification.Contact, notification.Organization.TenantId.GetValueOrDefault());
 
         await AddToTenantAsync(notification.Contact, notification.Organization.TenantId.GetValueOrDefault());
-        
-        _emailSender.Push(new EmailMessage()
+
+        if (isNewIdentity)
         {
-            ToAddress = notification.Contact.Email,
-            Subject = "[ServeSync] Thông báo thông tin tài khoản",
-            Body = _emailTemplateGenerator.GetGrantAccountToEventOrganizer(notification.Contact.Name, notification.Contact.Email, notification.Contact.Email, "servesync@123")
-        });
+            _emailSender.Push(new EmailMessage()
+            {
+                ToAddress = notification.Contact.Email,
+                Subject = "[ServeSync] Thông báo thông tin tài khoản",
+                Body = _emailTemplateGenerator.GetGrantAccountToEventOrganizer(
+                    notification.Contact.Name, 
+                    notification.Contact.Email, 
+                    notification.Contact.Email, 
+                    AppConstants.DefaultPassword)
+            });    
+        }
     }
     
-    private async Task InitIdentityAsync(EventOrganizationContact contact, Guid tenantId)
+    private async Task<bool> InitIdentityAsync(EventOrganizationContact contact, Guid tenantId)
     {
         var user = await _identityService.GetByUserNameAsync(contact.Email);
         if (user != null)
@@ -60,16 +67,15 @@ public class OrganizationContactInvitationApprovedDomainEventHandler : IDomainEv
             }
             
             contact.SetIdentityId(user.Id);
-            return;
+            return false;
         }
-        
-        var password = "servesync@123";
+
         var result = await _identityService.CreateEventOrganizationContactAsync(
             contact.Name,
             contact.Email,
             contact.ImageUrl,
             contact.Email,
-            password,
+            AppConstants.DefaultPassword,
             contact.Id,
             tenantId);
 
@@ -81,6 +87,7 @@ public class OrganizationContactInvitationApprovedDomainEventHandler : IDomainEv
 
         contact.SetIdentityId(result.Data!.Id);
         _logger.LogInformation("Created new identity user {IdentityUserId} for event organization contact {EventOrganizationContactId}", contact.IdentityId, contact.Id);
+        return true;
     }
     
     private async Task AddToTenantAsync(EventOrganizationContact contact, Guid tenantId)

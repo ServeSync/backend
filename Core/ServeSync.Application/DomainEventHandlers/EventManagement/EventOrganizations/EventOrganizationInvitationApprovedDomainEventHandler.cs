@@ -36,16 +36,23 @@ public class EventOrganizationInvitationApprovedDomainEventHandler : IDomainEven
     {
         await InitTenantAsync(notification.Organization);
         
-        var password = await InitIdentityAsync(notification.Organization);
+        var isNewIdentity = await InitIdentityAsync(notification.Organization);
 
         await InitTenantOwnerAsync(notification.Organization);
-        
-        _emailSender.Push(new EmailMessage()
+
+        if (isNewIdentity)
         {
-            ToAddress = notification.Organization.Email,
-            Subject = "[ServeSync] Thông báo thông tin tài khoản",
-            Body = _emailTemplateGenerator.GetGrantAccountToEventOrganizer(notification.Organization.Name, notification.Organization.Email, notification.Organization.Email, password)
-        });
+            _emailSender.Push(new EmailMessage()
+            {
+                ToAddress = notification.Organization.Email,
+                Subject = "[ServeSync] Thông báo thông tin tài khoản",
+                Body = _emailTemplateGenerator.GetGrantAccountToEventOrganizer(
+                    notification.Organization.Name, 
+                    notification.Organization.Email, 
+                    notification.Organization.Email,
+                    AppConstants.DefaultPassword)
+            });    
+        }
     }
     
     private async Task InitTenantAsync(EventOrganization organization)
@@ -61,9 +68,8 @@ public class EventOrganizationInvitationApprovedDomainEventHandler : IDomainEven
         _logger.LogInformation("Created new tenant {TenantId} for event organization {EventOrganizationId}", result.Data!.Id, organization.Id);
     }
 
-    private async Task<string> InitIdentityAsync(EventOrganization organization)
+    private async Task<bool> InitIdentityAsync(EventOrganization organization)
     {
-        var password = "servesync@123";
         var user = await _identityService.GetByUserNameAsync(organization.Email);
         if (user != null)
         {
@@ -76,7 +82,7 @@ public class EventOrganizationInvitationApprovedDomainEventHandler : IDomainEven
             }
             
             organization.SetIdentityId(user.Id);
-            return password;
+            return false;
         }
         
         var result = await _identityService.CreateEventOrganizationAsync(
@@ -84,7 +90,7 @@ public class EventOrganizationInvitationApprovedDomainEventHandler : IDomainEven
             organization.Email,
             organization.ImageUrl,
             organization.Email,
-            password,
+            AppConstants.DefaultPassword,
             organization.Id,
             organization.TenantId!.Value);
 
@@ -96,7 +102,7 @@ public class EventOrganizationInvitationApprovedDomainEventHandler : IDomainEven
 
         organization.SetIdentityId(result.Data!.Id);
         _logger.LogInformation("Created new identity user {IdentityUserId} for event organization {EventOrganizationId}", organization.IdentityId, organization.Id);
-        return password;
+        return true;
     }
     
     private async Task InitTenantOwnerAsync(EventOrganization organization)

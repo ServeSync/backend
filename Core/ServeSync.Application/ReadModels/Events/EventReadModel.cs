@@ -18,7 +18,7 @@ public class EventReadModel : BaseReadModel<Guid>
     public int Rating { get; set; }
 
     public AuditReadModel Created { get; set; } = null!;
-    public AuditReadModel Modified { get; set; } = null!;
+    public AuditReadModel? Modified { get; set; }
     
     public EventAddressReadModel Address { get; set; } = null!;
     
