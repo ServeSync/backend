@@ -6,6 +6,8 @@ using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventAggregate.Specifications;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Specifications;
 using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Domain.SeedWorks.Specifications;
 using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
@@ -16,14 +18,17 @@ public class GetAllEventsQueryHandler : IQueryHandler<GetAllEventsQuery, PagedRe
 {
     private readonly ICurrentUser _currentUser;
     private readonly IBasicReadOnlyRepository<Event, Guid> _eventRepository;
+    private readonly IBasicReadOnlyRepository<EventOrganization, Guid> _eventOrganizationRepository;
     private readonly IMapper _mapper;
     
     public GetAllEventsQueryHandler(
         ICurrentUser currentUser,
         IBasicReadOnlyRepository<Event, Guid> eventRepository, 
+        IBasicReadOnlyRepository<EventOrganization, Guid> eventOrganizationRepository,
         IMapper mapper)
     {
         _currentUser = currentUser;
+        _eventOrganizationRepository = eventOrganizationRepository;
         _eventRepository = eventRepository;
         _mapper = mapper;
     }
@@ -70,11 +75,20 @@ public class GetAllEventsQueryHandler : IQueryHandler<GetAllEventsQuery, PagedRe
         {
             if (await _currentUser.IsOrganizationAsync())
             {
-                return new EventByOrganizationSpecification(Guid.Parse(_currentUser.ReferenceId), _currentUser.Id);    
+                return new EventByOrganizationSpecification(Guid.Parse(_currentUser.ReferenceId), _currentUser.Id, _currentUser.TenantId);    
             }
             else if (await _currentUser.IsOrganizationContactAsync())
             {
-                return new EventByOrganizationContactSpecification(Guid.Parse(_currentUser.ReferenceId));    
+                var organization = await _eventOrganizationRepository.FindAsync(new EventOrganizationByContactSpecification(Guid.Parse(_currentUser.ReferenceId)));
+                if (organization == null)
+                {
+                    return EmptyFalseSpecification<Event, Guid>.Instance;
+                }
+                
+                return new EventByOrganizationContactSpecification(
+                    Guid.Parse(_currentUser.ReferenceId),
+                    organization.IdentityId!,
+                    organization.TenantId!.Value);    
             }
         }
         
