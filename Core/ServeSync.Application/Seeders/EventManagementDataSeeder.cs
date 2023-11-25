@@ -12,6 +12,7 @@ using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
@@ -136,9 +137,8 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Phone.PhoneNumber(),
                     faker.Image.PicsumUrl(),
                     faker.Lorem.Sentence(),
-                    faker.Address.FullAddress());
-                
-                eventOrganization.ApproveInvitation();
+                    faker.Address.FullAddress(),
+                    OrganizationStatus.Active);
                 
                 await _eventOrganizationRepository.InsertAsync(eventOrganization);
 
@@ -154,7 +154,8 @@ public class EventManagementDataSeeder : IDataSeeder
                         faker.Random.Bool(),
                         faker.Person.DateOfBirth,
                         faker.Person.Address.City,
-                        faker.Commerce.Department()).ApproveInvitation();
+                        faker.Commerce.Department(),
+                        OrganizationStatus.Active);
                 }
             }
         

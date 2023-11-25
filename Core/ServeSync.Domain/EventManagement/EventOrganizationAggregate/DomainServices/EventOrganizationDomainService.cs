@@ -105,8 +105,8 @@ public class EventOrganizationDomainService : IEventOrganizationDomainService
             throw new EventOrganizationHasHostedAnEventException(eventOrganization.Id);
         }
         
+        eventOrganization.AddDomainEvent(new EventOrganizationDeletedDomainEvent(eventOrganization));
         _eventOrganizationRepository.Delete(eventOrganization);
-        eventOrganization.AddDomainEvent(new EventOrganizationDeletedDomainEvent(eventOrganization.Id, eventOrganization.Status, eventOrganization.IdentityId!, eventOrganization.TenantId.GetValueOrDefault()));
     }
 
     public async Task DeleteContactAsync(EventOrganization eventOrganization, Guid eventOrganizationContactId)

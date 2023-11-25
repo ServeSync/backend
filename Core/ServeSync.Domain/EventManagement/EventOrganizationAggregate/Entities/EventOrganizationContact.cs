@@ -67,6 +67,8 @@ public class EventOrganizationContact : Entity
         Address = address;
         ImageUrl = Guard.NotNullOrEmpty(imageUrl, nameof(ImageUrl));
         Position = position;
+        
+        AddDomainEvent(new EventOrganizationContactUpdatedDomainEvent(this));
     }
     
     public void ApproveInvitation()

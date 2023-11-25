@@ -208,4 +208,26 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             ArrayFilters = arrayFilters
         });
     }
+
+    public Task UpdateOrganizationContactInEventsAsync(EventOrganizationContact eventOrganizationContact)
+    {
+        var filter = Builders<EventReadModel>.Filter.Eq("Organizations.Representatives.OrganizationRepId",eventOrganizationContact.Id.ToString());
+        
+        var update = Builders<EventReadModel>.Update
+            .Set("Organizations.Representatives.$[representative].Name", eventOrganizationContact.Name)
+            .Set("Organizations.Representatives.$[representative].ImageUrl", eventOrganizationContact.ImageUrl)
+            .Set("Organizations.Representatives.$[representative].Email", eventOrganizationContact.Email)
+            .Set("Organizations.Representatives.$[representative].PhoneNumber", eventOrganizationContact.PhoneNumber)
+            .Set("Organizations.Representatives.$[representative].Position", eventOrganizationContact.Position);
+        
+        var arrayFilters = new List<ArrayFilterDefinition>
+        {
+            new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("representative.OrganizationRepId", eventOrganizationContact.Id.ToString())),
+        };
+
+        return Collection.UpdateManyAsync(filter, update, new UpdateOptions()
+        {
+            ArrayFilters = arrayFilters
+        });
+    }
 }

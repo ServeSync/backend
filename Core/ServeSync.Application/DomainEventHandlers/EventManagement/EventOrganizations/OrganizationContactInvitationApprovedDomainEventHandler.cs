@@ -62,7 +62,13 @@ public class OrganizationContactInvitationApprovedDomainEventHandler : IDomainEv
             
             if (!await _identityService.IsOrganizationContactAsync(contact.IdentityId, tenantId))
             {
-                await _identityService.GrantToRoleAsync(user.Id, AppRole.EventOrganizer, tenantId);
+                var grantRoleResult = await _identityService.GrantToRoleAsync(user.Id, AppRole.EventOrganizer, tenantId);
+                if (!grantRoleResult.IsSuccess)
+                {
+                    _logger.LogError("Can not grant identity user {IdentityUserId} to role {RoleName}: {Message}", user.Id, AppRole.EventOrganization, grantRoleResult.Error);
+                    throw new ResourceInvalidOperationException(grantRoleResult.Error!, grantRoleResult.ErrorCode!);
+                }
+                
                 _logger.LogInformation("Granted identity user {IdentityUserId} to role {RoleName}", user.Id, AppRole.EventOrganizer);
             }
             

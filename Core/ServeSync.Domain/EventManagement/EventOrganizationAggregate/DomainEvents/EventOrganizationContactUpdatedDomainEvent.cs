@@ -3,14 +3,12 @@ using ServeSync.Domain.SeedWorks.Events;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
 
-public class EventOrganizationContactDeletedDomainEvent : IDomainEvent
+public class EventOrganizationContactUpdatedDomainEvent : IDomainEvent
 {
     public EventOrganizationContact EventOrganizationContact { get; set; }
-    public Guid TenantId { get; set; }
     
-    public EventOrganizationContactDeletedDomainEvent(EventOrganizationContact eventOrganizationContact, Guid tenantId)
+    public EventOrganizationContactUpdatedDomainEvent(EventOrganizationContact eventOrganizationContact)
     {
         EventOrganizationContact = eventOrganizationContact;
-        TenantId = tenantId;
     }
 }

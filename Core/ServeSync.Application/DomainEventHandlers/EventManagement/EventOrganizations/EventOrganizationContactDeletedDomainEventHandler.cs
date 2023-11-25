@@ -21,10 +21,11 @@ public class EventOrganizationContactDeletedDomainEventHandler : IDomainEventHan
 
     public async Task Handle(EventOrganizationContactDeletedDomainEvent notification, CancellationToken cancellationToken)
     {
-        if (notification.Status == OrganizationStatus.Active)
+        if (notification.EventOrganizationContact.Status == OrganizationStatus.Active
+            && string.IsNullOrEmpty(notification.EventOrganizationContact.IdentityId))
         {
-            await _tenantService.RemoveUserFromTenantAsync(notification.IdentityId, notification.TenantId);    
-            _logger.LogInformation("Removed user '{IdentityId} from tenant {tenantId}'!", notification.IdentityId, notification.TenantId);
+            await _tenantService.RemoveUserFromTenantAsync(notification.EventOrganizationContact.IdentityId, notification.TenantId);    
+            _logger.LogInformation("Removed user '{IdentityId} from tenant {tenantId}'!", notification.EventOrganizationContact.IdentityId, notification.TenantId);
         }
     }
 }

@@ -24,10 +24,12 @@ public class EventOrganizationDeletedDomainEventHandler : IDomainEventHandler<Ev
     
     public async Task Handle(EventOrganizationDeletedDomainEvent @event, CancellationToken cancellationToken)
     {
-        if (@event.Status == OrganizationStatus.Active)
+        if (@event.EventOrganization.Status == OrganizationStatus.Active
+            && @event.EventOrganization.TenantId.HasValue
+            && !string.IsNullOrEmpty(@event.EventOrganization.IdentityId))
         {
-            await RemoveIdentityAsync(@event.IdentityId, @event.TenantId);
-            await RemoveTenantAsync(@event.TenantId);    
+            await RemoveIdentityAsync(@event.EventOrganization.IdentityId, @event.EventOrganization.TenantId.Value);
+            await RemoveTenantAsync(@event.EventOrganization.TenantId.Value);    
         }
     }
     
