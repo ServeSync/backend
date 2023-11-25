@@ -26,7 +26,7 @@ public class SyncEventOrganizationContactReadModelBackGroundJobHandler
     
     public async Task Handle(SyncEventOrganizationContactReadModelBackGroundJob notification, CancellationToken cancellationToken)
     {
-        var organizationContact =await _eventOrganizationContactRepository.FindByIdAsync(notification.EventOrganizationContactId);
+        var organizationContact = await _eventOrganizationContactRepository.FindByIdAsync(notification.EventOrganizationContactId);
         if (organizationContact == null)
         {
             _logger.LogError("Sync Event organization contact failed: id {EventOrganizationContactId} not found", notification.EventOrganizationContactId);
