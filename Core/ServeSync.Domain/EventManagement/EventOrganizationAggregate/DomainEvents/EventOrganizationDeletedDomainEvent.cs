@@ -1,20 +1,15 @@
-﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
+﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.SeedWorks.Events;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
 
 public class EventOrganizationDeletedDomainEvent : IDomainEvent
 {
-    public Guid Id { get; set; }
-    public OrganizationStatus Status { get; set; }
-    public string IdentityId { get; set; }
-    public Guid TenantId { get; set; }
+    public EventOrganization EventOrganization { get; set; }
     
-    public EventOrganizationDeletedDomainEvent(Guid id, OrganizationStatus status, string identityId, Guid tenantId)
+    public EventOrganizationDeletedDomainEvent(EventOrganization eventOrganization)
     {
-        Id = id;
-        Status = status;
-        IdentityId = identityId;
-        TenantId = tenantId;
+        EventOrganization = eventOrganization;
     }
 }

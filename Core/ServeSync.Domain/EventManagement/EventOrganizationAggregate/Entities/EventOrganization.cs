@@ -2,6 +2,7 @@
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
+using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
@@ -59,6 +60,11 @@ public class EventOrganization : AuditableAggregateRoot
         string? position,
         OrganizationStatus status = OrganizationStatus.Pending)
     {
+        if (Email == email)
+        {
+            throw new ResourceInvalidDataException("Organization email and contact email can not be the same");
+        }
+        
         if (Status != OrganizationStatus.Active)
         {
             throw new EventOrganizationNotActiveException(Id);
@@ -124,7 +130,7 @@ public class EventOrganization : AuditableAggregateRoot
         }
         
         Contacts.Remove(eventOrganizationContact);
-        AddDomainEvent(new EventOrganizationContactDeletedDomainEvent(eventOrganizationContactId, eventOrganizationContact.Status, eventOrganizationContact.IdentityId, TenantId.GetValueOrDefault()));
+        AddDomainEvent(new EventOrganizationContactDeletedDomainEvent(eventOrganizationContact, TenantId.GetValueOrDefault()));
     }
 
     public void ApproveInvitation()

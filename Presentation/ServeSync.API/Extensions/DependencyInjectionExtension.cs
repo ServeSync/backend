@@ -373,6 +373,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPersistedDomainEventHandler<StudentContactInfoUpdatedDomainEvent>, SyncStudentReadModelDomainEventHandler>();
         services.AddScoped<IPersistedDomainEventHandler<StudentCodeUpdatedDomainEvent>, SyncStudentReadModelDomainEventHandler>();
         services.AddScoped<IPersistedDomainEventHandler<EventOrganizationUpdatedDomainEvent>, SyncEventOrganizationReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<EventOrganizationContactUpdatedDomainEvent>, SyncEventOrganizationContactReadModelDomainEventHandler>();
+        
         return services;
     }
 

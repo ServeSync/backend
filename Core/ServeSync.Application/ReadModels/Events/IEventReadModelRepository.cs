@@ -26,4 +26,6 @@ public interface IEventReadModelRepository : IReadModelRepository<EventReadModel
     Task UpdateStudentInEventsAsync(Student student);
 
     Task UpdateOrganizationInEventsAsync(EventOrganization eventOrganization);
+    
+    Task UpdateOrganizationContactInEventsAsync(EventOrganizationContact eventOrganizationContact);
 }
