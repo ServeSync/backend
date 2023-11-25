@@ -113,6 +113,9 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
             }
             catch (EventOrganizationContactAlreadyExistedException e)
             {
+                var contact = organization.Contacts.First(x => x.Email == notification.EventCollaborationRequest.OrganizationContact.Email);
+                contact.ApproveInvitation();
+                
                 _logger.LogInformation(e.Message);
             }    
         }

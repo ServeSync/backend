@@ -177,7 +177,7 @@ public class IdentityService : IIdentityService
                 return IdentityResult<IdentityUserDto>.Failed(IdentityErrorCodes.IdentityTenantNotFound, $"Tenant with id {tenantId} not found!");
             }
             
-            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.EventOrganizer, tenantId);
+            var grantRoleResult = await GrantToRoleAsync(createIdentityUserResult.Data!.Id, AppRole.EventOrganization, tenantId);
             if (grantRoleResult.IsSuccess)
             {
                 return IdentityResult<IdentityUserDto>.Success(createIdentityUserResult.Data);
