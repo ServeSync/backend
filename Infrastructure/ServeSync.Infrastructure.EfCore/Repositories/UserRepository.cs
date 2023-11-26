@@ -33,6 +33,11 @@ public class UserRepository : EfCoreRepository<ApplicationUser, string>, IUserRe
     {
         return (await DbContext.Set<RefreshToken>()
                                .Include(x => x.User)
+                                    .ThenInclude(x => x.Tenants)
+                               .Include(x => x.User)
+                                    .ThenInclude(x => x.Roles)
+                               .Include(x => x.User)
+                                    .ThenInclude(x => x.RefreshToken)
                                .FirstOrDefaultAsync(x => x.Value == refreshToken))?.User;
     }
 

@@ -42,7 +42,7 @@ public class JwtTokenProvider : ITokenProvider
         return Guid.NewGuid().ToString();
     }
     
-    public bool ValidateToken(string token, ref string id)
+    public bool ValidateToken(string token, ref string id, ref List<Claim> claims)
     {
         var jwtTokenHandler = new JwtSecurityTokenHandler();
         
@@ -69,6 +69,7 @@ public class JwtTokenProvider : ITokenProvider
         finally
         {
             id = jwtTokenHandler.ReadJwtToken(token).Payload.Jti;
+            claims = jwtTokenHandler.ReadJwtToken(token).Claims.ToList();
         }
     }
 

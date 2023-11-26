@@ -42,14 +42,16 @@ public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, A
         }
 
         var accessTokenId = string.Empty;
-        if (_tokenProvider.ValidateToken(request.AccessToken, ref accessTokenId))
+        var claims = new List<Claim>();
+        if (_tokenProvider.ValidateToken(request.AccessToken, ref accessTokenId, ref claims))
         {
             throw new AccessTokenStillValidException();
         }
         
         user.UseRefreshToken(accessTokenId, request.RefreshToken);
-        
-        var accessToken = _tokenProvider.GenerateAccessToken(IdentityUserClaimGenerator.Generate(user));
+
+        var tenantId = claims.FirstOrDefault(x => x.Type == AppClaim.TenantId)?.Value;
+        var accessToken = _tokenProvider.GenerateAccessToken(IdentityUserClaimGenerator.Generate(user, tenantId == null ? null : Guid.Parse(tenantId)));
         var credential = new AuthCredentialDto()
         {
             AccessToken = accessToken.Value,
