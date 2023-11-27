@@ -9,6 +9,7 @@ using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Domain
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Events;
 
@@ -57,6 +58,13 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
             Subject = "[ServeSync] Thông báo duyệt đơn hợp tác",
             Body = _emailTemplateGenerator.GetApproveCollaborationRequest(notification.EventCollaborationRequest.OrganizationContact.Name, notification.EventCollaborationRequest.Name)
         });
+        
+        _emailSender.Push(new EmailMessage()
+        {
+            ToAddress = notification.EventCollaborationRequest.Organization.Email,
+            Subject = "[ServeSync] Thông báo duyệt đơn hợp tác",
+            Body = _emailTemplateGenerator.GetApproveCollaborationRequest(notification.EventCollaborationRequest.OrganizationContact.Name, notification.EventCollaborationRequest.Name)
+        });
     }
     
     private async Task<EventOrganization> CreateOrganizationAsync(EventCollaborationRequestApprovedDomainEvent notification)
@@ -70,8 +78,9 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
                 notification.EventCollaborationRequest.Organization.PhoneNumber,
                 notification.EventCollaborationRequest.Organization.ImageUrl,
                 notification.EventCollaborationRequest.Organization.Description,
-                notification.EventCollaborationRequest.Organization.Address);
-            
+                notification.EventCollaborationRequest.Organization.Address,
+                OrganizationStatus.Active);
+
             _eventOrganizationDomainService.AddContact(
                 organization,
                 notification.EventCollaborationRequest.OrganizationContact.Name,
@@ -81,7 +90,8 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
                 notification.EventCollaborationRequest.OrganizationContact.Gender,
                 notification.EventCollaborationRequest.OrganizationContact.Birth,
                 notification.EventCollaborationRequest.OrganizationContact.Address,
-                notification.EventCollaborationRequest.OrganizationContact.Position);
+                notification.EventCollaborationRequest.OrganizationContact.Position,
+                OrganizationStatus.Active);
             
             await _eventOrganizationRepository.InsertAsync(organization);
             _logger.LogInformation("Created new organization {Email}", notification.EventCollaborationRequest.Organization.Email);
@@ -90,7 +100,12 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
         {
             try
             {
-                _eventOrganizationDomainService.AddContact(
+                if (organization.Status != OrganizationStatus.Active)
+                {
+                    organization.ApproveInvitation();
+                }
+                
+                var contact = _eventOrganizationDomainService.AddContact(
                     organization,
                     notification.EventCollaborationRequest.OrganizationContact.Name,
                     notification.EventCollaborationRequest.OrganizationContact.Email,
@@ -99,15 +114,25 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
                     notification.EventCollaborationRequest.OrganizationContact.Gender,
                     notification.EventCollaborationRequest.OrganizationContact.Birth,
                     notification.EventCollaborationRequest.OrganizationContact.Address,
-                    notification.EventCollaborationRequest.OrganizationContact.Position);
+                    notification.EventCollaborationRequest.OrganizationContact.Position,
+                    OrganizationStatus.Active);
+                
                 _eventOrganizationRepository.Update(organization);
             }
             catch (EventOrganizationContactAlreadyExistedException e)
             {
+                var contact = organization.Contacts.First(x => x.Email == notification.EventCollaborationRequest.OrganizationContact.Email);
+                
+                if (contact.Status != OrganizationStatus.Active)
+                {
+                    organization.ApproveContactInvitation(contact.Id);
+                }
+                
                 _logger.LogInformation(e.Message);
             }    
         }
 
+        await _unitOfWork.CommitAsync();
         return organization;
     }
     
@@ -117,8 +142,8 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
     {
         try
         {
-            await _unitOfWork.BeginTransactionAsync();
-        
+            var dateTime = DateTime.UtcNow;
+            
             var @event = await _eventDomainService.CreateAsync(
                 notification.EventCollaborationRequest.Name,
                 notification.EventCollaborationRequest.Introduction,
@@ -136,33 +161,33 @@ public class EventCollaborationRequestApprovedDomainEventHandler : IDomainEventH
                 @event,
                 notification.EventCollaborationRequest.StartAt.AddDays(-1), 
                 notification.EventCollaborationRequest.StartAt.AddDays(-1).AddMinutes(15)
-                , DateTime.Now);
+                , DateTime.UtcNow);
             
             _eventDomainService.AddAttendanceInfo(
                 @event, 
                 notification.EventCollaborationRequest.StartAt, 
-                notification.EventCollaborationRequest.StartAt.AddMinutes(15));
+                notification.EventCollaborationRequest.StartAt.AddMinutes(15),
+                dateTime);
 
-            await _eventDomainService.AddDefaultRoleAsync(@event, notification.EventCollaborationRequest.Capacity);
+            await _eventDomainService.AddDefaultRoleAsync(@event, notification.EventCollaborationRequest.Capacity, dateTime);
             
-            _eventDomainService.AddOrganization(@event, organization, "Nhà tổ chức");
+            _eventDomainService.AddOrganization(@event, organization, "Nhà tổ chức", dateTime);
             
             _eventDomainService.AddRepresentative(
                 @event, 
                 organization,
                 organization.Contacts.First(x => x.Email == notification.EventCollaborationRequest.OrganizationContact.Email),
-                "Diễn giả");
+                "Diễn giả",
+                dateTime);
             
             await _eventRepository.InsertAsync(@event);
             await _unitOfWork.CommitAsync();
 
-            _eventDomainService.SetRepresentativeOrganization(@event, organization.Id);
-            @event.Create(organization.Contacts.First().IdentityId);
-            _eventDomainService.ApproveEvent(@event, DateTime.Now);
+            _eventDomainService.SetRepresentativeOrganization(@event, organization.Id, dateTime);
+            @event.Create(organization.IdentityId!);
+            _eventDomainService.ApproveEvent(@event, DateTime.UtcNow);
             
             _eventRepository.Update(@event);
-            
-            await _unitOfWork.CommitTransactionAsync();
             
             _logger.LogInformation("Convert collaboration request '{Id}' to event success with id: {EventId}", notification.EventCollaborationRequest.Id, @event.Id);
             return @event;

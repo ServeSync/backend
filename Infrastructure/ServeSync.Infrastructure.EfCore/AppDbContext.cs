@@ -1,9 +1,12 @@
 ﻿using System.Linq.Expressions;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Sessions;
+using ServeSync.Domain.SeedWorks.Events;
 using ServeSync.Domain.SeedWorks.Models;
 using ServeSync.Domain.SeedWorks.Models.Interfaces;
 using ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities;
@@ -11,20 +14,31 @@ using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 
 namespace ServeSync.Infrastructure.EfCore;
 
-public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+public class AppDbContext : IdentityDbContext<
+    ApplicationUser, 
+    ApplicationRole, 
+    string, 
+    IdentityUserClaim<string>, 
+    ApplicationUserInRole,
+    IdentityUserLogin<string>, 
+    IdentityRoleClaim<string>, 
+    IdentityUserToken<string>>
 {
     private readonly ICurrentUser _currentUser;
     private readonly IMediator _mediator;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<AppDbContext> _logger;
     
     public AppDbContext(
         DbContextOptions<AppDbContext> options,
         ICurrentUser currentUser,
         IMediator mediator,
+        IServiceProvider serviceProvider,
         ILogger<AppDbContext> logger) : base(options)
     {
         _currentUser = currentUser;
         _mediator = mediator;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -53,12 +67,16 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     {
         ProcessAuditEntityState();
         
-        await DispatchDomainEventsAsync();
+        var domainEvents = await DispatchDomainEventsAsync();
         
-        return await base.SaveChangesAsync(cancellationToken);
+        var result = await base.SaveChangesAsync(cancellationToken);
+
+        await DispatchPersistedDomainEventsAsync(domainEvents);
+
+        return result;
     }
 
-    private async Task DispatchDomainEventsAsync()
+    private async Task<IList<IDomainEvent>> DispatchDomainEventsAsync()
     {
         var domainEntities = ChangeTracker.Entries<IDomainModel>()
             .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any())
@@ -68,7 +86,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
             .SelectMany(x => x.Entity.DomainEvents)
             .Distinct()
             .ToList();
-
+        
         domainEntities.ToList()
             .ForEach(entity => entity.Entity.ClearDomainEvents());
 
@@ -76,6 +94,25 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
         {
             _logger.LogInformation("Dispatching domain event: {EventName}", domainEvent.GetType().Name);
             await _mediator.Publish(domainEvent);   
+        }
+        
+        return domainEvents;
+    }
+    
+    private async Task DispatchPersistedDomainEventsAsync(IList<IDomainEvent> domainEvents)
+    {
+        foreach (var domainEvent in domainEvents)
+        {
+            _logger.LogInformation("Dispatching persisted domain event: {EventName}", domainEvent.GetType().Name);
+            
+            var domainEventHandlerType = typeof(IPersistedDomainEventHandler<>).MakeGenericType(domainEvent.GetType());
+            var domainEventHandlers = _serviceProvider.GetServices(domainEventHandlerType);
+            
+            foreach (var domainEventHandler in domainEventHandlers)
+            {
+                var handleMethod = domainEventHandlerType.GetMethod(nameof(IPersistedDomainEventHandler<IDomainEvent>.Handle));
+                await (Task) handleMethod!.Invoke(domainEventHandler, new object[] { domainEvent, default(CancellationToken) });
+            }
         }
     }
     
@@ -91,6 +128,16 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
 
                 case EntityState.Modified:
                     entry.Entity.Update(_currentUser.Id);
+                    break;
+            }
+        }
+        
+        foreach (var entry in ChangeTracker.Entries<IHasTenant>())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.Entity.TenantId = _currentUser.TenantId == Guid.Empty ? null : _currentUser.TenantId;
                     break;
             }
         }

@@ -39,6 +39,7 @@ public static class Permissions
         new(Events.Edit, "Chỉnh sửa sự kiện."),
         new(Events.Approve, "Duyệt sự kiện."),
         new(Events.Cancel, "Hủy sự kiện."),
+        new(Events.Reject, "Từ chối sự kiện."),
         new(Events.ApproveRegistration, "Duyệt đơn đăng ký tham gia."),
         new(Events.RejectRegistration, "Từ chối đơn đăng ký tham gia."),
         
@@ -46,7 +47,10 @@ public static class Permissions
         new(EventCollaborationRequests.Approve, "Duyệt đề nghị hợp tác."),
         new(EventCollaborationRequests.Reject, "Từ chối đề nghị hợp tác."),
         
-        new (EventOrganizations.View, "Xem danh sách nhà tổ chức sự kiện.")
+        new (EventOrganizations.View, "Xem danh sách nhà tổ chức sự kiện."),
+        new(EventOrganizations.Create, "Tạo nhà tổ chức sự kiện."),
+        new(EventOrganizations.Update, "Cập nhật nhà tổ chức sự kiện."),
+        new(EventOrganizations.Delete, "Xóa nhà tổ chức sự kiện."),
     };
 
     public static class Roles
@@ -122,6 +126,7 @@ public static class Permissions
         
         public const string Approve = $"{Group}.Approve";
         public const string Cancel = $"{Group}.Cancel";
+        public const string Reject = $"{Group}.Reject";
 
         public const string ApproveRegistration = $"{Group}.ApproveRegistration";
         public const string RejectRegistration = $"{Group}.RejectRegistration";
@@ -141,6 +146,9 @@ public static class Permissions
         public const string Group = $"{Default}.EventOrganizations";
         
         public const string View = $"{Group}.View";
+        public const string Create = $"{Group}.Create";
+        public const string Update = $"{Group}.Update";
+        public const string Delete = $"{Group}.Delete";
     }
 
     public static List<string> GeneratePermissionsForModule(string module)

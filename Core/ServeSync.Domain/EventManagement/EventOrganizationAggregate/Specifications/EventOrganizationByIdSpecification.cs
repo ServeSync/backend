@@ -14,6 +14,7 @@ public class EventOrganizationByIdSpecification :Specification<EventOrganization
         _id = id;
         
         AddInclude(x => x.Contacts!);
+        AddInclude(x => x.OrganizationInEvents!);
     }
     
     public override Expression<Func<EventOrganization, bool>> ToExpression()

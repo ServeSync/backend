@@ -12,6 +12,7 @@ using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
@@ -125,6 +126,8 @@ public class EventManagementDataSeeder : IDataSeeder
 
         try
         {
+            await _unitOfWork.BeginTransactionAsync();
+            
             for (var i = 0; i < 5; i++)
             {
                 var faker = new Faker();
@@ -134,7 +137,8 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Phone.PhoneNumber(),
                     faker.Image.PicsumUrl(),
                     faker.Lorem.Sentence(),
-                    faker.Address.FullAddress());
+                    faker.Address.FullAddress(),
+                    OrganizationStatus.Active);
                 
                 await _eventOrganizationRepository.InsertAsync(eventOrganization);
 
@@ -150,16 +154,18 @@ public class EventManagementDataSeeder : IDataSeeder
                         faker.Random.Bool(),
                         faker.Person.DateOfBirth,
                         faker.Person.Address.City,
-                        faker.Commerce.Department());
+                        faker.Commerce.Department(),
+                        OrganizationStatus.Active);
                 }
             }
         
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitTransactionAsync();
         
             _logger.LogInformation("Seeded event organizations successfully!");
         }
         catch (Exception e)
         {
+            await _unitOfWork.RollbackTransactionAsync();
             _logger.LogInformation("Seeded event organizations failed: {Message}", e.Message);
         }
     }
@@ -171,7 +177,6 @@ public class EventManagementDataSeeder : IDataSeeder
             _logger.LogInformation("Events already seeded.");
             return;
         }
-
         
         var eventOrganizations = await _eventOrganizationRepository.FindAllAsync();
         var eventActivities = await _eventActivityRepository.FindAllAsync();
@@ -180,6 +185,7 @@ public class EventManagementDataSeeder : IDataSeeder
         {
             try
             {
+                var dateTime = DateTime.UtcNow;
                 var faker = new Faker();
                 await _unitOfWork.BeginTransactionAsync();
 
@@ -189,8 +195,8 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Lorem.Paragraph(),
                     faker.Image.PicsumUrl(),
                     faker.PickRandom<EventType>(),
-                    faker.Date.Between(DateTime.Now.AddHours(1), DateTime.Now.AddDays(2)),
-                    faker.Date.Between(DateTime.Now.AddDays(0), DateTime.Now.AddDays(2)),
+                    faker.Date.Between(DateTime.UtcNow.AddHours(1), DateTime.UtcNow.AddDays(2)),
+                    faker.Date.Between(DateTime.UtcNow.AddDays(0), DateTime.UtcNow.AddDays(2)),
                     faker.PickRandom(eventActivities).Id,
                     faker.Address.FullAddress(),
                     faker.Random.Double(-180, 180),
@@ -205,41 +211,46 @@ public class EventManagementDataSeeder : IDataSeeder
                         faker.Lorem.Sentence(),
                         faker.Random.Bool(),
                         faker.Random.Int(1, 10),
-                        faker.Random.Int(1, 10));
+                        faker.Random.Int(1, 10),
+                        dateTime);
                 }
 
                 _eventDomainService.AddAttendanceInfo(
                     @event,
-                    faker.Date.Between(DateTime.Now.AddMinutes(30), DateTime.Now.AddDays(1)),
-                    faker.Date.Between(DateTime.Now.AddDays(1), DateTime.Now.AddDays(2)));
+                    faker.Date.Between(DateTime.UtcNow.AddMinutes(30), DateTime.UtcNow.AddDays(1)),
+                    faker.Date.Between(DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2)),
+                    dateTime);
 
                 _eventDomainService.AddRegistrationInfo(
                     @event,
-                    faker.Date.Between(DateTime.Now.AddMinutes(30), DateTime.Now.AddMinutes(45)),
-                    faker.Date.Between(DateTime.Now.AddHours(2), DateTime.Now.AddHours(3)),
-                    DateTime.Now);
+                    faker.Date.Between(DateTime.UtcNow.AddMinutes(30), DateTime.UtcNow.AddMinutes(45)),
+                    faker.Date.Between(DateTime.UtcNow.AddHours(2), DateTime.UtcNow.AddHours(3)),
+                    DateTime.UtcNow);
 
                 var organization = faker.PickRandom(eventOrganizations);
                 
                 _eventDomainService.AddOrganization(
                     @event,
                     organization,
-                    faker.Name.JobTitle());
+                    faker.Name.JobTitle(),
+                    dateTime);
 
                 _eventDomainService.AddRepresentative(
                     @event,
                     organization,
                     faker.PickRandom(organization.Contacts),
-                    faker.Name.JobTitle());
+                    faker.Name.JobTitle(),
+                    dateTime);
                 
-                @event.Approve(DateTime.Now);
+                @event.Approve(DateTime.UtcNow);
 
                 await _eventRepository.InsertAsync(@event);
                 await _unitOfWork.CommitAsync();
 
                 _eventDomainService.SetRepresentativeOrganization(
                     @event,
-                    faker.PickRandom(@event.Organizations).OrganizationId);
+                    faker.PickRandom(@event.Organizations).OrganizationId,
+                    dateTime);
 
                 _eventRepository.Update(@event);
                 await _unitOfWork.CommitTransactionAsync(false);
@@ -374,8 +385,8 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Lorem.Paragraph(),
                     faker.Random.Int(1, 100),
                     faker.Image.PicsumUrl(),
-                    faker.Date.Between(DateTime.Now, DateTime.Now.AddDays(1)),
-                    faker.Date.Between(DateTime.Now.AddDays(1), DateTime.Now.AddDays(2)),
+                    faker.Date.Between(DateTime.UtcNow, DateTime.UtcNow.AddDays(1)),
+                    faker.Date.Between(DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2)),
                     faker.PickRandom<EventType>(),
                     faker.PickRandom(activities).Id,
                     faker.Address.FullAddress(),

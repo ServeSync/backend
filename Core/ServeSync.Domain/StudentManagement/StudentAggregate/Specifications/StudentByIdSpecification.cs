@@ -14,6 +14,7 @@ public class StudentByIdSpecification : Specification<Student, Guid>
         
         AddInclude(x => x.HomeRoom!);
         AddInclude("HomeRoom.Faculty");
+        AddInclude(x => x.EducationProgram!);
     }
     
     public override Expression<Func<Student, bool>> ToExpression()

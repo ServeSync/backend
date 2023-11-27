@@ -17,7 +17,7 @@ public class StudentEventAttendance : Entity
     {
         StudentEventRegisterId = Guard.NotNull(studentEventRegisterId, nameof(StudentEventRegisterId));
         EventAttendanceInfoId = Guard.NotNull(eventAttendanceInfoId, nameof(EventAttendanceInfoId));
-        AttendanceAt = DateTime.Now;
+        AttendanceAt = DateTime.UtcNow;
     }
     
     private StudentEventAttendance()

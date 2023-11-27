@@ -1,4 +1,6 @@
-﻿namespace ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
+﻿using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
+
+namespace ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
 
 public class EventOrganizationContactDto
 {
@@ -11,5 +13,6 @@ public class EventOrganizationContactDto
     public string? Address { get; set; }
     public string ImageUrl { get; set; } = null!;
     public string? Position { get; set; }
+    public OrganizationStatus Status { get; set; }
     public Guid EventOrganizationId { get; set; }
 }

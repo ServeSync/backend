@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using ServeSync.Application.QueryObjects;
+using ServeSync.Application.ReadModels.Abstracts;
+using ServeSync.Application.ReadModels.Events;
 using ServeSync.Application.SeedWorks.Schedulers;
 using ServeSync.Application.UseCases.EventManagement.Events.Jobs;
 using ServeSync.Domain.EventManagement.EventAggregate.DomainEvents;
@@ -11,37 +14,41 @@ using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 namespace ServeSync.Application.DomainEventHandlers.EventManagement.Events;
 
 public class SyncEventReadModelDomainEventHandler : 
-    IDomainEventHandler<EventUpdatedDomainEvent>, 
-    IDomainEventHandler<NewEventCreatedDomainEvent>,
-    IDomainEventHandler<StudentEventRegisterApprovedDomainEvent>,
-    IDomainEventHandler<StudentEventRegisterRejectedDomainEvent>,
-    IDomainEventHandler<StudentAttendedToEventDomainEvent>,
-    IDomainEventHandler<StudentRegisteredToEventRoleDomainEvent>
+    IPersistedDomainEventHandler<EventUpdatedDomainEvent>, 
+    IPersistedDomainEventHandler<NewEventCreatedDomainEvent>,
+    IPersistedDomainEventHandler<StudentEventRegisterApprovedDomainEvent>,
+    IPersistedDomainEventHandler<StudentEventRegisterRejectedDomainEvent>,
+    IPersistedDomainEventHandler<StudentAttendedToEventDomainEvent>,
+    IPersistedDomainEventHandler<StudentRegisteredToEventRoleDomainEvent>
 {
     private readonly IBackGroundJobManager _backGroundJobManager;
+    private readonly IEventQueries _eventQueries;
+    private readonly IReadModelRepository<EventReadModel, Guid> _eventReadModelRepository;
     private readonly IBasicReadOnlyRepository<EventRole, Guid> _eventRoleRepository;
     private readonly ILogger<SyncEventReadModelDomainEventHandler> _logger;
     
     public SyncEventReadModelDomainEventHandler(
         IBackGroundJobManager backGroundJobManager,
+        IEventQueries eventQueries,
+        IReadModelRepository<EventReadModel, Guid> eventReadModelRepository,
         IBasicReadOnlyRepository<EventRole, Guid> eventRoleRepository,
         ILogger<SyncEventReadModelDomainEventHandler> logger)
     {
+        _eventQueries = eventQueries;
+        _eventReadModelRepository = eventReadModelRepository;
         _backGroundJobManager = backGroundJobManager;
         _eventRoleRepository = eventRoleRepository;
         _logger = logger;
     }
     
-    public Task Handle(EventUpdatedDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(EventUpdatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        SyncEventData(notification.EventId);
-        return Task.CompletedTask;
+        await SyncEventData(notification.EventId);
     }
 
-    public Task Handle(NewEventCreatedDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(NewEventCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        SyncEventData(notification.Event.Id);
-        return Task.CompletedTask;
+        await SyncEventData(notification.Event.Id);
     }
 
     public async Task Handle(StudentEventRegisterApprovedDomainEvent notification, CancellationToken cancellationToken)
@@ -64,10 +71,18 @@ public class SyncEventReadModelDomainEventHandler :
         await SyncEventDataByEventRoleIdAsync(notification.EventRoleId);
     }
     
-    private void SyncEventData(Guid id)
+    private async Task SyncEventData(Guid id)
     {
         var job = new SyncEventReadModelBackGroundJob(id);
         _backGroundJobManager.Fire(job);
+        
+        var @event = await _eventQueries.GetEventReadModelByIdAsync(id);
+        if (@event != null)
+        {
+            await _eventReadModelRepository.CreateOrUpdateAsync(@event);
+                
+            _logger.LogInformation("Sync data for event '{EventId}' success", id);
+        }
     }
 
     private async Task SyncEventDataByEventRoleIdAsync(Guid eventRoleId)
@@ -78,6 +93,6 @@ public class SyncEventReadModelDomainEventHandler :
             throw new EventRoleNotFoundException(eventRoleId);
         }
         
-        SyncEventData(eventRole.EventId);
+        await SyncEventData(eventRole.EventId);
     }
 }

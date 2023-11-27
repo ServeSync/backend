@@ -26,6 +26,12 @@ public class EventAttendanceInfo : Entity
     {
         return (StartAt <= endAt && EndAt >= endAt) || (StartAt <= startAt && EndAt >= startAt);
     }
+    
+    internal void Update(DateTime startAt, DateTime endAt)
+    {
+        StartAt = Guard.NotNull(startAt, nameof(StartAt));
+        SetEndAt(endAt);
+    }
 
     internal bool CanAttendance(DateTime dateTime)
     {

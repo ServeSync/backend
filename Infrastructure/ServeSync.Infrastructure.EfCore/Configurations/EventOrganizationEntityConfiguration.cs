@@ -24,5 +24,14 @@ public class EventOrganizationEntityConfiguration : IEntityTypeConfiguration<Eve
 
         builder.Property(x => x.ImageUrl)
             .IsRequired();
+
+        builder.Property(x => x.Status)
+            .IsRequired();
+
+        builder.Property(x => x.IdentityId)
+            .IsRequired(false);
+
+        builder.Property(x => x.TenantId)
+            .IsRequired(false);
     }
 }

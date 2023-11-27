@@ -15,15 +15,15 @@ public class UserCacheManager : IUserCacheManager
         _cacheService = cacheService;
     }
     
-    public Task<IEnumerable<string>?> GetRolesAsync(string id)
+    public Task<IEnumerable<string>?> GetRolesAsync(string id, Guid tenantId)
     {
-        var key = KeyGenerator.Generate("UserRole", id);
+        var key = KeyGenerator.Generate("UserRole", $"{id}{tenantId}");
         return _cacheService.GetRecordAsync<IEnumerable<string>?>(key);
     }
     
-    public async Task SetRolesAsync(string id, IEnumerable<string> roles)
+    public async Task SetRolesAsync(string id, Guid tenantId, IEnumerable<string> roles)
     {
-        var key = KeyGenerator.Generate("UserRole", id);
+        var key = KeyGenerator.Generate("UserRole", $"{id}{tenantId}");
         await _cacheService.SetRecordAsync(key, roles, TimeSpan.FromMinutes(30));
     }
 }

@@ -2,5 +2,5 @@
 
 public interface IBackGroundJobPublisher
 {
-    void Publish(IBackGroundJob job);
+    Task Publish(IBackGroundJob job);
 }

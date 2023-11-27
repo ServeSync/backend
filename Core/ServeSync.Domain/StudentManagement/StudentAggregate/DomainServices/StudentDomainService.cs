@@ -10,6 +10,7 @@ using ServeSync.Domain.StudentManagement.HomeRoomAggregate;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.Exceptions;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Specifications;
 
@@ -243,6 +244,11 @@ public class StudentDomainService : IStudentDomainService
         }
             
         student.ApproveEventRegister(eventRegisterId);
+        
+        foreach (var register in student.EventRegisters.Where(x => x.Id != eventRegisterId && @event.Roles.Any(y => y.Id == x.EventRoleId) && x.Status == EventRegisterStatus.Pending))
+        {
+            register.Reject("Đã tham gia với vai trò khác!");
+        }
         return student;
     }
 

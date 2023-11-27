@@ -3,11 +3,11 @@ using ServeSync.Domain.SeedWorks.Events;
 
 namespace ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
 
-public class NewOrganizationContactCreatedDomainEvent : IDomainEvent
+public class NewPendingOrganizationContactCreatedDomainEvent : IDomainEvent
 {
     public EventOrganizationContact Contact { get; set; }
     
-    public NewOrganizationContactCreatedDomainEvent(EventOrganizationContact contact)
+    public NewPendingOrganizationContactCreatedDomainEvent(EventOrganizationContact contact)
     {
         Contact = contact;
     }

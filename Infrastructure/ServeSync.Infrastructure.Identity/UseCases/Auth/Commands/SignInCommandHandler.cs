@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using ServeSync.Application.Common;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.Common.Settings;
 using ServeSync.Application.SeedWorks.Cqrs;
@@ -10,6 +11,7 @@ using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Exceptions;
+using ServeSync.Infrastructure.Identity.Services;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Enums;
 
@@ -48,14 +50,14 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
         var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, true);
         if (result.Succeeded)
         {
-            var accessToken = _tokenProvider.GenerateAccessToken(GetUserAuthenticateClaimsAsync(user, request.LoginPortal));
+            var accessToken = _tokenProvider.GenerateAccessToken(IdentityUserClaimGenerator.Generate(user));
             var credential = new AuthCredentialDto()
             {
                 AccessToken = accessToken.Value,
                 RefreshToken = _tokenProvider.GenerateRefreshToken()
             };
             
-            user.AddRefreshToken(accessToken.Id, credential.RefreshToken, DateTime.Now.AddDays(_jwtSetting.RefreshTokenExpiresInDay));
+            user.AddRefreshToken(accessToken.Id, credential.RefreshToken, DateTime.UtcNow.AddDays(_jwtSetting.RefreshTokenExpiresInDay));
             
             _userRepository.Update(user);
             await _unitOfWork.CommitAsync();
@@ -79,6 +81,7 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
             {
                 AppRole.Admin,
                 AppRole.StudentAffair,
+                AppRole.EventOrganization,
                 AppRole.EventOrganizer
             });
         }
@@ -87,22 +90,5 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
         {
             AppRole.Student
         });
-    }
-    
-    private IEnumerable<Claim> GetUserAuthenticateClaimsAsync(ApplicationUser user, LoginPortal loginPortal)
-    {
-        var claims = new List<Claim>()
-        {
-            new (AppClaim.UserId, user.Id),
-            new (AppClaim.UserName, user.UserName),
-            new (AppClaim.Email, user.Email)
-        };
-
-        if (loginPortal == LoginPortal.Student)
-        {
-            claims.Add(new Claim(AppClaim.StudentId, user.ExternalId!.ToString()));
-        }
-        
-        return claims;
     }
 }

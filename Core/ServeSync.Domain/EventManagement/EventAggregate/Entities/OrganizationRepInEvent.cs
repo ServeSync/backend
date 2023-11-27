@@ -19,6 +19,12 @@ public class OrganizationRepInEvent : Entity
         OrganizationRepId = Guard.NotNull(organizationRepId, nameof(OrganizationRepId));
         Role = Guard.NotNullOrWhiteSpace(role, nameof(Role));
     }
+    
+    internal void Update(Guid organizationRepId, string role)
+    {
+        OrganizationRepId = Guard.NotNull(organizationRepId, nameof(OrganizationRepId));
+        Role = Guard.NotNullOrWhiteSpace(role, nameof(Role));
+    }
 
     private OrganizationRepInEvent()
     {

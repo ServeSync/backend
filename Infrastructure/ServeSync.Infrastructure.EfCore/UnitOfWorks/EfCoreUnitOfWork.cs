@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Data;
+using ServeSync.Domain.SeedWorks.Events;
+using ServeSync.Domain.SeedWorks.Models.Interfaces;
 
 namespace ServeSync.Infrastructure.EfCore.UnitOfWorks;
 
@@ -49,6 +50,10 @@ public class EfCoreUnitOfWork : IUnitOfWork
                 if (autoRollbackOnFail)
                 {
                     await RollbackTransactionAsync();
+                }
+                else
+                {
+                    throw;
                 }
             }
         }

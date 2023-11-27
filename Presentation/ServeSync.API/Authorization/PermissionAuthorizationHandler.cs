@@ -28,7 +28,7 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionAut
             return;
         }
 
-        var hasPermission = await _identityService.HasPermissionAsync(_currentUser.Id, requirement.Permission);
+        var hasPermission = await _identityService.HasPermissionAsync(_currentUser.Id, _currentUser.TenantId, requirement.Permission);
         if (hasPermission)
         {
             context.Succeed(requirement);

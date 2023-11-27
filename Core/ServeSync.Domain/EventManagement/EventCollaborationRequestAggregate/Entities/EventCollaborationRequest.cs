@@ -6,6 +6,7 @@ using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.ValueObjects;
 using ServeSync.Domain.EventManagement.SharedKernel.ValueObjects;
+using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 using ServeSync.Domain.SeedWorks.Models;
 
 namespace ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities;
@@ -68,6 +69,12 @@ public class EventCollaborationRequest : AuditableAggregateRoot
         Type = Guard.NotNull(eventType, nameof(EventType));
         ActivityId = Guard.NotNull(activityId, nameof(ActivityId));
         Address = new EventAddress(fullAddress, longitude, latitude);
+
+        if (organizationEmail == organizationContactEmail)
+        {
+            throw new ResourceInvalidDataException("Organization email and contact email can not be the same");
+        }
+        
         Organization = new EventOrganizationInfo(
             organizationName,
             organizationDescription,
@@ -118,11 +125,7 @@ public class EventCollaborationRequest : AuditableAggregateRoot
     
     public CollaborationRequestStatus GetStatus(DateTime dateTime)
     {
-        if (Status == CollaborationRequestStatus.Pending && StartAt > dateTime.AddDays(1))
-        {
-            return CollaborationRequestStatus.Pending;
-        }
-        else if (Status == CollaborationRequestStatus.Pending && StartAt <= dateTime.AddDays(-1))
+        if (Status == CollaborationRequestStatus.Pending && StartAt.AddDays(-1) <= dateTime)
         {
             return CollaborationRequestStatus.Expired;
         }

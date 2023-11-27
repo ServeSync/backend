@@ -11,6 +11,8 @@ public class FilterEventOrganizationSpecification : PagingAndSortingSpecificatio
     public FilterEventOrganizationSpecification(int page, int size, string sorting, string? search) : base(page, size, sorting)
     {
         _search = search;
+        
+        AddInclude(x => x.OrganizationInEvents);
     }
     
     public override Expression<Func<EventOrganization, bool>> ToExpression()

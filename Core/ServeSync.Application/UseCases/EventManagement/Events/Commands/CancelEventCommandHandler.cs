@@ -34,7 +34,7 @@ public class CancelEventCommandHandler : ICommandHandler<CancelEventCommand, Gui
             throw new EventNotFoundException(request.EventId);
         }
         
-        _eventDomainService.CancelEvent(@event, DateTime.Now);
+        _eventDomainService.CancelEvent(@event, DateTime.UtcNow);
         await _unitOfWork.CommitAsync();
         
         _logger.LogInformation("Event with id {EventID} was cancelled!", request.EventId);

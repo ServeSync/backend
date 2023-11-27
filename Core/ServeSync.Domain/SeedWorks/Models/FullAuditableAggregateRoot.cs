@@ -11,7 +11,7 @@ public abstract class FullAuditableAggregateRoot<TKey> : AuditableAggregateRoot<
     {
         IsDeleted = true;
         DeletedBy = deletedBy;
-        LastModified = DateTime.Now;
+        LastModified = DateTime.UtcNow;
     }
 }
 

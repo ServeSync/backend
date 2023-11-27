@@ -9,5 +9,5 @@ public interface ITokenProvider
     
     string GenerateRefreshToken();
 
-    bool ValidateToken(string token, ref string id);
+    bool ValidateToken(string token, ref string id, ref List<Claim> claims);
 }

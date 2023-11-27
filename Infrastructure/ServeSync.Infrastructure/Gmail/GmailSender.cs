@@ -38,7 +38,7 @@ public class GmailSender : IEmailSender
             };
             
             message.To.Add(new MailAddress(emailMessage.ToAddress));
-
+        
             var client = new SmtpClient
             {
                 Port = _emailSetting.Port,

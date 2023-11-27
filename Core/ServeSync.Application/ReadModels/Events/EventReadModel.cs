@@ -16,6 +16,10 @@ public class EventReadModel : BaseReadModel<Guid>
     public EventStatus Status { get; set; }
     public EventType Type { get; set; }
     public int Rating { get; set; }
+
+    public AuditReadModel Created { get; set; } = null!;
+    public AuditReadModel? Modified { get; set; }
+    public Guid? TenantId { get; set; }
     
     public EventAddressReadModel Address { get; set; } = null!;
     
@@ -38,4 +42,12 @@ public class EventAddressReadModel
     public string FullAddress { get; set; } = null!;
     public double Longitude { get; set; }
     public double Latitude { get; set; }
+}
+
+public class AuditReadModel
+{
+    public string? Id { get; set; }
+    public DateTime At { get; set; }
+    public string? FullName { get; set; }
+    public string? ImageUrl { get; set; }
 }

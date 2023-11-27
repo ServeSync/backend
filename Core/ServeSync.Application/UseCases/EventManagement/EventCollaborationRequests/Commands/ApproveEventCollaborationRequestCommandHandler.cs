@@ -34,12 +34,22 @@ public class ApproveEventCollaborationRequestCommandHandler : ICommandHandler<Ap
             throw new EventCollaborationRequestNotFoundException(request.Id);
         }
 
-        _eventCollaborationRequestDomainService.Approve(eventCollaborationRequest, DateTime.Now);
-        _eventCollaborationRequestRepository.Update(eventCollaborationRequest);
+        try
+        {
+            await _unitOfWork.BeginTransactionAsync();
         
-        await _unitOfWork.CommitAsync();
+            _eventCollaborationRequestDomainService.Approve(eventCollaborationRequest, DateTime.UtcNow);
+            _eventCollaborationRequestRepository.Update(eventCollaborationRequest);
         
-        _logger.LogInformation("Event collaboration request {Id} approved successfully!", request.Id);
-        return eventCollaborationRequest.EventId!.Value;
+            await _unitOfWork.CommitTransactionAsync();
+            
+            _logger.LogInformation("Event collaboration request {Id} approved successfully!", request.Id);
+            return eventCollaborationRequest.EventId!.Value;
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
+        }
     }
 }

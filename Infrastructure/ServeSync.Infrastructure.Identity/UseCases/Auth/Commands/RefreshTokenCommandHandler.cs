@@ -9,6 +9,7 @@ using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Exceptions;
+using ServeSync.Infrastructure.Identity.Services;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 
 namespace ServeSync.Infrastructure.Identity.UseCases.Auth.Commands;
@@ -41,37 +42,27 @@ public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, A
         }
 
         var accessTokenId = string.Empty;
-        if (_tokenProvider.ValidateToken(request.AccessToken, ref accessTokenId))
+        var claims = new List<Claim>();
+        if (_tokenProvider.ValidateToken(request.AccessToken, ref accessTokenId, ref claims))
         {
             throw new AccessTokenStillValidException();
         }
         
         user.UseRefreshToken(accessTokenId, request.RefreshToken);
-        
-        var accessToken = _tokenProvider.GenerateAccessToken(GetUserAuthenticateClaimsAsync(user));
+
+        var tenantId = claims.FirstOrDefault(x => x.Type == AppClaim.TenantId)?.Value;
+        var accessToken = _tokenProvider.GenerateAccessToken(IdentityUserClaimGenerator.Generate(user, tenantId == null ? null : Guid.Parse(tenantId)));
         var credential = new AuthCredentialDto()
         {
             AccessToken = accessToken.Value,
             RefreshToken = _tokenProvider.GenerateRefreshToken()
         };
             
-        user.AddRefreshToken(accessToken.Id, credential.RefreshToken, DateTime.Now.AddDays(_jwtSetting.RefreshTokenExpiresInDay));
+        user.AddRefreshToken(accessToken.Id, credential.RefreshToken, DateTime.UtcNow.AddDays(_jwtSetting.RefreshTokenExpiresInDay));
             
         _userRepository.Update(user);
         await _unitOfWork.CommitAsync();
 
         return credential;
-    }
-    
-    private IEnumerable<Claim> GetUserAuthenticateClaimsAsync(ApplicationUser user)
-    {
-        var claims = new List<Claim>()
-        {
-            new (AppClaim.UserId, user.Id),
-            new (AppClaim.UserName, user.UserName),
-            new (AppClaim.Email, user.Email)
-        };
-        
-        return claims;
     }
 }

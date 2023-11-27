@@ -130,4 +130,12 @@ public class StudentController : ControllerBase
         var program = await _mediator.Send(new GetEducationProgramByStudentQuery(id));
         return Ok(program);
     }
+    
+    [HttpPost("{id:guid}/attendance-events/export")]
+    [HasPermission(Permissions.Students.View)]
+    public async Task<IActionResult> ExportStudentAttendanceEventsAsync(Guid id, ExportStudentAttendanceEventsDto dto)
+    {
+        var byteArray = await _mediator.Send(new ExportStudentAttendanceEventsCommand(id, dto.FromDate, dto.ToDate));
+        return File(byteArray, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "student.xlsx");
+    }
 }

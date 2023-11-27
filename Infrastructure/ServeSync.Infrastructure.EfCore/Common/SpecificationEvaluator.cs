@@ -34,22 +34,23 @@ public static class SpecificationEvaluator<TEntity, TKey>
     {
         var queryable = GetQuery(inputQuery, (ISpecification<TEntity, TKey>)specification);
 
+        var specificationSorting = specification.BuildSorting();
         if (typeof(TEntity).IsAssignableTo(typeof(IHasAuditable)))
         {
-            if (string.IsNullOrWhiteSpace(specification.BuildSorting()))
+            if (string.IsNullOrWhiteSpace(specificationSorting))
             {
                 queryable = queryable.OrderBy(GetDefaultSorting());  
             }
             else
             {
-                queryable = queryable.OrderBy($"{specification.BuildSorting()}, {GetDefaultSorting()}");
+                queryable = queryable.OrderBy($"{specificationSorting}, {GetDefaultSorting()}");
             }
         }
         else
         {
-            if (!string.IsNullOrWhiteSpace(specification.BuildSorting()))
+            if (!string.IsNullOrWhiteSpace(specificationSorting))
             {
-                queryable = queryable.OrderBy(specification.BuildSorting());    
+                queryable = queryable.OrderBy(specificationSorting);    
             }
         }
 

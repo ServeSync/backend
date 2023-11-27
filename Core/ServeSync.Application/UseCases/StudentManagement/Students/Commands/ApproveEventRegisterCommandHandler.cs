@@ -34,7 +34,7 @@ public class ApproveEventRegisterCommandHandler : ICommandHandler<ApproveEventRe
             throw new StudentNotFoundException(request.StudentId);
         }
         
-        await _studentDomainService.ApproveEventRegisterAsync(student, request.EventRegisterId, DateTime.Now);
+        await _studentDomainService.ApproveEventRegisterAsync(student, request.EventRegisterId, DateTime.UtcNow);
         _studentRepository.Update(student);
         await _unitOfWork.CommitAsync();
         

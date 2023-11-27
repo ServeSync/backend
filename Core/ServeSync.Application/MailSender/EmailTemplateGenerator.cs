@@ -83,6 +83,25 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
         return template;
     }
 
+    public string GetRejectEvent(string name, string eventName)
+    {
+        var template = GetTemplate("RejectEvent")
+            .Replace("{{FullName}}", name)
+            .Replace("{{EventName}}", eventName);
+
+        return template;
+    }
+
+    public string GetOrganizationInvitation(string name, string approveUrlCallBack, string rejectUrlCallBack)
+    {
+        var template = GetTemplate("OrganizationInvitation")
+            .Replace("{{FullName}}", name)
+            .Replace("{{ApproveUrlCallBack}}", approveUrlCallBack)
+            .Replace("{{RejectUrlCallBack}}", rejectUrlCallBack);
+        
+        return template;
+    }
+
     private string GetTemplate(string templateName)
     {
         var pathToFile = GetTemplatePath(templateName);

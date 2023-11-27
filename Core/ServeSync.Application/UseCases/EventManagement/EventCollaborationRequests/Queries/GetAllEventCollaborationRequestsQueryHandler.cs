@@ -38,7 +38,7 @@ public class GetAllEventCollaborationRequestsQueryHandler : IQueryHandler<GetAll
         var specification = new FilterEventCollaborationRequestSpecification(request.Page, request.Size, request.Sorting, request.Search)
             .And(new EventCollaborationRequestByTimeFrameSpecification(request.StartDate, request.EndDate))
             .AndIf(request.EventType.HasValue, new EventCollaborationRequestByTypeSpecification(request.EventType.GetValueOrDefault()))
-            .AndIf(request.Status.HasValue, new EventCollaborationRequestByStatusSpecification(request.Status.GetValueOrDefault()));
+            .AndIf(request.Status.HasValue, new EventCollaborationRequestByStatusSpecification(request.Status.GetValueOrDefault(), DateTime.UtcNow));
 
         return specification;
     }

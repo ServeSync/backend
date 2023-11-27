@@ -40,8 +40,6 @@ public class ImportStudentFromCsvBackGroundJobHandler : IBackGroundJobHandler<Im
     
     public async Task Handle(ImportStudentFromCsvBackGroundJob job, CancellationToken cancellationToken)
     {
-        await _unitOfWork.BeginTransactionAsync();
-
         var homeRoomIdByName = await GetIncludedHomeRooms(job);
         var educationProgramIdByName = await GetIncludedEducationPrograms(job);
         
@@ -83,7 +81,7 @@ public class ImportStudentFromCsvBackGroundJobHandler : IBackGroundJobHandler<Im
             }
         }
     
-        await _unitOfWork.CommitTransactionAsync(true);
+        await _unitOfWork.CommitAsync();
     }
     
     private async Task<IDictionary<string, Guid>> GetIncludedHomeRooms(ImportStudentFromCsvBackGroundJob job)

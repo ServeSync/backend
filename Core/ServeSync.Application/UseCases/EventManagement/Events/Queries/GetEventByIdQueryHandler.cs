@@ -46,15 +46,17 @@ public class GetEventByIdQueryHandler : IQueryHandler<GetEventByIdQuery, EventDe
         
         if (_currentUser.IsAuthenticated)
         {
+            eventDetailDto.CanAccess = (eventDetailDto.Created.Id == _currentUser.Id && @event.TenantId == _currentUser.TenantId) || await _currentUser.IsAdminAsync() || await _currentUser.IsStudentAffairAsync();
             eventDetailDto.IsAttendance = @event.AttendanceInfos.Any(x => x.AttendanceStudents.Any(y => y.IdentityId == _currentUser.Id));
             eventDetailDto.IsRegistered = @event.Roles.Any(x => x.RegisteredStudents.Any(y => y.IdentityId == _currentUser.Id && y.Status == EventRegisterStatus.Approved));
             eventDetailDto.Roles.ForEach(x =>
             {
                 x.IsRegistered = @event.Roles.Any(y => y.RegisteredStudents.Any(z => z.IdentityId == _currentUser.Id && y.Id == x.Id));
+                x.Status = @event.Roles.Where(y => y.Id == x.Id).SelectMany(y => y.RegisteredStudents).FirstOrDefault(y => y.IdentityId == _currentUser.Id)?.Status;
             });
         }
 
-        var currentTime = DateTime.Now;
+        var currentTime = DateTime.UtcNow;
         eventDetailDto.CalculatedStatus = eventDetailDto.GetCurrentStatus(currentTime);
         eventDetailDto.Status = eventDetailDto.GetStatus(currentTime);
         return eventDetailDto;

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.ReadModels.Events;
 using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
@@ -31,5 +32,6 @@ public class EventReadModelMapper : Profile
         CreateMap<EventAddressReadModel, EventAddressDto>();
         CreateMap<EventReadModel, StudentAttendanceEventDto>();
         CreateMap<AttendanceStudentInEventRoleReadModel, StudentAttendanceEventDto>();
+        CreateMap<AuditReadModel, AuditDto>();
     }
 }

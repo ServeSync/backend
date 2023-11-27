@@ -16,11 +16,18 @@ public class BackGroundJobPublisher : IBackGroundJobPublisher
     }
     
     
-    public void Publish(IBackGroundJob job)
+    public async Task Publish(IBackGroundJob job)
     {
         var scope = _serviceProvider.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         _logger.LogInformation("Job {JobName} published!", job.GetType().Name);
-        mediator.Publish(job);
+        try
+        {
+            await mediator.Publish(job);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error while publishing job {JobName}", job.GetType().Name);
+        }
     }
 }

@@ -18,7 +18,7 @@ public class OrganizationInEventEntityConfiguration : IEntityTypeConfiguration<O
                .HasForeignKey(x => x.EventId);
 
         builder.HasOne(x => x.Organization)
-               .WithMany()
+               .WithMany(x => x.OrganizationInEvents)
                .HasForeignKey(x => x.OrganizationId);
     }
 }

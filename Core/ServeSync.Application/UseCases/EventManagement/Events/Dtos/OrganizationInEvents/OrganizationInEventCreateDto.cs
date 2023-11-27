@@ -11,6 +11,8 @@ public class OrganizationInEventCreateDto
     [MinLength(5)]
     public string Role { get; set; } = null!;
     
+    [Required]
+    [MinLength(1)]
     public List<OrganizationRepInEventCreateDto> OrganizationReps { get; set; } = null!;
 }
 

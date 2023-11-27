@@ -1,12 +1,11 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
 using ServeSync.API.Common.Enums;
+using ServeSync.Application.Common;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Commands;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventAttendanceInfos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
@@ -33,7 +32,7 @@ public class EventController : ControllerBase
     [ProducesResponseType(typeof(PagedResultDto<FlatEventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventsAsync([FromQuery] EventFilterRequestDto dto)
     {
-        var query = new GetAllEventsQuery(dto.StartDate, dto.EndDate, dto.EventType, dto.EventStatus, dto.Search, dto.Page, dto.Size, dto.Sorting);
+        var query = new GetAllEventsQuery(dto.StartDate, dto.EndDate, dto.EventType, dto.EventStatus, dto.DefaultFilters, dto.Search, dto.Page, dto.Size, dto.Sorting);
         
         var events = await _mediator.Send(query);
         return Ok(events);
@@ -57,6 +56,16 @@ public class EventController : ControllerBase
         return Ok(SimpleIdResponse<Guid>.Create(id));
     }
     
+    [HttpPut("{id:guid}")]
+    [HasPermission(Permissions.Events.Edit)]
+    [EventAccessControl(EventSourceAccessControl.Event)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] EventUpdateDto dto)
+    {
+        await _mediator.Send(new UpdateEventCommand(id, dto));
+        return NoContent();
+    }
+    
     [HttpPost("register")]
     [HasRole(AppRole.Student)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -70,7 +79,7 @@ public class EventController : ControllerBase
     [ProducesResponseType(typeof(PagedResultDto<RegisteredStudentInEventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRegisteredStudentsAsync(Guid id, [FromQuery] RegisteredStudentFilterRequestDto dto)
     {
-        var registeredStudents = await _mediator.Send(new GetAllRegisteredStudentsQuery(id, dto.Page, dto.Size));
+        var registeredStudents = await _mediator.Send(new GetAllRegisteredStudentsQuery(id, dto.Status, dto.Page, dto.Size));
         return Ok(registeredStudents);
     }
     
@@ -113,7 +122,7 @@ public class EventController : ControllerBase
     [HasPermission(Permissions.Events.Cancel)]
     [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> CancelEvent(Guid id)
+    public async Task<IActionResult> CancelEventAsync(Guid id)
     {
         await _mediator.Send(new CancelEventCommand(id));
         return NoContent();
@@ -121,11 +130,28 @@ public class EventController : ControllerBase
     
     [HttpPost("{id:guid}/approve")]
     [HasPermission(Permissions.Events.Approve)]
-    [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> ApproveEvent(Guid id)
+    public async Task<IActionResult> ApproveEventAsync(Guid id)
     {
         await _mediator.Send(new ApproveEventCommand(id));
+        return NoContent();
+    }
+    
+    [HttpPost("{id:guid}/reject")]
+    [HasPermission(Permissions.Events.Reject)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> RejectEventAsync(Guid id)
+    {
+        await _mediator.Send(new RejectEventCommand(id));
+        return NoContent();
+    }
+    
+    [HttpPost("sync")]
+    [HasRole(AppRole.Admin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> SyncEventsAsync([FromQuery] Guid[] ids)
+    {
+        await _mediator.Send(new SyncEventsCommand(ids));
         return NoContent();
     }
 }

@@ -141,13 +141,6 @@ public class Student : AuditableAggregateRoot
         }
         
         eventRegister.Approve();
-        foreach (var register in EventRegisters)
-        {
-            if (register.Id != eventRegisterId)
-            {
-                register.Reject("Đã tham gia với vai trò khác!");
-            }
-        }
     }
 
     internal void RejectEventRegister(Guid eventRegisterId, string reason)
@@ -159,7 +152,6 @@ public class Student : AuditableAggregateRoot
         }
         
         eventRegister.Reject(reason);
-        AddDomainEvent(new StudentEventRegisterRejectedDomainEvent(Id, eventRegister.EventRoleId, reason));
     }
     
     internal void AttendEvent(Guid eventRoleId, Guid eventAttendanceInfoId)

@@ -21,7 +21,7 @@ public class GetAllRegisteredStudentsQueryHandler : IQueryHandler<GetAllRegister
     
     public async Task<PagedResultDto<RegisteredStudentInEventDto>> Handle(GetAllRegisteredStudentsQuery request, CancellationToken cancellationToken)
     {
-        var (registeredStudents, total) = await _eventReadModelRepository.GetPagedRegisteredStudentsInEventAsync(request.EventId, request.Page, request.Size);
+        var (registeredStudents, total) = await _eventReadModelRepository.GetPagedRegisteredStudentsInEventAsync(request.EventId, request.Status, request.Page, request.Size);
         if (registeredStudents == null)
         {
             throw new EventNotFoundException(request.EventId);

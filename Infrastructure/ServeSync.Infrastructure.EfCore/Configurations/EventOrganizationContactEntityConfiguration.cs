@@ -36,6 +36,9 @@ public class EventOrganizationContactEntityConfiguration : IEntityTypeConfigurat
 
        builder.Property(x => x.Position)
               .IsRequired(false);
+       
+       builder.Property(x => x.Status)
+              .IsRequired();
 
        builder.HasOne(x => x.EventOrganization)
               .WithMany(x => x.Contacts)

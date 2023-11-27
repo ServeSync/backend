@@ -6,6 +6,7 @@ namespace ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 
 public class StudentDetailDto : BasicStudentDto
 {
+    public double Score { get; set; }
     public FacultyDto Faculty { get; set; } = null!;
     public HomeRoomDto HomeRoom { get; set; } = null!;
     public EducationProgramDto EducationProgram { get; set; } = null!;

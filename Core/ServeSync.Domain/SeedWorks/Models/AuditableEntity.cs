@@ -11,13 +11,13 @@ public abstract class AuditableEntity<TKey> : Entity<TKey>, IAuditableEntity<TKe
     
     public void Create(string createdBy)
     {
-        Created = DateTime.Now;
+        Created = DateTime.UtcNow;
         CreatedBy = createdBy;
     }
     
     public void Update(string lastModifiedBy)
     {
-        LastModified = DateTime.Now;
+        LastModified = DateTime.UtcNow;
         LastModifiedBy = lastModifiedBy;
     }
 }

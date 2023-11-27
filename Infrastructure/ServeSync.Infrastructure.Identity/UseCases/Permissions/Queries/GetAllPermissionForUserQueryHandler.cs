@@ -10,6 +10,7 @@ using ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Specification
 using ServeSync.Infrastructure.Identity.Models.RoleAggregate;
 using ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Models.RoleAggregate.Exceptions;
+using ServeSync.Infrastructure.Identity.Models.UserAggregate;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Exceptions;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Dtos;
@@ -19,6 +20,7 @@ namespace ServeSync.Infrastructure.Identity.UseCases.Permissions.Queries;
 public class GetAllPermissionForUserQueryHandler : IQueryHandler<GetAllPermissionForUserQuery, IEnumerable<PermissionDto>>
 {
     private readonly IRoleRepository _roleRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IBasicReadOnlyRepository<ApplicationPermission, Guid> _permissionRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUserCacheManager _userCacheManager;
@@ -28,6 +30,7 @@ public class GetAllPermissionForUserQueryHandler : IQueryHandler<GetAllPermissio
     
     public GetAllPermissionForUserQueryHandler(
         IRoleRepository roleRepository,
+        IUserRepository userRepository,
         IUserCacheManager userCacheManager,
         IPermissionCacheManager permissionCacheManager,
         IBasicReadOnlyRepository<ApplicationPermission, Guid> permissionRepository,
@@ -36,6 +39,7 @@ public class GetAllPermissionForUserQueryHandler : IQueryHandler<GetAllPermissio
         ILogger<GetAllPermissionQueryHandler> logger)
     {
         _roleRepository = roleRepository;
+        _userRepository = userRepository;
         _permissionRepository = permissionRepository;
         _userManager = userManager;
         _userCacheManager = userCacheManager;
@@ -46,7 +50,7 @@ public class GetAllPermissionForUserQueryHandler : IQueryHandler<GetAllPermissio
     
     public async Task<IEnumerable<PermissionDto>> Handle(GetAllPermissionForUserQuery request, CancellationToken cancellationToken)
     {
-        var roles = await GetRolesForUserAsync(request.UserId);
+        var roles = await GetRolesForUserAsync(request.UserId, request.TenantId);
         
         var result = new List<PermissionDto>();
         foreach (var role in roles)
@@ -58,9 +62,9 @@ public class GetAllPermissionForUserQueryHandler : IQueryHandler<GetAllPermissio
         return result;
     }
     
-    private async Task<IEnumerable<string>> GetRolesForUserAsync(string userId)
+    private async Task<IEnumerable<string>> GetRolesForUserAsync(string userId, Guid tenantId)
     {
-        var roles = await _userCacheManager.GetRolesAsync(userId);
+        var roles = await _userCacheManager.GetRolesAsync(userId, tenantId);
         if (roles == null)
         {
             _logger.LogInformation("[Get role] Cache missed!");
@@ -70,9 +74,9 @@ public class GetAllPermissionForUserQueryHandler : IQueryHandler<GetAllPermissio
             {
                 throw new UserNotFoundException(userId);
             }
-            
-            roles = await _userManager.GetRolesAsync(user);
-            await _userCacheManager.SetRolesAsync(userId, roles);
+
+            roles = await _userRepository.GetRolesAsync(userId, tenantId);
+            await _userCacheManager.SetRolesAsync(userId, tenantId, roles);
         }
 
         return roles;

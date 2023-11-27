@@ -34,7 +34,7 @@ public class RejectEventCollaborationRequestCommandHandler : ICommandHandler<Rej
             throw new EventCollaborationRequestNotFoundException(request.Id);
         }
 
-        _eventCollaborationRequestDomainService.Reject(eventCollaborationRequest, DateTime.Now);
+        _eventCollaborationRequestDomainService.Reject(eventCollaborationRequest, DateTime.UtcNow);
         _eventCollaborationRequestRepository.Update(eventCollaborationRequest);
         
         await _unitOfWork.CommitAsync();

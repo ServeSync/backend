@@ -42,6 +42,9 @@ using ServeSync.Infrastructure.Identity.UseCases.Auth.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Auth.Settings;
 using ServeSync.Application.Caching;
 using ServeSync.Application.Caching.Interfaces;
+using ServeSync.Application.DomainEventHandlers.EventManagement.EventOrganizations;
+using ServeSync.Application.DomainEventHandlers.EventManagement.Events;
+using ServeSync.Application.DomainEventHandlers.StudentManagement;
 using ServeSync.Application.Identity;
 using ServeSync.Application.ImageUploader;
 using ServeSync.Application.MailSender;
@@ -52,14 +55,18 @@ using ServeSync.Application.ReadModels.Events;
 using ServeSync.Application.Seeders;
 using ServeSync.Application.SeedWorks.Behavior;
 using ServeSync.Application.SeedWorks.Schedulers;
+using ServeSync.Application.UseCases.StudentManagement.Students.Jobs;
 using ServeSync.Domain.EventManagement.EventAggregate;
+using ServeSync.Domain.EventManagement.EventAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate;
+using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainEvents;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
+using ServeSync.Domain.SeedWorks.Events;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.FacultyAggregate;
@@ -67,6 +74,7 @@ using ServeSync.Domain.StudentManagement.FacultyAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
+using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
 using ServeSync.Infrastructure.Caching;
 using ServeSync.Infrastructure.Cloudinary;
@@ -76,6 +84,8 @@ using ServeSync.Infrastructure.HangFire;
 using ServeSync.Infrastructure.Identity.Caching;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
+using ServeSync.Infrastructure.Identity.Models.TenantAggregate;
+using ServeSync.Infrastructure.Identity.Models.TenantAggregate.Entities;
 using ServeSync.Infrastructure.Identity.Services;
 using ServeSync.Infrastructure.MongoDb;
 using ServeSync.Infrastructure.MongoDb.Repositories;
@@ -176,6 +186,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped(typeof(ISpecificationRepository<,>), typeof(EfCoreSpecificationRepository<,>));
         
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IStudentRepository, StudentRepository>();
@@ -186,6 +197,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEventCollaborationRequestRepository, EventCollaborationRequestRepository>();
         services.AddScoped<IEventOrganizationRepository, EventOrganizationRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
+        services.AddScoped<IOrganizationInvitationRepository, OrganizationInvitationRepository>();
         
         return services;
     }
@@ -263,6 +275,7 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<ITenantService, TenantService>();
         
         services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
@@ -349,6 +362,22 @@ public static class DependencyInjectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddPersistedDomainEventHandlers(this IServiceCollection services)
+    {
+        services.AddScoped<IPersistedDomainEventHandler<EventUpdatedDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<NewEventCreatedDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentEventRegisterApprovedDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentEventRegisterRejectedDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentAttendedToEventDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentRegisteredToEventRoleDomainEvent>, SyncEventReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentContactInfoUpdatedDomainEvent>, SyncStudentReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentCodeUpdatedDomainEvent>, SyncStudentReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<EventOrganizationUpdatedDomainEvent>, SyncEventOrganizationReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<EventOrganizationContactUpdatedDomainEvent>, SyncEventOrganizationContactReadModelDomainEventHandler>();
+        
+        return services;
+    }
+
     public static IServiceCollection AddDataSeeders(this IServiceCollection services)
     {
         services.AddScoped<IDataSeeder, IdentityDataSeeder>();
@@ -415,7 +444,7 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddMongoDB(this IServiceCollection services, IConfiguration configuration)
     {
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-        BsonSerializer.RegisterSerializer(new DateTimeSerializer(DateTimeKind.Local));
+        BsonSerializer.RegisterSerializer(new DateTimeSerializer(DateTimeKind.Utc));
  
         services.AddSingleton(provider =>
         {

@@ -13,7 +13,7 @@ public class LessThanCurrentDateAttribute : ValidationAttribute
     
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        if (value is DateTime date && date > DateTime.Now)
+        if (value is DateTime date && date > DateTime.UtcNow)
         {
             return new ValidationResult($"{FieldName} must be less than current date!");
         }
