@@ -73,6 +73,8 @@ using ServeSync.Domain.StudentManagement.FacultyAggregate;
 using ServeSync.Domain.StudentManagement.FacultyAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.DomainServices;
+using ServeSync.Domain.StudentManagement.ProofAggregate;
+using ServeSync.Domain.StudentManagement.ProofAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
@@ -198,6 +200,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEventOrganizationRepository, EventOrganizationRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
         services.AddScoped<IOrganizationInvitationRepository, OrganizationInvitationRepository>();
+        services.AddScoped<IProofRepository, ProofRepository>();
         
         return services;
     }
@@ -358,6 +361,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEventOrganizationDomainService, EventOrganizationDomainService>();
         services.AddScoped<IEventCollaborationRequestDomainService, EventCollaborationRequestDomainService>();
         services.AddScoped<IEventDomainService, EventDomainService>();
+        services.AddScoped<IProofDomainService, ProofDomainService>();
 
         return services;
     }

@@ -6,7 +6,7 @@ namespace ServeSync.Domain.StudentManagement.ProofAggregate.Entities;
 
 public class Proof : AuditableAggregateRoot
 {
-    public ProofType? ProofType { get; private set; }
+    public ProofType ProofType { get; private set; }
     public ProofStatus ProofStatus { get; private set; }
     public string? Description { get; private set; }
     public string ImageUrl { get; private set; }

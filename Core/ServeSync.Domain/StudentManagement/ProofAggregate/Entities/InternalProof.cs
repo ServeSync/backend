@@ -14,13 +14,12 @@ public class InternalProof : Proof
     public Proof? Proof { get; private set; }
     
     public InternalProof(
-        ProofType proofType, 
-        string description, 
+        string? description, 
         string imageUrl, 
         DateTime attendanceAt, 
         Guid studentId,
         Guid eventId,
-        Guid eventRoleId) : base(proofType, description, imageUrl, attendanceAt, studentId)
+        Guid eventRoleId) : base(ProofType.Internal, description, imageUrl, attendanceAt, studentId)
     {
         EventId = eventId;
         EventRoleId = eventRoleId;
