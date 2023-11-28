@@ -114,3 +114,10 @@ public class StudentAttendanceEventDto : FlatEventDto
     public double Score { get; set; }
     public DateTime AttendanceAt { get; set; }
 }
+
+public class StudentRegisteredEventDto : FlatEventDto
+{
+    public Guid RoleId { get; set; }
+    public string Role { get; set; } = null!;
+    public double Score { get; set; }
+}
