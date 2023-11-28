@@ -122,6 +122,14 @@ public class StudentController : ControllerBase
         return Ok(events);
     }
     
+    [HttpGet("{id:guid}/registered-events")]
+    [ProducesResponseType(typeof(PagedResultDto<StudentRegisteredEventDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRegisteredEventsOfStudentAsync(Guid id, [FromQuery] PagingRequestDto dto)
+    {
+        var events = await _mediator.Send(new GetAllRegisteredEventsOfStudentQuery(id, dto.Page, dto.Size));
+        return Ok(events);
+    }
+    
     [HttpGet("{id:guid}/education-program")]
     [HasPermission(Permissions.Students.View)]
     [ProducesResponseType(typeof(StudentEducationProgramDto), StatusCodes.Status200OK)]

@@ -17,6 +17,8 @@ public interface IEventReadModelRepository : IReadModelRepository<EventReadModel
 
     Task<(List<EventReadModel>, int)> GetAttendanceEventsOfStudentAsync(Guid studentId, int page, int size);
     
+    Task<(List<EventReadModel>, int)> GetRegisteredEventsOfStudentAsync(Guid studentId, int page, int size);
+    
     Task<int> GetCountNumberOfAttendedEventsOfStudentAsync(Guid studentId);
     
     Task<double> GetSumScoreOfAttendedEventsOfStudentAsync(Guid requestStudentId);

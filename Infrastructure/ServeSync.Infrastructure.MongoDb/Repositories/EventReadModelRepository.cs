@@ -102,22 +102,40 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
         return (attendanceStudents, total);
     }
 
-    public Task<(List<EventReadModel>, int)> GetAttendanceEventsOfStudentAsync(Guid studentId, int page, int size)
+    public async Task<(List<EventReadModel>, int)> GetAttendanceEventsOfStudentAsync(Guid studentId, int page, int size)
     {
-        var attendanceEvents = Collection.AsQueryable()
+        var queryable = Collection.AsQueryable()
             .Where(x =>
-                x.AttendanceInfos.Any(y => 
-                    y.AttendanceStudents.Any(z => z.StudentId == studentId)))
+                x.AttendanceInfos.Any(y =>
+                    y.AttendanceStudents.Any(z => z.StudentId == studentId)));
+        
+        var attendanceEvents = await queryable
             .Skip((page - 1) * size)
             .Take(size)
-            .ToList();
+            .ToListAsync();
         
-        var total = Collection
-            .AsQueryable()
-            .Count(x => x.AttendanceInfos.Any(y => 
-                y.AttendanceStudents.Any(z => z.StudentId == studentId)));
+        var total = await queryable.CountAsync();
 
-        return Task.FromResult((attendanceEvents, total));
+        return (attendanceEvents, total);
+    }
+
+    public async Task<(List<EventReadModel>, int)> GetRegisteredEventsOfStudentAsync(Guid studentId, int page, int size)
+    {
+        var queryable = Collection.AsQueryable()
+            .Where(x =>
+                x.Roles.Any(y =>
+                    y.RegisteredStudents.Any(z => z.StudentId == studentId))
+                && x.AttendanceInfos.All(y =>
+                    y.AttendanceStudents.All(z => z.StudentId != studentId)));
+
+        var registeredEvents = await queryable
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToListAsync();
+        
+        var total = await queryable.CountAsync();
+
+        return (registeredEvents, total);
     }
 
     public Task<int> GetCountNumberOfAttendedEventsOfStudentAsync(Guid studentId)
