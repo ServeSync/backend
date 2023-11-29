@@ -10,14 +10,14 @@ public class Proof : AuditableAggregateRoot
     public ProofStatus ProofStatus { get; private set; }
     public string? Description { get; private set; }
     public string ImageUrl { get; private set; }
-    public DateTime AttendanceAt { get; private set; }
+    public DateTime? AttendanceAt { get; private set; }
     public Guid StudentId { get; private set; }
     public Student? Student { get; private set; }
     
     public InternalProof? InternalProof { get; private set; }
     public ExternalProof? ExternalProof { get; private set; }
     
-    public Proof(ProofType proofType, string? description, string imageUrl, DateTime attendanceAt, Guid studentId)
+    public Proof(ProofType proofType, string? description, string imageUrl, DateTime? attendanceAt, Guid studentId)
     {
         ProofType = proofType;
         Description = description;

@@ -27,4 +27,13 @@ public class ProofController : ControllerBase
         var id = await _mediator.Send(new CreateInternalProofCommand(dto));
         return Ok(SimpleIdResponse<Guid>.Create(id));
     }
+    
+    [HttpPost("external")]
+    [HasRole(AppRole.Student)]
+    [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateExternalProofAsync(ExternalProofCreateDto dto)
+    {
+        var id = await _mediator.Send(new CreateExternalProofCommand(dto));
+        return Ok(SimpleIdResponse<Guid>.Create(id));
+    }
 }
