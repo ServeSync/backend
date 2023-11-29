@@ -1,6 +1,8 @@
 ﻿using ServeSync.Domain.EventManagement.EventAggregate;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
+using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventCategoryAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Domain.StudentManagement.ProofAggregate.Entities;
 using ServeSync.Domain.StudentManagement.ProofAggregate.Exceptions;
@@ -14,17 +16,20 @@ public class ProofDomainService : IProofDomainService
     private readonly IProofRepository _proofRepository;
     private readonly IBasicReadOnlyRepository<Student, Guid> _studentRepository;
     private readonly IBasicReadOnlyRepository<EventRole, Guid> _eventRoleRepository;
+    private readonly IBasicReadOnlyRepository<EventActivity, Guid> _eventActivityRepository;
     private readonly IEventRepository _eventRepository;
     
     public ProofDomainService(
         IProofRepository proofRepository,
         IBasicReadOnlyRepository<Student, Guid> studentRepository,
         IBasicReadOnlyRepository<EventRole, Guid> eventRoleRepository,
+        IBasicReadOnlyRepository<EventActivity, Guid> eventActivityRepository,
         IEventRepository eventRepository)
     {
         _proofRepository = proofRepository;
         _studentRepository = studentRepository;
         _eventRoleRepository = eventRoleRepository;
+        _eventActivityRepository = eventActivityRepository;
         _eventRepository = eventRepository;
     }
     
@@ -52,7 +57,50 @@ public class ProofDomainService : IProofDomainService
 
         return proof;
     }
-    
+
+    public async Task<Proof> CreateExternalProofAsync(
+        string? description, 
+        string imageUrl, 
+        DateTime? attendanceAt, 
+        Guid studentId,
+        string eventName, 
+        string organizationName,
+        string address, 
+        string role, 
+        DateTime startAt, 
+        DateTime endAt, 
+        double score, 
+        Guid activityId)
+    {
+        await CheckStudentExistAsync(studentId);
+        var activity = await _eventActivityRepository.FindByIdAsync(activityId);
+        if (activity == null)
+        {
+            throw new EventActivityNotFoundException(activityId);
+        }
+
+        if (score < activity.MinScore || score > activity.MaxScore)
+        {
+            throw new EventActivityScoreOutOfRangeException(activityId, score);
+        }
+        
+        var proof = new ExternalProof(
+            description,
+            imageUrl,
+            attendanceAt,
+            studentId,
+            eventName,
+            organizationName,
+            address,
+            role,
+            startAt,
+            endAt,
+            score,
+            activityId);
+        
+        return proof;
+    }
+
     private async Task CheckInternalProofExistAsync(Guid eventId, Guid studentId)
     {
         var isInternalProofExist = await _proofRepository.IsInternalProofExistAsync(eventId, studentId);
