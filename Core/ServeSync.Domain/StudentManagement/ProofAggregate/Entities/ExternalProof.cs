@@ -7,6 +7,7 @@ public class ExternalProof : Proof
 {
     public string EventName { get; private set; }
     public string Address { get; private set; }
+    public string OrganizationName { get; private set; }
     public string Role { get; private set; }
     public DateTime StartAt { get; private set; }
     public DateTime EndAt { get; private set; }
@@ -20,6 +21,7 @@ public class ExternalProof : Proof
     public ExternalProof(
         ProofType proofType, 
         string description, 
+        string organizationName,
         string imageUrl, 
         DateTime attendanceAt, 
         Guid studentId,
@@ -32,6 +34,7 @@ public class ExternalProof : Proof
         Guid activityId) : base(proofType, description, imageUrl, attendanceAt, studentId)
     {
         EventName = eventName;
+        OrganizationName = organizationName;
         Address = address;
         Role = role;
         StartAt = startAt;
