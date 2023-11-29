@@ -308,7 +308,7 @@ public class Event : AuditableTenantAggregateRoot
     
     internal void AddRegistrationInfo(DateTime startAt, DateTime endAt, DateTime dateTime)
     {
-        if (dateTime >= StartAt)
+        if (dateTime >= StartAt || GetCurrentStatus(dateTime) == EventStatus.Expired)
         {
             throw new EventRegistrationInfoCannotBeAddedException();
         }
@@ -335,7 +335,7 @@ public class Event : AuditableTenantAggregateRoot
             throw new EventRegistrationInfoNotFoundException(id, Id);
         }
 
-        if (registrationInfo.StartAt <= dateTime)
+        if (registrationInfo.StartAt <= dateTime || GetCurrentStatus(dateTime) == EventStatus.Expired)
         {
             throw new EventRegistrationInfoCannotBeUpdatedException(id);
         }
@@ -357,7 +357,7 @@ public class Event : AuditableTenantAggregateRoot
             throw new EventRegistrationInfoNotFoundException(id, Id);
         }
         
-        if (registrationInfo.StartAt <= dateTime)
+        if (registrationInfo.StartAt <= dateTime || GetCurrentStatus(dateTime) == EventStatus.Expired)
         {
             throw new EventRegistrationInfoCannotBeUpdatedException(id);
         }
@@ -482,7 +482,7 @@ public class Event : AuditableTenantAggregateRoot
         {
             return EventStatus.Done;
         }
-        else if (Status == EventStatus.Pending && StartAt <= dateTime)
+        else if (Status == EventStatus.Pending && RegistrationInfos.Any(x => x.StartAt <= dateTime))
         {
             return EventStatus.Expired;
         }
@@ -508,7 +508,7 @@ public class Event : AuditableTenantAggregateRoot
     
     private void CheckCanUpdateAttendanceInfo(DateTime dateTime)
     {
-        if (StartAt <= dateTime)
+        if (StartAt <= dateTime || Status == EventStatus.Approved)
         {
             throw new EventAttendanceInfoCanNotBeUpdatedException(Id);
         }
@@ -516,7 +516,7 @@ public class Event : AuditableTenantAggregateRoot
     
     private void CheckCanUpdateOrganizationInfo(DateTime dateTime)
     {
-        if (StartAt <= dateTime)
+        if (StartAt <= dateTime || Status == EventStatus.Approved)
         {
             throw new EventOrganizationCanNotBeUpdatedException(Id);
         }
