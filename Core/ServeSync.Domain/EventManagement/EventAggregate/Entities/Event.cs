@@ -308,7 +308,10 @@ public class Event : AuditableTenantAggregateRoot
     
     internal void AddRegistrationInfo(DateTime startAt, DateTime endAt, DateTime dateTime)
     {
-        CheckCanUpdateRegistrationInfo(dateTime);
+        if (dateTime >= StartAt)
+        {
+            throw new EventRegistrationInfoCannotBeAddedException();
+        }
         
         if (startAt >= StartAt || endAt >= StartAt)
         {
@@ -326,12 +329,15 @@ public class Event : AuditableTenantAggregateRoot
     
     internal void UpdateRegistrationInfo(Guid id, DateTime startAt, DateTime endAt, DateTime dateTime)
     {
-        CheckCanUpdateRegistrationInfo(dateTime);
-        
         var registrationInfo = RegistrationInfos.FirstOrDefault(x => x.Id == id);
         if (registrationInfo == null)
         {
             throw new EventRegistrationInfoNotFoundException(id, Id);
+        }
+
+        if (registrationInfo.StartAt <= dateTime)
+        {
+            throw new EventRegistrationInfoCannotBeUpdatedException(id);
         }
         
         if (RegistrationInfos.Any(x => x.Id != id && x.IsOverlapped(startAt, endAt)))
@@ -345,12 +351,15 @@ public class Event : AuditableTenantAggregateRoot
     
     internal void RemoveRegistrationInfo(Guid id, DateTime dateTime)
     {
-        CheckCanUpdateRegistrationInfo(dateTime);
-        
         var registrationInfo = RegistrationInfos.FirstOrDefault(x => x.Id == id);
         if (registrationInfo == null)
         {
             throw new EventRegistrationInfoNotFoundException(id, Id);
+        }
+        
+        if (registrationInfo.StartAt <= dateTime)
+        {
+            throw new EventRegistrationInfoCannotBeUpdatedException(id);
         }
         
         RegistrationInfos.Remove(registrationInfo);

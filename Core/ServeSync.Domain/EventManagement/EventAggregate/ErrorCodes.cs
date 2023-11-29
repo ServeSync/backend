@@ -37,4 +37,5 @@ public static class ErrorCodes
     public const string EventRegistrationInfoCannotBeUpdated = "EventRegistration:000003";
     public const string EventRegistrationInfoOverlapped = "EventRegistration:000004";
     public const string EventRegistrationInfoNotFound = "EventRegistration:000005";
+    public const string EventRegistrationInfoCannotBeAdded = "EventRegistration:000006";
 }
