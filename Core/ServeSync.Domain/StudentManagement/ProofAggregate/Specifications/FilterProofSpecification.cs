@@ -15,6 +15,8 @@ public class FilterProofSpecification : PagingAndSortingSpecification<Proof, Gui
         AddInclude(x => x.Student!);
         AddInclude(x => x.ExternalProof);
         AddInclude(x => x.InternalProof);
+        AddInclude(x => x.InternalProof.Event);
+        AddInclude(x => x.InternalProof.Event.RepresentativeOrganization.Organization);
     }
     
     public override Expression<Func<Proof, bool>> ToExpression()
