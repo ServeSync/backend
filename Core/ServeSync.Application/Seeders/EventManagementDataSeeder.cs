@@ -8,12 +8,17 @@ using ServeSync.Domain.EventManagement.EventCategoryAggregate;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Enums;
+using ServeSync.Domain.EventManagement.EventCategoryAggregate.Specifications;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate;
 using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.DomainServices;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Enums;
 using ServeSync.Domain.SeedWorks.Repositories;
+using ServeSync.Domain.StudentManagement.ProofAggregate;
+using ServeSync.Domain.StudentManagement.ProofAggregate.DomainServices;
+using ServeSync.Domain.StudentManagement.ProofAggregate.Enums;
+using ServeSync.Domain.StudentManagement.ProofAggregate.Specifications;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainServices;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
@@ -27,11 +32,13 @@ public class EventManagementDataSeeder : IDataSeeder
     private readonly IEventCategoryDomainService _eventCategoryDomainService;
     private readonly IEventOrganizationDomainService _eventOrganizationDomainService;
     private readonly IEventDomainService _eventDomainService;
+    private readonly IProofDomainService _proofDomainService;
     
     private readonly IEventCategoryRepository _eventCategoryRepository;
     private readonly IEventOrganizationRepository _eventOrganizationRepository;
     private readonly IEventRepository _eventRepository;
     private readonly IStudentRepository _studentRepository;
+    private readonly IProofRepository _proofRepository;
     private readonly IEventCollaborationRequestRepository _eventCollaborationRequestRepository;
     private readonly IBasicReadOnlyRepository<StudentEventRegister, Guid> _studentEventRegisterRepository;
     private readonly IBasicReadOnlyRepository<EventActivity, Guid> _eventActivityRepository;
@@ -46,10 +53,12 @@ public class EventManagementDataSeeder : IDataSeeder
         IEventOrganizationDomainService eventOrganizationDomainService,
         IEventDomainService eventDomainService,
         IEventCollaborationRequestDomainService eventCollaborationRequestDomainService,
+        IProofDomainService proofDomainService,
         IEventCategoryRepository eventCategoryRepository,
         IEventOrganizationRepository eventOrganizationRepository,
         IEventRepository eventRepository,
         IStudentRepository studentRepository,
+        IProofRepository proofRepository,
         IEventCollaborationRequestRepository eventCollaborationRequestRepository,
         IBasicReadOnlyRepository<StudentEventRegister, Guid> studentEventRegisterRepository,
         IBasicReadOnlyRepository<EventActivity, Guid> eventActivityRepository,
@@ -62,10 +71,12 @@ public class EventManagementDataSeeder : IDataSeeder
         _eventOrganizationDomainService = eventOrganizationDomainService;
         _eventDomainService = eventDomainService;
         _eventCategoryRepository = eventCategoryRepository;
+        _proofDomainService = proofDomainService;
         _eventCollaborationRequestDomainService = eventCollaborationRequestDomainService;
         _eventOrganizationRepository = eventOrganizationRepository;
         _eventRepository = eventRepository;
         _studentRepository = studentRepository;
+        _proofRepository = proofRepository;
         _eventCollaborationRequestRepository = eventCollaborationRequestRepository;
         _studentEventRegisterRepository = studentEventRegisterRepository;
         _eventActivityRepository = eventActivityRepository;
@@ -80,6 +91,8 @@ public class EventManagementDataSeeder : IDataSeeder
         await SeedEventOrganizationsAsync();
         await SeedEventsAsync();
         await SeedRegisterEventAsync();
+        await SeedInternalProofAsync();
+        await SeedExternalProofAsync();
         await SeedAttendanceEventsForStudentAsync();
         await SeedEventCollaborationRequestsAsync();
     }
@@ -179,7 +192,7 @@ public class EventManagementDataSeeder : IDataSeeder
         }
         
         var eventOrganizations = await _eventOrganizationRepository.FindAllAsync();
-        var eventActivities = await _eventActivityRepository.FindAllAsync();
+        var eventActivities = await _eventActivityRepository.FindAllAsync(x => x.EventCategory.Type == EventCategoryType.Event);
        
         for (var i = 0; i < 100; i++)
         {
@@ -335,7 +348,7 @@ public class EventManagementDataSeeder : IDataSeeder
         
         var events = await _eventRepository.FindAllAsync();
         var students = await _studentRepository.FindAllAsync();
-        foreach (var @event in events)
+        foreach (var @event in events.Take(events.Count / 2))
         {
             var faker = new Faker();
             foreach (var student in students)
@@ -419,6 +432,83 @@ public class EventManagementDataSeeder : IDataSeeder
         _logger.LogInformation("Seeded event collaboration requests successfully!");
     }
 
+    private async Task SeedInternalProofAsync()
+    {
+        if (await _proofRepository.AnyAsync(new ProofByTypeSpecification(ProofType.Internal)))
+        {
+            _logger.LogInformation("Internal proofs already seeded.");
+            return;
+        }
+        
+        var events = await _eventRepository.FindAllAsync();
+        var students = await _studentRepository.FindAllAsync();
+
+        foreach (var @event in events)
+        {
+            try
+            {
+                var faker = new Faker();
+            
+                var proof = await _proofDomainService.CreateInternalProofAsync(
+                    faker.Lorem.Sentence(),
+                    faker.Image.PicsumUrl(),
+                    faker.PickRandom(@event.AttendanceInfos).StartAt.AddMinutes(5),
+                    faker.PickRandom(students).Id,
+                    @event.Id,
+                    faker.PickRandom(@event.Roles.Where(x => !x.IsNeedApprove)).Id,
+                    @event.EndAt.AddDays(5));
+                await _proofRepository.InsertAsync(proof);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Seeded internal proofs failed: {Message}", e.Message);
+            }
+        }
+        
+        await _unitOfWork.CommitAsync();
+    }
+
+    private async Task SeedExternalProofAsync()
+    {
+        if (await _proofRepository.AnyAsync(new ProofByTypeSpecification(ProofType.External)))
+        {
+            _logger.LogInformation("External proofs already seeded.");
+            return;
+        }
+
+        var activities = await _eventActivityRepository.FindAllAsync();
+        var students = await _studentRepository.FindAllAsync();
+        for (var i = 0; i < 30; i++)
+        {
+            try
+            {
+                var faker = new Faker();
+
+                var activity = faker.PickRandom(activities);
+                var proof = await _proofDomainService.CreateExternalProofAsync(
+                    faker.Lorem.Sentence(),
+                    faker.Image.PicsumUrl(),
+                    DateTime.UtcNow.AddDays(-1.5),
+                    faker.PickRandom(students).Id,
+                    faker.Lorem.Sentence(),
+                    faker.Company.CompanyName(),
+                    faker.Address.FullAddress(),
+                    faker.Name.JobTitle(),
+                    DateTime.UtcNow.AddDays(-2),
+                    DateTime.UtcNow.AddDays(-1),
+                    faker.Random.Int((int)activity.MinScore, (int)activity.MaxScore),
+                    activity.Id);
+                await _proofRepository.InsertAsync(proof);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Seeded external proofs failed: {Message}", e.Message);
+            }
+        }
+        
+        await _unitOfWork.CommitAsync();
+    }
+    
     private Dictionary<dynamic, List<dynamic>> GetEventCategories()
     {
         var eventCategories = new Dictionary<dynamic, List<dynamic>>();
