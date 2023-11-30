@@ -45,7 +45,7 @@ public class ProofDomainService : IProofDomainService
     {
         await CheckStudentExistAsync(studentId);
         await CheckRegisteredEventAsync(eventId, studentId, eventRoleId);
-        await CheckIsAttendedToEventAsync(eventId, studentId, DateTime.UtcNow);
+        await CheckIsAttendedToEventAsync(eventId, studentId, dateTime);
         await CheckInternalProofExistAsync(eventId, studentId);
         
         var proof = new InternalProof(

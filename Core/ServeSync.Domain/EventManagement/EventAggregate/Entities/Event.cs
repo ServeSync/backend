@@ -308,7 +308,9 @@ public class Event : AuditableTenantAggregateRoot
     
     internal void AddRegistrationInfo(DateTime startAt, DateTime endAt, DateTime dateTime)
     {
-        if (dateTime >= StartAt || GetCurrentStatus(dateTime) == EventStatus.Expired)
+        if (dateTime >= StartAt || GetCurrentStatus(dateTime) is EventStatus.Expired 
+                                                              or EventStatus.Cancelled 
+                                                              or EventStatus.Rejected)
         {
             throw new EventRegistrationInfoCannotBeAddedException();
         }
@@ -335,7 +337,9 @@ public class Event : AuditableTenantAggregateRoot
             throw new EventRegistrationInfoNotFoundException(id, Id);
         }
 
-        if (registrationInfo.StartAt <= dateTime || GetCurrentStatus(dateTime) == EventStatus.Expired)
+        if (registrationInfo.StartAt <= dateTime || GetCurrentStatus(dateTime) is EventStatus.Expired 
+                                                                               or EventStatus.Cancelled 
+                                                                               or EventStatus.Rejected)
         {
             throw new EventRegistrationInfoCannotBeUpdatedException(id);
         }
@@ -357,7 +361,9 @@ public class Event : AuditableTenantAggregateRoot
             throw new EventRegistrationInfoNotFoundException(id, Id);
         }
         
-        if (registrationInfo.StartAt <= dateTime || GetCurrentStatus(dateTime) == EventStatus.Expired)
+        if (registrationInfo.StartAt <= dateTime || GetCurrentStatus(dateTime) is EventStatus.Expired 
+                                                                               or EventStatus.Cancelled 
+                                                                               or EventStatus.Rejected)
         {
             throw new EventRegistrationInfoCannotBeUpdatedException(id);
         }
@@ -500,7 +506,9 @@ public class Event : AuditableTenantAggregateRoot
     
     private void CheckCanUpdateRoleInfo(DateTime dateTime)
     {
-        if (RegistrationInfos.Any(x => x.StartAt <= dateTime))
+        if (RegistrationInfos.Any(x => x.StartAt <= dateTime) || GetCurrentStatus(dateTime) is EventStatus.Expired 
+                                                                                                            or EventStatus.Cancelled 
+                                                                                                            or EventStatus.Rejected)
         {
             throw new EventRoleCanNotBeUpdatedException(Id);
         }
@@ -508,7 +516,9 @@ public class Event : AuditableTenantAggregateRoot
     
     private void CheckCanUpdateAttendanceInfo(DateTime dateTime)
     {
-        if (StartAt <= dateTime || Status == EventStatus.Approved)
+        if (StartAt <= dateTime || GetCurrentStatus(dateTime) is EventStatus.Expired 
+                                                              or EventStatus.Cancelled 
+                                                              or EventStatus.Rejected)
         {
             throw new EventAttendanceInfoCanNotBeUpdatedException(Id);
         }
@@ -516,7 +526,9 @@ public class Event : AuditableTenantAggregateRoot
     
     private void CheckCanUpdateOrganizationInfo(DateTime dateTime)
     {
-        if (StartAt <= dateTime || Status == EventStatus.Approved)
+        if (StartAt <= dateTime || GetCurrentStatus(dateTime) is EventStatus.Expired 
+                                                              or EventStatus.Cancelled 
+                                                              or EventStatus.Rejected)
         {
             throw new EventOrganizationCanNotBeUpdatedException(Id);
         }
