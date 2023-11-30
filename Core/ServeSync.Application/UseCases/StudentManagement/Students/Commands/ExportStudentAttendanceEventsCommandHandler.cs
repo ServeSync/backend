@@ -54,7 +54,7 @@ public class ExportStudentAttendanceEventsCommandHandler : ICommandHandler<Expor
     
     private int GenerateExcelHeader(ExcelWorksheet worksheet, int beginRow)
     {
-        var header = "ĐIỂM HOẠT ĐỘNG KẾT NỐI CỘNG ĐỒNG CỦA SINH VIÊN";
+        var header = "BẢNG TỔNG HỢP ĐIỂM HOẠT ĐỘNG CỘNG ĐỒNG CỦA SINH VIÊN";
         worksheet.Cells[beginRow, 1].Value = header;
         worksheet.Cells[beginRow, 1, 1, header.Length - 1].Merge = true;
         worksheet.Cells[beginRow, 1].Style.Font.Bold = true;
@@ -77,8 +77,6 @@ public class ExportStudentAttendanceEventsCommandHandler : ICommandHandler<Expor
             { "Mã SV", student.Code },
             { "Họ và tên", student.FullName }, 
             { "Email", student.Email },
-            { "Số điện thoại", student.Phone },
-            { "Số CMND/CCCD", student.CitizenId },
             { "Giới tính", student.Gender ? "Nam" : "Nữ" },
             { "Ngày sinh", student.DateOfBirth },
             { "Lớp sinh hoạt", student.HomeRoom!.Name },
@@ -86,7 +84,7 @@ public class ExportStudentAttendanceEventsCommandHandler : ICommandHandler<Expor
             { "Khoa", student.HomeRoom!.Faculty!.Name}
         };
 
-        row = row + 1;
+        row = row + 2;
         
         foreach (var key in valueByColumnName.Keys)
         {
