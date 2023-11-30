@@ -1,5 +1,6 @@
 ﻿using ServeSync.Domain.EventManagement.EventAggregate;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
+using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Exceptions;
@@ -136,9 +137,9 @@ public class ProofDomainService : IProofDomainService
             throw new EventNotFoundException(eventId);
         }
 
-        if (@event.AttendanceInfos.Any(x => x.EndAt > dateTime))
+        if (@event.GetCurrentStatus(dateTime) != EventStatus.Done)
         {
-            throw new EventIsHappeningException(eventId);
+            throw new EventIsNotDoneException(eventId);
         }
         
         var isStudentAttended = await _eventRepository.IsStudentAttendedToEventAsync(studentId, eventId);

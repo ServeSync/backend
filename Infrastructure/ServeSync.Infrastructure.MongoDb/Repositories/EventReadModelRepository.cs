@@ -124,7 +124,7 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
         var queryable = Collection.AsQueryable()
             .Where(x =>
                 x.Roles.Any(y =>
-                    y.RegisteredStudents.Any(z => z.StudentId == studentId))
+                    y.RegisteredStudents.Any(z => z.StudentId == studentId && z.Status == EventRegisterStatus.Approved))
                 && x.AttendanceInfos.All(y =>
                     y.AttendanceStudents.All(z => z.StudentId != studentId)));
 
