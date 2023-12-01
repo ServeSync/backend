@@ -48,4 +48,12 @@ public class ProofController : ControllerBase
         var proofs = await _mediator.Send(query);
         return Ok(proofs);
     }
+    
+    [HttpPut("{id:guid}/reject")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> RejectProofAsync([FromRoute] Guid id, [FromBody] RejectProofDto dto)
+    {
+        await _mediator.Send(new RejectProofCommand(id, dto.RejectReason));
+        return NoContent();
+    }
 }

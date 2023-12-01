@@ -5,6 +5,7 @@ public class ProofCreateDto
     public string? Description { get; set; }
     public string ImageUrl { get; set; } = null!;
     public DateTime AttendanceAt { get; set; }
+    public string? RejectReason { get; set; }
 }
 
 public class InternalProofCreateDto : ProofCreateDto
