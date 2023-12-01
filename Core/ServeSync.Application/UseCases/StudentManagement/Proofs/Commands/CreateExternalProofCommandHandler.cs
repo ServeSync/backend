@@ -35,6 +35,7 @@ public class CreateExternalProofCommandHandler : ICommandHandler<CreateExternalP
             request.Proof.Description,
             request.Proof.ImageUrl,
             request.Proof.AttendanceAt,
+            request.Proof.RejectReason,
             Guid.Parse(_currentUser.ReferenceId),
             request.Proof.EventName,
             request.Proof.OrganizationName,

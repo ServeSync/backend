@@ -8,6 +8,7 @@ public interface IProofDomainService
         string? description, 
         string imageUrl, 
         DateTime attendanceAt, 
+        string? rejectReason,
         Guid studentId,
         Guid eventId,
         Guid eventRoleId,
@@ -17,6 +18,7 @@ public interface IProofDomainService
         string? description,
         string imageUrl,
         DateTime? attendanceAt,
+        string? rejectReason,
         Guid studentId,
         string eventName,
         string organizationName,
@@ -26,4 +28,6 @@ public interface IProofDomainService
         DateTime endAt,
         double score,
         Guid activityId);
+
+    Proof RejectProof(Proof proof, string reason);
 }

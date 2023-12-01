@@ -38,6 +38,7 @@ public class ProofDomainService : IProofDomainService
         string? description, 
         string imageUrl, 
         DateTime attendanceAt, 
+        string? rejectReason,
         Guid studentId, 
         Guid eventId,
         Guid eventRoleId,
@@ -52,6 +53,7 @@ public class ProofDomainService : IProofDomainService
             description,
             imageUrl,
             attendanceAt,
+            rejectReason,
             studentId,
             eventId,
             eventRoleId);
@@ -63,6 +65,7 @@ public class ProofDomainService : IProofDomainService
         string? description, 
         string imageUrl, 
         DateTime? attendanceAt, 
+        string? rejectReason,
         Guid studentId,
         string eventName, 
         string organizationName,
@@ -89,6 +92,7 @@ public class ProofDomainService : IProofDomainService
             description,
             imageUrl,
             attendanceAt,
+            rejectReason,
             studentId,
             eventName,
             organizationName,
@@ -99,6 +103,13 @@ public class ProofDomainService : IProofDomainService
             score,
             activityId);
         
+        return proof;
+    }
+
+    public Proof RejectProof(Proof proof, string reason)
+    {
+        proof.Reject(reason);
+
         return proof;
     }
 

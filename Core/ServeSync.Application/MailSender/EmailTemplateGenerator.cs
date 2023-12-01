@@ -102,6 +102,16 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
         return template;
     }
 
+    public string GetRejectProof(string studentName, string proofName, string rejectReason)
+    {
+        var template = GetTemplate("RejectProof")
+            .Replace("{{StudentName}}", studentName)
+            .Replace("{{ProofName}}", proofName)
+            .Replace("{{RejectReason}}", rejectReason);
+
+        return template;
+    }
+
     private string GetTemplate(string templateName)
     {
         var pathToFile = GetTemplatePath(templateName);

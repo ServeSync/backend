@@ -24,6 +24,7 @@ public class ExternalProof : Proof
         string? description,
         string imageUrl, 
         DateTime? attendanceAt, 
+        string? rejectReason,
         Guid studentId,
         string eventName,
         string organizationName,
@@ -32,7 +33,7 @@ public class ExternalProof : Proof
         DateTime startAt,
         DateTime endAt,
         double score,
-        Guid activityId) : base(ProofType.External, description, imageUrl, attendanceAt, studentId)
+        Guid activityId) : base(ProofType.External, description, imageUrl, attendanceAt, rejectReason, studentId)
     {
         EventName = eventName;
         OrganizationName = organizationName;
