@@ -79,7 +79,7 @@ public class EmptySpecification<TEntity, TKey> : Specification<TEntity, TKey>
     where TEntity : IEntity<TKey> 
     where TKey : IEquatable<TKey> 
 {
-    public static EmptySpecification<TEntity, TKey> Instance { get; } = new();
+    public static ISpecification<TEntity, TKey> Instance { get; } = new EmptySpecification<TEntity, TKey>();
     
     public override Expression<Func<TEntity, bool>> ToExpression()
     {
@@ -91,7 +91,7 @@ public class EmptyFalseSpecification<TEntity, TKey> : Specification<TEntity, TKe
     where TEntity : IEntity<TKey> 
     where TKey : IEquatable<TKey> 
 {
-    public static EmptyFalseSpecification<TEntity, TKey> Instance { get; } = new();
+    public static ISpecification<TEntity, TKey> Instance { get; } = new EmptyFalseSpecification<TEntity, TKey>();
     
     public override Expression<Func<TEntity, bool>> ToExpression()
     {
