@@ -91,7 +91,7 @@ public class StudentController : ControllerBase
     public async Task<IActionResult> DeleteStudentByIdAsync(Guid id)
     {
         await _mediator.Send(new DeleteStudentCommand(id));
-        return Ok();
+        return NoContent();
     }
     
     [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/approve")]

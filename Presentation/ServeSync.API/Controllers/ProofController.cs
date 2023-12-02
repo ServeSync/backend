@@ -56,4 +56,12 @@ public class ProofController : ControllerBase
         await _mediator.Send(new RejectProofCommand(id, dto.RejectReason));
         return NoContent();
     }
+    
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteProofAsync([FromRoute] Guid id)
+    {
+        await _mediator.Send(new DeleteProofCommand(id));
+        return NoContent();
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using ServeSync.Domain.SeedWorks.Specifications;
 using ServeSync.Domain.StudentManagement.ProofAggregate.Entities;
+using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 
 namespace ServeSync.Domain.StudentManagement.ProofAggregate.Specifications;
 
@@ -29,5 +30,11 @@ public class FilterProofSpecification : PagingAndSortingSpecification<Proof, Gui
                     x.ExternalProof.OrganizationName.ToLower().Contains(_search.ToLower()) ||
                     x.InternalProof.Event.RepresentativeOrganization.Organization.Name.ToLower().Contains(_search.ToLower()) ||
                     x.Student.FullName.ToLower().Contains(_search.ToLower());
+    }
+    
+    public override string BuildSorting()
+    {
+        Sorting = Sorting.Replace("StudentName", "Student.FullName");
+        return Sorting;
     }
 }

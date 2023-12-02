@@ -30,4 +30,6 @@ public interface IProofDomainService
         Guid activityId);
 
     Proof RejectProof(Proof proof, string reason);
+    
+    void Delete(Proof proof);
 }
