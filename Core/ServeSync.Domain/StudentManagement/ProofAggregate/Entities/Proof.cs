@@ -54,6 +54,61 @@ public class Proof : AuditableAggregateRoot
         ProofStatus = ProofStatus.Approved;
         AddDomainEvent(new ProofApprovedDomainEvent(this));
     }
+    
+    internal void Update(string? description, string imageUrl, DateTime? attendanceAt)
+    {
+        if (ProofStatus != ProofStatus.Pending)
+        {
+            throw new ProofNotPendingException(Id);
+        }
+        
+        Description = description;
+        ImageUrl = imageUrl;
+        AttendanceAt = attendanceAt;
+    }
+    
+    internal void UpdateInternalProof(Guid eventId, Guid eventRoleId)
+    {
+        InternalProof!.Update(eventId, eventRoleId);
+    }
+    
+    internal void UpdateExternalProof(
+        string eventName,
+        string organizationName,
+        string address,
+        string role,
+        DateTime startAt,
+        DateTime endAt,
+        double score,
+        Guid activityId)
+    {
+        ExternalProof!.Update(
+            eventName,
+            organizationName,
+            address,
+            role,
+            startAt,
+            endAt,
+            score,
+            activityId);
+    }
+    
+    internal void UpdateSpecialProof(
+        string title,
+        string role,
+        DateTime startAt,
+        DateTime endAt,
+        double score,
+        Guid activityId)
+    {
+        SpecialProof!.Update(
+            title,
+            role,
+            startAt,
+            endAt,
+            score,
+            activityId);
+    }
 
     public Proof()
     {

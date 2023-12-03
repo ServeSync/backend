@@ -47,6 +47,33 @@ public class ProofController : ControllerBase
         var id = await _mediator.Send(new CreateSpecialProofCommand(dto));
         return Ok(SimpleIdResponse<Guid>.Create(id));
     }
+    
+    [HttpPut("{id:guid}/internal")]
+    [HasRole(AppRole.Student)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateInternalProofAsync([FromRoute] Guid id, [FromBody] InternalProofUpdateDto dto)
+    {
+        await _mediator.Send(new UpdateInternalProofCommand(id, dto));
+        return NoContent();
+    }
+    
+    [HttpPut("{id:guid}/external")]
+    [HasRole(AppRole.Student)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateExternalProofAsync([FromRoute] Guid id, [FromBody] ExternalProofUpdateDto dto)
+    {
+        await _mediator.Send(new UpdateExternalProofCommand(id, dto));
+        return NoContent();
+    }
+    
+    [HttpPut("{id:guid}/special")]
+    [HasRole(AppRole.Student)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateSpecialProofAsync([FromRoute] Guid id, [FromBody] SpecialProofUpdateDto dto)
+    {
+        await _mediator.Send(new UpdateSpecialProofCommand(id, dto));
+        return NoContent();
+    }
 
     [HttpGet]
     [ProducesResponseType(typeof(PagedResultDto<ProofDto>), StatusCodes.Status200OK)]

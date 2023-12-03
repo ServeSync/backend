@@ -49,6 +49,31 @@ public class ExternalProof : Proof
         }
     }
     
+    internal void Update(
+        string eventName,
+        string organizationName,
+        string address,
+        string role,
+        DateTime startAt,
+        DateTime endAt,
+        double score,
+        Guid activityId)
+    {
+        EventName = eventName;
+        OrganizationName = organizationName;
+        Address = address;
+        Role = role;
+        StartAt = startAt;
+        EndAt = Guard.Range(endAt, nameof(StartAt), StartAt);
+        Score = score;
+        ActivityId = activityId;
+        
+        if (AttendanceAt < StartAt || AttendanceAt > EndAt)
+        {
+            throw new ResourceInvalidDataException("AttendanceAt must be between StartAt and EndAt");
+        }
+    }
+    
     public ExternalProof()
     {
         

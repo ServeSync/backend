@@ -25,6 +25,12 @@ public class InternalProof : Proof
         EventRoleId = eventRoleId;
     }
     
+    internal void Update(Guid eventId, Guid eventRoleId)
+    {
+        EventId = eventId;
+        EventRoleId = eventRoleId;
+    }
+    
     public InternalProof()
     {
         
