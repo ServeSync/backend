@@ -25,6 +25,7 @@ public class ProofDto : IProjection<Proof, Guid, ProofDto>
     
     public DateTime StartAt { get; set; }
     public DateTime EndAt { get; set; }
+    public DateTime? AttendanceAt { get; set; }
     
     public DateTime Created { get; set; }
     public DateTime? LastModified { get; set; }
@@ -107,6 +108,7 @@ public class ProofDto : IProjection<Proof, Guid, ProofDto>
                 : x.ProofType == ProofType.External 
                     ? x.ExternalProof!.EndAt
                     : x.SpecialProof!.EndAt,
+            AttendanceAt = x.AttendanceAt,
             Created = x.Created,
             LastModified = x.LastModified,
         };
@@ -196,6 +198,7 @@ public class ProofDetailDto : ProofDto, IProjection<Proof, Guid, ProofDetailDto>
                 : x.ProofType == ProofType.External 
                     ? x.ExternalProof!.EndAt
                     : x.SpecialProof!.EndAt,
+            AttendanceAt = x.AttendanceAt,
             Created = x.Created,
             LastModified = x.LastModified,
             Description = x.Description,
