@@ -13,6 +13,6 @@ public class ProofFilterRequestDto : PagingAndSortingRequestDto
     
     public ProofType? Type { get; set; }
 
-    [SortConstraint(Fields = $"{nameof(Proof.Student.FullName)}, {nameof(Proof.Created)}, {nameof(Proof.LastModified)}")]
+    [SortConstraint(Fields = $"StudentName, {nameof(Proof.Created)}, {nameof(Proof.LastModified)}")]
     public override string? Sorting { get; set; } = string.Empty;
 }

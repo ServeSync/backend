@@ -6,6 +6,7 @@ using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Exceptions;
 using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Domain.StudentManagement.ProofAggregate.Entities;
+using ServeSync.Domain.StudentManagement.ProofAggregate.Enums;
 using ServeSync.Domain.StudentManagement.ProofAggregate.Exceptions;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
@@ -111,6 +112,18 @@ public class ProofDomainService : IProofDomainService
         proof.Reject(reason);
 
         return proof;
+    }
+
+    public void Delete(Proof proof)
+    {
+        if (proof.ProofStatus == ProofStatus.Pending)
+        {
+            _proofRepository.Delete(proof);
+        }
+        else
+        {
+            throw new ProofCanNotBeDeletedException(proof.Id);
+        }
     }
 
     private async Task CheckInternalProofExistAsync(Guid eventId, Guid studentId)
