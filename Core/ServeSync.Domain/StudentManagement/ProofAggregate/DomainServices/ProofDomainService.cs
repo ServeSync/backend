@@ -39,7 +39,6 @@ public class ProofDomainService : IProofDomainService
         string? description, 
         string imageUrl, 
         DateTime attendanceAt, 
-        string? rejectReason,
         Guid studentId, 
         Guid eventId,
         Guid eventRoleId,
@@ -54,7 +53,6 @@ public class ProofDomainService : IProofDomainService
             description,
             imageUrl,
             attendanceAt,
-            rejectReason,
             studentId,
             eventId,
             eventRoleId);
@@ -66,7 +64,6 @@ public class ProofDomainService : IProofDomainService
         string? description, 
         string imageUrl, 
         DateTime? attendanceAt, 
-        string? rejectReason,
         Guid studentId,
         string eventName, 
         string organizationName,
@@ -78,22 +75,12 @@ public class ProofDomainService : IProofDomainService
         Guid activityId)
     {
         await CheckStudentExistAsync(studentId);
-        var activity = await _eventActivityRepository.FindByIdAsync(activityId);
-        if (activity == null)
-        {
-            throw new EventActivityNotFoundException(activityId);
-        }
-
-        if (score < activity.MinScore || score > activity.MaxScore)
-        {
-            throw new EventActivityScoreOutOfRangeException(activityId, score);
-        }
+        await CheckValidActivityAsync(activityId, score);
         
         var proof = new ExternalProof(
             description,
             imageUrl,
             attendanceAt,
-            rejectReason,
             studentId,
             eventName,
             organizationName,
@@ -104,6 +91,34 @@ public class ProofDomainService : IProofDomainService
             score,
             activityId);
         
+        return proof;
+    }
+
+    public async Task<Proof> CreateSpecialProofAsync(
+        string? description, 
+        string imageUrl, 
+        Guid studentId, 
+        string title, 
+        string role,
+        DateTime startAt, 
+        DateTime endAt, 
+        double score, 
+        Guid activityId)
+    {
+        await CheckStudentExistAsync(studentId);
+        await CheckValidActivityAsync(activityId, score);
+        
+        var proof = new SpecialProof(
+            description,
+            imageUrl,
+            studentId,
+            title,
+            role,
+            startAt,
+            endAt,
+            score,
+            activityId);
+
         return proof;
     }
 
@@ -170,6 +185,20 @@ public class ProofDomainService : IProofDomainService
         if (isStudentAttended)
         {
             throw new StudentAlreadyAttendanceException(studentId, eventId);
+        }
+    }
+
+    private async Task CheckValidActivityAsync(Guid activityId, double score)
+    {
+        var activity = await _eventActivityRepository.FindByIdAsync(activityId);
+        if (activity == null)
+        {
+            throw new EventActivityNotFoundException(activityId);
+        }
+
+        if (score < activity.MinScore || score > activity.MaxScore)
+        {
+            throw new EventActivityScoreOutOfRangeException(activityId, score);
         }
     }
 }

@@ -7,20 +7,20 @@ using ServeSync.Domain.StudentManagement.ProofAggregate.DomainServices;
 
 namespace ServeSync.Application.UseCases.StudentManagement.Proofs.Commands;
 
-public class CreateExternalProofCommandHandler : ICommandHandler<CreateExternalProofCommand, Guid>
+public class CreateSpecialProofCommandHandler : ICommandHandler<CreateSpecialProofCommand, Guid>
 {
     private readonly ICurrentUser _currentUser;
     private readonly IProofDomainService _proofDomainService;
     private readonly IProofRepository _proofRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<CreateInternalProofCommandHandler> _logger;
+    private readonly ILogger<CreateSpecialProofCommandHandler> _logger;
     
-    public CreateExternalProofCommandHandler(
+    public CreateSpecialProofCommandHandler(
         ICurrentUser currentUser,
         IProofDomainService proofDomainService,
         IProofRepository proofRepository, 
         IUnitOfWork unitOfWork, 
-        ILogger<CreateInternalProofCommandHandler> logger)
+        ILogger<CreateSpecialProofCommandHandler> logger)
     {
         _currentUser = currentUser;
         _proofDomainService = proofDomainService;
@@ -29,16 +29,13 @@ public class CreateExternalProofCommandHandler : ICommandHandler<CreateExternalP
         _logger = logger;
     }
     
-    public async Task<Guid> Handle(CreateExternalProofCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateSpecialProofCommand request, CancellationToken cancellationToken)
     {
-        var proof = await _proofDomainService.CreateExternalProofAsync(
+        var proof = await _proofDomainService.CreateSpecialProofAsync(
             request.Proof.Description,
             request.Proof.ImageUrl,
-            request.Proof.AttendanceAt,
             Guid.Parse(_currentUser.ReferenceId),
-            request.Proof.EventName,
-            request.Proof.OrganizationName,
-            request.Proof.Address,
+            request.Proof.Title,
             request.Proof.Role,
             request.Proof.StartAt,
             request.Proof.EndAt,

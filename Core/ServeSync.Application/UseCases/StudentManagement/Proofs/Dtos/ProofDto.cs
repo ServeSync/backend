@@ -14,9 +14,9 @@ public class ProofDto : IProjection<Proof, Guid, ProofDto>
     public ProofType ProofType { get; set; }
     
     public string EventName { get; set; } = null!;
-    public string OrganizationName { get; set; } = null!;
+    public string? OrganizationName { get; set; }
     public string Role { get; set; } = null!;
-    public string Address { get; set; } = null!;
+    public string? Address { get; set; }
     public string ImageUrl { get; set; } = null!;
     public double Score { get; set; }
     
@@ -38,20 +38,30 @@ public class ProofDto : IProjection<Proof, Guid, ProofDto>
             ProofType = x.ProofType,
             EventName = x.ProofType == ProofType.Internal 
                 ? x.InternalProof!.Event!.Name 
-                : x.ExternalProof!.EventName,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.EventName
+                    : x.SpecialProof!.Title,
             OrganizationName = x.ProofType == ProofType.Internal 
                 ? x.InternalProof!.Event!.RepresentativeOrganization!.Organization!.Name 
-                : x.ExternalProof!.OrganizationName,
+                : x.ProofType == ProofType.External
+                    ? x.ExternalProof!.OrganizationName
+                    : null,
             Role = x.ProofType == ProofType.Internal
                 ? x.InternalProof!.EventRole!.Name
-                : x.ExternalProof!.Role,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.Role
+                    : x.SpecialProof!.Role,
             Address = x.ProofType == ProofType.Internal
                 ? x.InternalProof!.Event!.Address.FullAddress
-                : x.ExternalProof!.Address,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.Address
+                    : null,
             ImageUrl = x.ImageUrl,
             Score = x.ProofType == ProofType.Internal
                 ? x.InternalProof!.EventRole!.Score
-                : x.ExternalProof!.Score,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.Score
+                    : x.SpecialProof!.Score,
             Student = new SimpleStudentDto()
             {
                 Id = x.Student!.Id,
@@ -63,26 +73,40 @@ public class ProofDto : IProjection<Proof, Guid, ProofDto>
             {
                 Id = x.ProofType == ProofType.Internal
                     ? x.InternalProof!.Event!.ActivityId
-                    : x.ExternalProof!.ActivityId,
+                    : x.ProofType == ProofType.External 
+                        ? x.ExternalProof!.ActivityId
+                        : x.SpecialProof!.ActivityId,
                 Name = x.ProofType == ProofType.Internal
                     ? x.InternalProof!.Event!.Activity!.Name
-                    : x.ExternalProof!.Activity!.Name,
+                    : x.ProofType == ProofType.External 
+                        ? x.ExternalProof!.Activity!.Name
+                        : x.SpecialProof!.Activity!.Name,
                 MinScore = x.ProofType == ProofType.Internal
                     ? x.InternalProof!.Event!.Activity!.MinScore
-                    : x.ExternalProof!.Activity!.MinScore,
+                    : x.ProofType == ProofType.External
+                        ? x.ExternalProof!.Activity!.MinScore
+                        : x.SpecialProof!.Activity!.MinScore,
                 MaxScore = x.ProofType == ProofType.Internal
                     ? x.InternalProof!.Event!.Activity!.MaxScore
-                    : x.ExternalProof!.Activity!.MaxScore,
+                    : x.ProofType == ProofType.External 
+                        ? x.ExternalProof!.Activity!.MaxScore
+                        : x.SpecialProof!.Activity!.MaxScore,
                 EventCategoryId = x.ProofType == ProofType.Internal
                     ? x.InternalProof!.Event!.Activity!.EventCategoryId
-                    : x.ExternalProof!.Activity!.EventCategoryId,
+                    : x.ProofType == ProofType.External
+                        ? x.ExternalProof!.Activity!.EventCategoryId
+                        : x.SpecialProof!.Activity!.EventCategoryId,
             },
             StartAt = x.ProofType == ProofType.Internal
                 ? x.InternalProof!.Event!.StartAt
-                : x.ExternalProof!.StartAt,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.StartAt
+                    : x.SpecialProof!.StartAt,
             EndAt = x.ProofType == ProofType.Internal
                 ? x.InternalProof!.Event!.EndAt
-                : x.ExternalProof!.EndAt,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.EndAt
+                    : x.SpecialProof!.EndAt,
             Created = x.Created,
             LastModified = x.LastModified,
         };
@@ -103,20 +127,30 @@ public class ProofDetailDto : ProofDto, IProjection<Proof, Guid, ProofDetailDto>
             ProofType = x.ProofType,
             EventName = x.ProofType == ProofType.Internal 
                 ? x.InternalProof!.Event!.Name 
-                : x.ExternalProof!.EventName,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.EventName
+                    : x.SpecialProof!.Title,
             OrganizationName = x.ProofType == ProofType.Internal 
                 ? x.InternalProof!.Event!.RepresentativeOrganization!.Organization!.Name 
-                : x.ExternalProof!.OrganizationName,
+                : x.ProofType == ProofType.External
+                    ? x.ExternalProof!.OrganizationName
+                    : null,
             Role = x.ProofType == ProofType.Internal
                 ? x.InternalProof!.EventRole!.Name
-                : x.ExternalProof!.Role,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.Role
+                    : x.SpecialProof!.Role,
             Address = x.ProofType == ProofType.Internal
                 ? x.InternalProof!.Event!.Address.FullAddress
-                : x.ExternalProof!.Address,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.Address
+                    : null,
             ImageUrl = x.ImageUrl,
             Score = x.ProofType == ProofType.Internal
                 ? x.InternalProof!.EventRole!.Score
-                : x.ExternalProof!.Score,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.Score
+                    : x.SpecialProof!.Score,
             Student = new SimpleStudentDto()
             {
                 Id = x.Student!.Id,
@@ -128,26 +162,40 @@ public class ProofDetailDto : ProofDto, IProjection<Proof, Guid, ProofDetailDto>
             {
                 Id = x.ProofType == ProofType.Internal
                     ? x.InternalProof!.Event!.ActivityId
-                    : x.ExternalProof!.ActivityId,
+                    : x.ProofType == ProofType.External 
+                        ? x.ExternalProof!.ActivityId
+                        : x.SpecialProof!.ActivityId,
                 Name = x.ProofType == ProofType.Internal
                     ? x.InternalProof!.Event!.Activity!.Name
-                    : x.ExternalProof!.Activity!.Name,
+                    : x.ProofType == ProofType.External 
+                        ? x.ExternalProof!.Activity!.Name
+                        : x.SpecialProof!.Activity!.Name,
                 MinScore = x.ProofType == ProofType.Internal
                     ? x.InternalProof!.Event!.Activity!.MinScore
-                    : x.ExternalProof!.Activity!.MinScore,
+                    : x.ProofType == ProofType.External
+                        ? x.ExternalProof!.Activity!.MinScore
+                        : x.SpecialProof!.Activity!.MinScore,
                 MaxScore = x.ProofType == ProofType.Internal
                     ? x.InternalProof!.Event!.Activity!.MaxScore
-                    : x.ExternalProof!.Activity!.MaxScore,
+                    : x.ProofType == ProofType.External 
+                        ? x.ExternalProof!.Activity!.MaxScore
+                        : x.SpecialProof!.Activity!.MaxScore,
                 EventCategoryId = x.ProofType == ProofType.Internal
                     ? x.InternalProof!.Event!.Activity!.EventCategoryId
-                    : x.ExternalProof!.Activity!.EventCategoryId,
+                    : x.ProofType == ProofType.External
+                        ? x.ExternalProof!.Activity!.EventCategoryId
+                        : x.SpecialProof!.Activity!.EventCategoryId,
             },
             StartAt = x.ProofType == ProofType.Internal
                 ? x.InternalProof!.Event!.StartAt
-                : x.ExternalProof!.StartAt,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.StartAt
+                    : x.SpecialProof!.StartAt,
             EndAt = x.ProofType == ProofType.Internal
                 ? x.InternalProof!.Event!.EndAt
-                : x.ExternalProof!.EndAt,
+                : x.ProofType == ProofType.External 
+                    ? x.ExternalProof!.EndAt
+                    : x.SpecialProof!.EndAt,
             Created = x.Created,
             LastModified = x.LastModified,
             Description = x.Description,

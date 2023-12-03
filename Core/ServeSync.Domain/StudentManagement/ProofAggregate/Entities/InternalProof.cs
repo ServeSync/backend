@@ -17,10 +17,9 @@ public class InternalProof : Proof
         string? description, 
         string imageUrl, 
         DateTime attendanceAt,
-        string? rejectReason,
         Guid studentId,
         Guid eventId,
-        Guid eventRoleId) : base(ProofType.Internal, description, imageUrl, attendanceAt, rejectReason, studentId)
+        Guid eventRoleId) : base(ProofType.Internal, description, imageUrl, attendanceAt, studentId)
     {
         EventId = eventId;
         EventRoleId = eventRoleId;

@@ -5,11 +5,9 @@ using ServeSync.Domain.StudentManagement.ProofAggregate.Enums;
 
 namespace ServeSync.Domain.StudentManagement.ProofAggregate.Entities;
 
-public class ExternalProof : Proof
+public class SpecialProof : Proof
 {
-    public string EventName { get; private set; }
-    public string Address { get; private set; }
-    public string OrganizationName { get; private set; }
+    public string Title { get; private set; }
     public string Role { get; private set; }
     public DateTime StartAt { get; private set; }
     public DateTime EndAt { get; private set; }
@@ -20,36 +18,26 @@ public class ExternalProof : Proof
     
     public Proof? Proof { get; private set; }
     
-    public ExternalProof(
+    public SpecialProof(
         string? description,
         string imageUrl, 
-        DateTime? attendanceAt, 
         Guid studentId,
-        string eventName,
-        string organizationName,
-        string address,
+        string title,
         string role,
         DateTime startAt,
         DateTime endAt,
         double score,
-        Guid activityId) : base(ProofType.External, description, imageUrl, attendanceAt, studentId)
+        Guid activityId) : base(ProofType.Special, description, imageUrl, null, studentId)
     {
-        EventName = eventName;
-        OrganizationName = organizationName;
-        Address = address;
+        Title = title;
         Role = role;
         StartAt = startAt;
         EndAt = Guard.Range(endAt, nameof(StartAt), StartAt);
         Score = score;
         ActivityId = activityId;
-        
-        if (AttendanceAt < StartAt || AttendanceAt > EndAt)
-        {
-            throw new ResourceInvalidDataException("AttendanceAt must be between StartAt and EndAt");
-        }
     }
     
-    public ExternalProof()
+    public SpecialProof()
     {
         
     }

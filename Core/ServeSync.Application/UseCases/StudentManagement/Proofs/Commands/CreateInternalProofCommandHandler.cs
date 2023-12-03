@@ -35,7 +35,6 @@ public class CreateInternalProofCommandHandler : ICommandHandler<CreateInternalP
             request.Proof.Description,
             request.Proof.ImageUrl,
             request.Proof.AttendanceAt,
-            request.Proof.RejectReason,
             Guid.Parse(_currentUser.ReferenceId),
             request.Proof.EventId,
             request.Proof.EventRoleId,

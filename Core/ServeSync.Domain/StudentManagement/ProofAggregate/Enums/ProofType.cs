@@ -3,5 +3,6 @@
 public enum ProofType
 {
     Internal,
-    External
+    External,
+    Special
 }

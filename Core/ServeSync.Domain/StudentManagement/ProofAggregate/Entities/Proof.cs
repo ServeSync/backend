@@ -20,14 +20,14 @@ public class Proof : AuditableAggregateRoot
     
     public InternalProof? InternalProof { get; private set; }
     public ExternalProof? ExternalProof { get; private set; }
+    public SpecialProof? SpecialProof { get; private set; }
     
-    public Proof(ProofType proofType, string? description, string imageUrl, DateTime? attendanceAt, string? rejectReason, Guid studentId)
+    public Proof(ProofType proofType, string? description, string imageUrl, DateTime? attendanceAt, Guid studentId)
     {
         ProofType = proofType;
         Description = description;
         ImageUrl = imageUrl;
         AttendanceAt = attendanceAt;
-        RejectReason = rejectReason;
         StudentId = studentId;
         
         ProofStatus = ProofStatus.Pending;

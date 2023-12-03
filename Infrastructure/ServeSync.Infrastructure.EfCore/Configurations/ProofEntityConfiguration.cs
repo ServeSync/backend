@@ -24,7 +24,7 @@ public class ProofEntityConfiguration : IEntityTypeConfiguration<Proof>
                .IsRequired();
 
         builder.Property(x => x.AttendanceAt)
-               .IsRequired();
+               .IsRequired(false);
 
         builder.HasOne(x => x.Student)
                .WithMany()

@@ -38,6 +38,15 @@ public class ProofController : ControllerBase
         var id = await _mediator.Send(new CreateExternalProofCommand(dto));
         return Ok(SimpleIdResponse<Guid>.Create(id));
     }
+    
+    [HttpPost("special")]
+    [HasRole(AppRole.Student)]
+    [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateSpecialProofAsync(SpecialProofCreateDto dto)
+    {
+        var id = await _mediator.Send(new CreateSpecialProofCommand(dto));
+        return Ok(SimpleIdResponse<Guid>.Create(id));
+    }
 
     [HttpGet]
     [ProducesResponseType(typeof(PagedResultDto<ProofDto>), StatusCodes.Status200OK)]
