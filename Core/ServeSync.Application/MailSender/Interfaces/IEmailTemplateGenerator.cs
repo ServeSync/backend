@@ -20,5 +20,7 @@ public interface IEmailTemplateGenerator
 
     string GetOrganizationInvitation(string name, string approveUrlCallBack, string rejectUrlCallBack);
     
+    string GetOrganizationContactInvitation(string name, string organizationName, string approveUrlCallBack, string rejectUrlCallBack);
+    
     string GetRejectProof(string studentName, string proofName, string rejectReason);
 }
