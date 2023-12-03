@@ -66,6 +66,14 @@ public class ProofController : ControllerBase
         return Ok(proof);
     }
     
+    [HttpPut("{id:guid}/approve")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ApproveProofAsync([FromRoute] Guid id)
+    {
+        await _mediator.Send(new ApproveProofCommand(id));
+        return NoContent();
+    }
+    
     [HttpPut("{id:guid}/reject")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RejectProofAsync([FromRoute] Guid id, [FromBody] RejectProofDto dto)

@@ -37,11 +37,22 @@ public class Proof : AuditableAggregateRoot
     {
         if (ProofStatus != ProofStatus.Pending)
         {
-            throw new ProofCanNotBeRejectedException(Id);
+            throw new ProofNotPendingException(Id);
         }
         ProofStatus = ProofStatus.Rejected;
         RejectReason = reason;
         AddDomainEvent(new ProofRejectedDomainEvent(this, reason));
+    }
+    
+    internal void Approve()
+    {
+        if (ProofStatus != ProofStatus.Pending)
+        {
+            throw new ProofNotPendingException(Id);
+        }
+        
+        ProofStatus = ProofStatus.Approved;
+        AddDomainEvent(new ProofApprovedDomainEvent(this));
     }
 
     public Proof()

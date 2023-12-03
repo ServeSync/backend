@@ -129,6 +129,13 @@ public class ProofDomainService : IProofDomainService
         return proof;
     }
 
+    public Proof ApproveProof(Proof proof)
+    {
+        proof.Approve();
+
+        return proof;
+    }
+
     public void Delete(Proof proof)
     {
         if (proof.ProofStatus == ProofStatus.Pending)

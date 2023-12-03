@@ -40,5 +40,7 @@ public interface IProofDomainService
 
     Proof RejectProof(Proof proof, string reason);
     
+    Proof ApproveProof(Proof proof);
+    
     void Delete(Proof proof);
 }
