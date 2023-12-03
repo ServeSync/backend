@@ -144,7 +144,7 @@ public class ProofDomainService : IProofDomainService
         }
         else
         {
-            throw new ProofCanNotBeDeletedException(proof.Id);
+            throw new ProofNotPendingException(proof.Id);
         }
     }
 
