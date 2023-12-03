@@ -24,13 +24,13 @@ public class GetAllProofsQueryHandler : IQueryHandler<GetAllProofsQuery, PagedRe
     {
         var specification = GetQuerySpecification(request);
         
-        var proofs = await _proofRepository.GetPagedListAsync(specification);
+        var proofs = await _proofRepository.GetPagedListAsync(specification, new ProofDto());
         var total = await _proofRepository.GetCountAsync(specification);
         
         return new PagedResultDto<ProofDto>(
             total,
             request.Size,
-            _mapper.Map<IEnumerable<ProofDto>>(proofs));
+            proofs);
     }
     
     private IPagingAndSortingSpecification<Proof, Guid> GetQuerySpecification(GetAllProofsQuery request)
