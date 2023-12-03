@@ -10,6 +10,9 @@ public class ProofRepository : EfCoreRepository<Proof>, IProofRepository
 {
     public ProofRepository(AppDbContext dbContext) : base(dbContext)
     {
+        AddInclude(x => x.InternalProof!);
+        AddInclude(x => x.ExternalProof!);
+        AddInclude(x => x.SpecialProof!);
     }
 
     public Task<bool> IsInternalProofExistAsync(Guid eventId, Guid studentId)

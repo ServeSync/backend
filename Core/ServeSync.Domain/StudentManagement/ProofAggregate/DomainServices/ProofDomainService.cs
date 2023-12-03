@@ -122,6 +122,88 @@ public class ProofDomainService : IProofDomainService
         return proof;
     }
 
+    public async Task<Proof> UpdateInternalProofAsync(
+        Proof proof,
+        string? description, 
+        string imageUrl, 
+        DateTime attendanceAt, 
+        Guid eventId, 
+        Guid eventRoleId,
+        DateTime dateTime)
+    {
+        if (proof.InternalProof!.EventId != eventId)
+        {
+            await CheckRegisteredEventAsync(eventId, proof.StudentId, eventRoleId);
+            await CheckIsAttendedToEventAsync(eventId, proof.StudentId, dateTime);
+        }
+
+        proof.Update(description, imageUrl, attendanceAt);
+        proof.UpdateInternalProof(eventId, eventRoleId);
+        
+        return proof;
+    }
+
+    public async Task<Proof> UpdateExternalProofAsync(
+        Proof proof,
+        string? description, 
+        string imageUrl, 
+        DateTime? attendanceAt, 
+        string eventName,
+        string organizationName, 
+        string address, 
+        string role, 
+        DateTime startAt, 
+        DateTime endAt, 
+        double score,
+        Guid activityId)
+    {
+        if (proof.ExternalProof!.ActivityId != activityId || proof.ExternalProof!.Score != score)
+        {
+            await CheckValidActivityAsync(activityId, score);
+        }
+        
+        proof.Update(description, imageUrl, attendanceAt);
+        proof.UpdateExternalProof(
+            eventName,
+            organizationName,
+            address,
+            role,
+            startAt,
+            endAt,
+            score,
+            activityId);
+        
+        return proof;
+    }
+
+    public async Task<Proof> UpdateSpecialProofAsync(
+        Proof proof, 
+        string? description, 
+        string imageUrl, 
+        string title, 
+        string role,
+        DateTime startAt, 
+        DateTime endAt, 
+        double score, 
+        Guid activityId)
+    {
+        if (proof.SpecialProof!.ActivityId != activityId || proof.ExternalProof!.Score != score)
+        {
+            await CheckValidActivityAsync(activityId, score);
+        }
+        
+        proof.Update(description, imageUrl, null);
+        proof.UpdateSpecialProof(
+            title,
+            role,
+            startAt,
+            endAt,
+            score,
+            activityId);
+        
+        return proof;
+    }
+
     public Proof RejectProof(Proof proof, string reason)
     {
         proof.Reject(reason);

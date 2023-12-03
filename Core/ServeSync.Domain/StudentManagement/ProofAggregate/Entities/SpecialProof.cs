@@ -37,6 +37,22 @@ public class SpecialProof : Proof
         ActivityId = activityId;
     }
     
+    internal void Update(
+        string title,
+        string role,
+        DateTime startAt,
+        DateTime endAt,
+        double score,
+        Guid activityId)
+    {
+        Title = title;
+        Role = role;
+        StartAt = startAt;
+        EndAt = Guard.Range(endAt, nameof(StartAt), StartAt);
+        Score = score;
+        ActivityId = activityId;
+    }
+    
     public SpecialProof()
     {
         
