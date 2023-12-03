@@ -40,9 +40,9 @@ public interface IEventDomainService
     
     Event UpdateAttendanceInfo(Event @event, Guid id, DateTime startAt, DateTime endAt, DateTime dateTime);
 
-    Event AddRole(Event @event, string name, string description, bool isNeedApprove, double score, int quantity, DateTime dateTime);
+    Task<Event> AddRoleAsync(Event @event, string name, string description, bool isNeedApprove, double score, int quantity, DateTime dateTime);
     
-    Event UpdateRole(Event @event, Guid id, string name, string description, bool isNeedApprove, double score, int quantity, DateTime dateTime);
+    Task<Event> UpdateRoleAsync(Event @event, Guid id, string name, string description, bool isNeedApprove, double score, int quantity, DateTime dateTime);
 
     Event RemoveRole(Event @event, Guid id, DateTime dateTime);
 

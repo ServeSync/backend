@@ -104,12 +104,12 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
 
         foreach (var role in updateRoles)
         {
-            _eventDomainService.UpdateRole(@event, role.Id!.Value, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
+            _eventDomainService.UpdateRoleAsync(@event, role.Id!.Value, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
         }
         
         foreach (var role in newRoles)
         {
-            _eventDomainService.AddRole(@event, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
+            _eventDomainService.AddRoleAsync(@event, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
         }
     }
 

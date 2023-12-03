@@ -218,7 +218,7 @@ public class EventManagementDataSeeder : IDataSeeder
                 for (var j = 0; j < 3; j++)
                 {
                     faker = new Faker();
-                    _eventDomainService.AddRole(
+                    _eventDomainService.AddRoleAsync(
                         @event,
                         faker.Name.JobTitle(),
                         faker.Lorem.Sentence(),
