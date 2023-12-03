@@ -92,13 +92,23 @@ public class ProofController : ControllerBase
         var proof = await _mediator.Send(new GetProofByIdQuery(id));
         return Ok(proof);
     }
-    
+
     [HttpPut("{id:guid}/approve")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ApproveProofAsync([FromRoute] Guid id)
     {
         await _mediator.Send(new ApproveProofCommand(id));
         return NoContent();
+    }
+    
+    [HttpGet("{studentId:guid}/student")]
+    [ProducesResponseType(typeof(PagedResultDto<ProofDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllProofsOfStudentAsync([FromRoute] Guid studentId, [FromQuery] ProofFilterRequestDto dto)
+    {
+        var query = new GetAllProofsOfStudentQuery(dto.Search, studentId, dto.Status, dto.Type, dto.Page, dto.Size, dto.Sorting);
+        var proofs = await _mediator.Send(query);
+        
+        return Ok(proofs);
     }
     
     [HttpPut("{id:guid}/reject")]
