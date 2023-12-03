@@ -104,7 +104,7 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
 
     public string GetOrganizationContactInvitation(string name, string organizationName, string approveUrlCallBack, string rejectUrlCallBack)
     {
-        var template = GetTemplate("OrganizationInvitation")
+        var template = GetTemplate("OrganizationContactInvitation")
             .Replace("{{FullName}}", name)
             .Replace("{{OrganizationName}}", organizationName)
             .Replace("{{ApproveUrlCallBack}}", approveUrlCallBack)

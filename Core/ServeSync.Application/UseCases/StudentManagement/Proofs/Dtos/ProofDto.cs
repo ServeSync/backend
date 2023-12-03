@@ -117,6 +117,7 @@ public class ProofDto : IProjection<Proof, Guid, ProofDto>
 
 public class ProofDetailDto : ProofDto, IProjection<Proof, Guid, ProofDetailDto>
 {
+    public Guid? EventId { get; set; }
     public string? Description { get; set; }
     public string? RejectReason { get; set; }
     
@@ -198,6 +199,9 @@ public class ProofDetailDto : ProofDto, IProjection<Proof, Guid, ProofDetailDto>
                 : x.ProofType == ProofType.External 
                     ? x.ExternalProof!.EndAt
                     : x.SpecialProof!.EndAt,
+            EventId = x.ProofType == ProofType.Internal
+                ? x.InternalProof!.EventId
+                : null,
             AttendanceAt = x.AttendanceAt,
             Created = x.Created,
             LastModified = x.LastModified,
