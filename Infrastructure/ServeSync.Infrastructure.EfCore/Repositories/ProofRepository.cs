@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.ObjectModel;
+using System.Linq.Dynamic.Core;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using ServeSync.Domain.StudentManagement.ProofAggregate;
 using ServeSync.Domain.StudentManagement.ProofAggregate.Entities;
 using ServeSync.Domain.StudentManagement.ProofAggregate.Enums;
@@ -22,4 +25,5 @@ public class ProofRepository : EfCoreRepository<Proof>, IProofRepository
                            x.StudentId == studentId && 
                            x.ProofStatus == ProofStatus.Approved);
     }
+    
 }

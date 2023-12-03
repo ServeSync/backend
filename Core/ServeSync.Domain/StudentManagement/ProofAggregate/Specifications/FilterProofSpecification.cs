@@ -23,13 +23,13 @@ public class FilterProofSpecification : PagingAndSortingSpecification<Proof, Gui
     public override Expression<Func<Proof, bool>> ToExpression()
     {
         return x => string.IsNullOrWhiteSpace(_search) ||
-                    x.ExternalProof.EventName.ToLower().Contains(_search.ToLower()) ||
-                    x.InternalProof.Event.Name.ToLower().Contains(_search.ToLower()) ||
+                    x.ExternalProof!.EventName.ToLower().Contains(_search.ToLower()) ||
+                    x.InternalProof!.Event.Name.ToLower().Contains(_search.ToLower()) ||
                     x.ExternalProof.Address.ToLower().Contains(_search.ToLower()) ||
                     x.InternalProof.Event.Address.FullAddress.ToLower().Contains(_search.ToLower()) ||
                     x.ExternalProof.OrganizationName.ToLower().Contains(_search.ToLower()) ||
-                    x.InternalProof.Event.RepresentativeOrganization.Organization.Name.ToLower().Contains(_search.ToLower()) ||
-                    x.Student.FullName.ToLower().Contains(_search.ToLower());
+                    x.InternalProof!.Event.RepresentativeOrganization.Organization.Name.ToLower().Contains(_search.ToLower()) ||
+                    x.Student!.FullName.ToLower().Contains(_search.ToLower());
     }
     
     public override string BuildSorting()
