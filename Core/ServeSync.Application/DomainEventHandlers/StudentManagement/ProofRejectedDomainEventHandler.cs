@@ -5,6 +5,7 @@ using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Domain.SeedWorks.Events;
 using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Domain.StudentManagement.ProofAggregate.DomainEvents;
+using ServeSync.Domain.StudentManagement.ProofAggregate.Enums;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
 
@@ -34,7 +35,14 @@ public class ProofRejectedDomainEventHandler : IDomainEventHandler<ProofRejected
     
     public async Task Handle(ProofRejectedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var eventName = notification.Proof.ExternalProof?.EventName ?? notification.Proof.InternalProof!.Event!.Name;
+        var eventName = notification.Proof.ProofType switch
+        {
+            ProofType.Internal => notification.Proof.InternalProof?.Event?.Name,
+            ProofType.External => notification.Proof.ExternalProof?.EventName,
+            ProofType.Special => notification.Proof.SpecialProof?.Title,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
         var student = await _studentRepository.FindByIdAsync(notification.Proof.StudentId);
         if (student == null)
         {
