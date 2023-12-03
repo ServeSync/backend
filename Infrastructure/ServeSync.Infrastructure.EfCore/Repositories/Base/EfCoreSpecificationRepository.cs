@@ -36,6 +36,11 @@ public class EfCoreSpecificationRepository<TEntity, TKey> : ISpecificationReposi
         return await GetQueryable(specification).ToListAsync();
     }
 
+    public async Task<IList<TOut>> GetPagedListAsync<TOut>(IPagingAndSortingSpecification<TEntity, TKey> specification, IProjection<TEntity, TKey, TOut> projection)
+    {
+        return await GetQueryable(specification).Select(projection.GetProject()).ToListAsync();
+    }
+
     public Task<TEntity?> FindAsync(ISpecification<TEntity, TKey> specification)
     {
         return GetQueryable(specification).FirstOrDefaultAsync();

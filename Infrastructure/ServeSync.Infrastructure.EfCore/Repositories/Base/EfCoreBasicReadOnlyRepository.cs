@@ -48,6 +48,15 @@ public class EfCoreBasicReadOnlyRepository<TEntity, TKey> : EfCoreSpecificationR
         return queryable.FirstOrDefaultAsync(x => id.Equals(x.Id));
     }
 
+    public Task<TOut?> FindByIdAsync<TOut>(object id, IProjection<TEntity, TKey, TOut> projection, string? includeProps = null, bool tracking = true)
+    {
+        var queryable = new AppQueryableBuilder<TEntity, TKey>(GetQueryable(tracking))
+            .IncludeProp(includeProps)
+            .Build();
+
+        return queryable.Where(x => id.Equals(x.Id)).Select(projection.GetProject()).FirstOrDefaultAsync();
+    }
+
     public Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> expression, bool tracking = true,
         string? includeProps = null)
     {

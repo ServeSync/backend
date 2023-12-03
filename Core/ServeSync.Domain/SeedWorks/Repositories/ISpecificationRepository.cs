@@ -12,6 +12,8 @@ public interface ISpecificationRepository<TEntity, TKey>
     Task<IList<TEntity>> GetPagedListAsync(int skip, int take, ISpecification<TEntity, TKey> specification, string? sorting = null);
 
     Task<IList<TEntity>> GetPagedListAsync(IPagingAndSortingSpecification<TEntity, TKey> specification);
+    
+    Task<IList<TOut>> GetPagedListAsync<TOut>(IPagingAndSortingSpecification<TEntity, TKey> specification, IProjection<TEntity, TKey, TOut> projection);
 
     Task<TEntity?> FindAsync(ISpecification<TEntity, TKey> specification);
 
