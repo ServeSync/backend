@@ -27,7 +27,7 @@ public class ProofEntityConfiguration : IEntityTypeConfiguration<Proof>
                .IsRequired(false);
 
         builder.HasOne(x => x.Student)
-               .WithMany()
+               .WithMany(x => x.Proofs)
                .HasForeignKey(x => x.StudentId);
     }
 }

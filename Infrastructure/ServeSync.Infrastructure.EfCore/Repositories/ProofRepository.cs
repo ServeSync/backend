@@ -25,5 +25,14 @@ public class ProofRepository : EfCoreRepository<Proof>, IProofRepository
                            x.StudentId == studentId && 
                            x.ProofStatus == ProofStatus.Approved);
     }
-    
+
+    public Task<double> GetSumScoreOfStudentAsync(Guid studentId)
+    {
+        return DbSet.Where(x => x.StudentId == studentId && x.ProofStatus == ProofStatus.Approved)
+            .SumAsync(x => x.ProofType == ProofType.Internal 
+                ? x.InternalProof!.EventRole!.Score
+                : x.ProofType == ProofType.External
+                    ? x.ExternalProof!.Score
+                    : x.SpecialProof!.Score);
+    }
 }

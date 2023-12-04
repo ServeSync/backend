@@ -1,6 +1,7 @@
 ﻿using ServeSync.Domain.SeedWorks.Models;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate.Entities;
 using ServeSync.Domain.StudentManagement.HomeRoomAggregate.Entities;
+using ServeSync.Domain.StudentManagement.ProofAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Exceptions;
@@ -29,6 +30,7 @@ public class Student : AuditableAggregateRoot
     public string IdentityId { get; private set; } = null!;
     
     public List<StudentEventRegister> EventRegisters { get; private set; }
+    public List<Proof> Proofs { get; private set; }
 
     internal Student(
         string code,
