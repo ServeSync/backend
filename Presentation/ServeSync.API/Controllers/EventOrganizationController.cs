@@ -24,7 +24,7 @@ public class EventOrganizationController : Controller
     }
 
     [HttpGet]
-    [HasPermission(Permissions.EventOrganizations.Management)]
+    [HasPermission(Permissions.EventOrganizations.View)]
     [ProducesResponseType(typeof(PagedResultDto<EventOrganizationDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventOrganizationsAsync([FromQuery] EventOrganizationFilterRequestDto dto)
     {
