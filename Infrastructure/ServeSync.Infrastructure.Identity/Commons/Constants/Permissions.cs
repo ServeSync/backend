@@ -1,6 +1,4 @@
-﻿using ServeSync.Domain.EventManagement.EventAggregate.Entities;
-using ServeSync.Domain.EventManagement.EventCollaborationRequestAggregate.Entities;
-using ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Entities;
+﻿using ServeSync.Infrastructure.Identity.Models.PermissionAggregate.Entities;
 
 namespace ServeSync.Infrastructure.Identity.Commons.Constants;
 
@@ -102,7 +100,7 @@ public static class Permissions
     {
         public const string Group = $"{Default}.Students";
 
-        public const string Management = $"{Default}.Management";
+        public const string Management = $"{Group}.Management";
         
         public const string View = $"{Group}.View";
         public const string Create = $"{Group}.Create";
@@ -120,7 +118,7 @@ public static class Permissions
     {
         public const string Group = $"{Default}.Events";
         
-        public const string Management = $"{Default}.Management";
+        public const string Management = $"{Group}.Management";
         
         public const string View = $"{Group}.View";
         public const string Create = $"{Group}.Create";
@@ -139,7 +137,7 @@ public static class Permissions
     {
         public const string Group = $"{Default}.EventCollaborationRequests";
         
-        public const string Management = $"{Default}.Management";
+        public const string Management = $"{Group}.Management";
         public const string View = $"{Group}.View";
         public const string Approve = $"{Group}.Approve";
         public const string Reject = $"{Group}.Reject";
@@ -149,7 +147,7 @@ public static class Permissions
     {
         public const string Group = $"{Default}.EventOrganizations";
         
-        public const string Management = $"{Default}.Management";
+        public const string Management = $"{Group}.Management";
         
         public const string View = $"{Group}.View";
         public const string Create = $"{Group}.Create";
@@ -166,7 +164,7 @@ public static class Permissions
     {
         public const string Group = $"{Default}.Proofs";
         
-        public const string Management = $"{Default}.Management";
+        public const string Management = $"{Group}.Management";
         
         public const string View = $"{Group}.View";
         public const string Create = $"{Group}.Create";
