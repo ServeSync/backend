@@ -202,6 +202,7 @@ public class EventManagementDataSeeder : IDataSeeder
                 var faker = new Faker();
                 await _unitOfWork.BeginTransactionAsync();
 
+                var eventActivity = faker.PickRandom(eventActivities);
                 var @event = await _eventDomainService.CreateAsync(
                     faker.Person.FullName,
                     faker.Lorem.Sentence(),
@@ -210,7 +211,7 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.PickRandom<EventType>(),
                     faker.Date.Between(DateTime.UtcNow.AddHours(1), DateTime.UtcNow.AddDays(2)),
                     faker.Date.Between(DateTime.UtcNow.AddDays(0), DateTime.UtcNow.AddDays(2)),
-                    faker.PickRandom(eventActivities).Id,
+                    eventActivity.Id,
                     faker.Address.FullAddress(),
                     faker.Random.Double(-180, 180),
                     faker.Random.Double(-90, 90));
@@ -223,7 +224,7 @@ public class EventManagementDataSeeder : IDataSeeder
                         faker.Name.JobTitle(),
                         faker.Lorem.Sentence(),
                         faker.Random.Bool(),
-                        faker.Random.Int(1, 10),
+                        eventActivity.MinScore,
                         faker.Random.Int(1, 10),
                         dateTime);
                 }
@@ -407,7 +408,7 @@ public class EventManagementDataSeeder : IDataSeeder
                     faker.Random.Double(-90, 90),
                     faker.Commerce.Department(),
                     faker.Lorem.Paragraph(),
-                    faker.Person.Email,
+                    new Faker().Person.Email,
                     faker.Person.Phone,
                     faker.Address.FullAddress(),
                     faker.Image.PicsumUrl(),
