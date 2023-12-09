@@ -77,7 +77,7 @@ public class ExportStudentAttendanceEventsCommandHandler : ICommandHandler<Expor
     
     private int GenerateExcelHeader(ExportStudentAttendanceEventsCommand request, ExcelWorksheet worksheet, int beginRow)
     {
-        var header = $"BẢNG TỔNG HỢP ĐIỂM HOẠT ĐỘNG CỘNG ĐỒNG CỦA SINH VIÊN TỪ {request.FromDate.ToString("dd/MM/yyyy")} - {request.ToDate.ToString("dd/MM/yyyy")}";
+        var header = "BẢNG TỔNG HỢP ĐIỂM HOẠT ĐỘNG CỘNG ĐỒNG CỦA SINH VIÊN";
 
         worksheet.Cells[beginRow, 1].Value = header;
         worksheet.Cells[beginRow, 1, 1, header.Length - 1].Merge = true;
