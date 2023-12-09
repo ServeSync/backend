@@ -11,6 +11,8 @@ public static class StudentPermissions
         
         Permissions.Events.View,
         
+        Permissions.Students.Export,
+        
         Permissions.Proofs.View,
         Permissions.Proofs.Create,
         Permissions.Proofs.Delete,
