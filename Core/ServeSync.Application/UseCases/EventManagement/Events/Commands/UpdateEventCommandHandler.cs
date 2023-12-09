@@ -68,7 +68,7 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
                 dateTime);    
         }
         
-        UpdateEventRoles(@event, request, dateTime);
+        await UpdateEventRolesAsync(@event, request, dateTime);
         UpdateRegistrationInfos(@event, request, dateTime);
         UpdateAttendanceInfos(@event, request, dateTime);
         await UpdateOrganizationAsync(@event, request, dateTime);
@@ -86,7 +86,7 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
         _logger.LogInformation("Event with Id '{EventId}' has been updated!", @event.Id);
     }
 
-    private void UpdateEventRoles(Event @event, UpdateEventCommand request, DateTime dateTime)
+    private async Task UpdateEventRolesAsync(Event @event, UpdateEventCommand request, DateTime dateTime)
     {
         if (request.Event.Roles == null)
         {
@@ -104,12 +104,12 @@ public class UpdateEventCommandHandler : ICommandHandler<UpdateEventCommand>
 
         foreach (var role in updateRoles)
         {
-            _eventDomainService.UpdateRoleAsync(@event, role.Id!.Value, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
+           await _eventDomainService.UpdateRoleAsync(@event, role.Id!.Value, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
         }
         
         foreach (var role in newRoles)
         {
-            _eventDomainService.AddRoleAsync(@event, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
+            await _eventDomainService.AddRoleAsync(@event, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
         }
     }
 

@@ -68,7 +68,7 @@ public class CreateEventCommandHandler : ICommandHandler<CreateEventCommand, Gui
 
         foreach (var role in request.Event.Roles)
         {
-            _eventDomainService.AddRoleAsync(@event, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
+            await _eventDomainService.AddRoleAsync(@event, role.Name, role.Description, role.IsNeedApprove, role.Score, role.Quantity, dateTime);
         }
         
         foreach (var registrationInfo in request.Event.RegistrationInfos)

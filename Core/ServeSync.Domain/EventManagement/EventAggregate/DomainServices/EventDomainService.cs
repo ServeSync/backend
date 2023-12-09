@@ -117,7 +117,7 @@ public class EventDomainService : IEventDomainService
     public async Task<Event> AddRoleAsync(Event @event, string name, string description, bool isNeedApprove, double score, int quantity, DateTime dateTime)
     {
         var activity = await _eventActivityRepository.FindByIdAsync(@event.ActivityId);
-        if (activity!.MaxScore < score && score < activity.MinScore)
+        if (activity!.MaxScore < score || score < activity.MinScore)
         {
             throw new EventActivityScoreOutOfRangeException(activity.Id, score);
         }
@@ -129,7 +129,7 @@ public class EventDomainService : IEventDomainService
     public async Task<Event> UpdateRoleAsync(Event @event, Guid id, string name, string description, bool isNeedApprove, double score, int quantity, DateTime dateTime)
     {
         var activity = await _eventActivityRepository.FindByIdAsync(@event.ActivityId);
-        if (activity!.MaxScore < score && score < activity.MinScore)
+        if (activity!.MaxScore < score || score < activity.MinScore)
         {
             throw new EventActivityScoreOutOfRangeException(activity.Id, score);
         }
@@ -152,7 +152,7 @@ public class EventDomainService : IEventDomainService
             "Người tham dự",
             "Người tham dự sự kiện",
             false, 
-            activity!.MaxScore,
+            (activity!.MaxScore + activity.MinScore) / 2,
             quantity,
             dateTime);
         
