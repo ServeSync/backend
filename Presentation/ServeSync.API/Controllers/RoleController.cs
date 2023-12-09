@@ -24,7 +24,7 @@ public class RoleController : ControllerBase
     }
 
     [HttpGet]
-    [HasPermission(Permissions.Roles.View)]
+    [HasPermission(Permissions.Roles.Management)]
     [ProducesResponseType(typeof(PagedResultDto<RoleDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPagedRoleAsync([FromQuery] RoleFilterAndPagingRequestDto dto)
     {

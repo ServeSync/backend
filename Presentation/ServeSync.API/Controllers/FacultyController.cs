@@ -19,7 +19,7 @@ public class FacultyController : ControllerBase
     }
     
     [HttpGet]
-    [HasPermission(Permissions.Faculties.View)]
+    // [HasPermission(Permissions.Faculties.View)]
     [ProducesResponseType(typeof(IEnumerable<EducationProgramDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllFacultiesAsync()
     {

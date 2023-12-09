@@ -7,6 +7,7 @@ using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Proofs.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Proofs.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Proofs.Queries;
+using ServeSync.Infrastructure.Identity.Commons.Constants;
 
 namespace ServeSync.API.Controllers;
 
@@ -76,6 +77,7 @@ public class ProofController : ControllerBase
     }
 
     [HttpGet]
+    [HasPermission(Permissions.Proofs.Management)]
     [ProducesResponseType(typeof(PagedResultDto<ProofDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllProofsAsync([FromQuery] ProofFilterRequestDto dto)
     {
@@ -86,6 +88,7 @@ public class ProofController : ControllerBase
     }
     
     [HttpGet("{id:guid}")]
+    [HasPermission(Permissions.Proofs.View)]
     [ProducesResponseType(typeof(ProofDetailDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetProofByIdAsync(Guid id)
     {
@@ -94,6 +97,7 @@ public class ProofController : ControllerBase
     }
 
     [HttpPut("{id:guid}/approve")]
+    [HasPermission(Permissions.Proofs.Approve)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ApproveProofAsync([FromRoute] Guid id)
     {
@@ -102,6 +106,7 @@ public class ProofController : ControllerBase
     }
     
     [HttpGet("{studentId:guid}/student")]
+    [HasPermission(Permissions.Students.View)]
     [ProducesResponseType(typeof(PagedResultDto<ProofDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllProofsOfStudentAsync([FromRoute] Guid studentId, [FromQuery] ProofFilterRequestDto dto)
     {
@@ -112,6 +117,7 @@ public class ProofController : ControllerBase
     }
     
     [HttpPut("{id:guid}/reject")]
+    [HasPermission(Permissions.Proofs.Reject)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RejectProofAsync([FromRoute] Guid id, [FromBody] RejectProofDto dto)
     {
@@ -120,6 +126,7 @@ public class ProofController : ControllerBase
     }
     
     [HttpDelete("{id:guid}")]
+    [HasPermission(Permissions.Proofs.Delete)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteProofAsync([FromRoute] Guid id)
     {

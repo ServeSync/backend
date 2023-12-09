@@ -4,6 +4,7 @@ public static class StudentAffairPermissions
 {
     public static List<string> Provider = new()
     {
+        Permissions.Roles.Management,
         Permissions.Roles.Create,
         Permissions.Roles.View,
         Permissions.Roles.Edit,
@@ -16,17 +17,17 @@ public static class StudentAffairPermissions
         Permissions.Users.ViewPermissions,
         Permissions.Users.ViewProfile,
         
-        Permissions.Faculties.View,
-        Permissions.HomeRooms.View,
-        Permissions.EducationPrograms.View,
-        
+        Permissions.Students.Management,
         Permissions.Students.View,
         Permissions.Students.Delete,
         Permissions.Students.Create,
         Permissions.Students.Edit,
         Permissions.Students.ViewProfile,
         Permissions.Students.EditProfile, 
+        Permissions.Students.Import,
+        Permissions.Students.Export,
         
+        Permissions.Events.Management,
         Permissions.Events.View,
         Permissions.Events.Delete,
         Permissions.Events.Create,
@@ -37,12 +38,27 @@ public static class StudentAffairPermissions
         Permissions.Events.ApproveRegistration,
         Permissions.Events.RejectRegistration,
         
+        Permissions.EventOrganizations.Management,
         Permissions.EventOrganizations.View,
         Permissions.EventOrganizations.Create,
         Permissions.EventOrganizations.Update,
         Permissions.EventOrganizations.Delete,
+        Permissions.EventOrganizations.ViewContact,
+        Permissions.EventOrganizations.UpdateContact,
+        Permissions.EventOrganizations.RemoveContact,
+        Permissions.EventOrganizations.AddContact,
         
+        Permissions.EventCollaborationRequests.Management,
         Permissions.EventCollaborationRequests.View,
-        Permissions.EventCollaborationRequests.Approve
+        Permissions.EventCollaborationRequests.Approve,
+        Permissions.EventCollaborationRequests.Reject,
+        
+        Permissions.Proofs.Management,
+        Permissions.Proofs.View,
+        Permissions.Proofs.Create,
+        Permissions.Proofs.Delete,
+        Permissions.Proofs.Update,
+        Permissions.Proofs.Approve,
+        Permissions.Proofs.Reject,
     };
 }
