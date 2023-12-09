@@ -43,18 +43,20 @@ public class ExportStudentAttendanceEventsCommandHandler : ICommandHandler<Expor
             throw new StudentNotFoundException(request.StudentId);
         }
         
-        var (events, _) = await _eventReadModelRepository.GetAttendanceEventsOfStudentAsync(request.StudentId, 1, 10);
+        var events = await _eventReadModelRepository.GetAttendanceEventsOfStudentAsync(request.StudentId, request.FromDate, request.ToDate);
         var eventCategories = (await _eventCategoryRepository.FindAllAsync()).OrderBy(x => x.Index).ToList();
         var activities = await _eventActivityRepository.FindAllAsync();
         
         var specification = new ProofByStudentIdSpecification(request.StudentId, true)
-            .And(new ProofByStatusSpecification(ProofStatus.Approved));
+            .And(new ProofByStatusSpecification(ProofStatus.Approved))
+            .And(new ProofByTimeSpecification(request.FromDate, request.ToDate));
         var proofs = await _proofRepository.FilterAsync(specification);
         
-        return await GenerateExcelFileAsync(student, events, proofs, eventCategories, activities);
+        return await GenerateExcelFileAsync(request, student, events, proofs, eventCategories, activities);
     }
 
     private async Task<byte[]> GenerateExcelFileAsync(
+        ExportStudentAttendanceEventsCommand request,
         Student student, 
         IList<EventReadModel> events, 
         IList<Proof> proofs,
@@ -65,7 +67,7 @@ public class ExportStudentAttendanceEventsCommandHandler : ICommandHandler<Expor
         using var excelPackage = new ExcelPackage();
         var worksheet = excelPackage.Workbook.Worksheets.Add("Kết quả phục vụ cộng đồng");
 
-        var headerEndAt = GenerateExcelHeader(worksheet, 1);
+        var headerEndAt = GenerateExcelHeader(request, worksheet, 1);
         var studentInfoSectionEndAt = GenerateStudentInfoSection(worksheet, student, headerEndAt);
         GenerateAttendanceEventsSection(worksheet, student.Id, events, proofs, eventCategories, activities, studentInfoSectionEndAt);
         
@@ -73,9 +75,10 @@ public class ExportStudentAttendanceEventsCommandHandler : ICommandHandler<Expor
         return await excelPackage.GetAsByteArrayAsync();
     }
     
-    private int GenerateExcelHeader(ExcelWorksheet worksheet, int beginRow)
+    private int GenerateExcelHeader(ExportStudentAttendanceEventsCommand request, ExcelWorksheet worksheet, int beginRow)
     {
-        var header = "BẢNG TỔNG HỢP ĐIỂM HOẠT ĐỘNG CỘNG ĐỒNG CỦA SINH VIÊN";
+        var header = $"BẢNG TỔNG HỢP ĐIỂM HOẠT ĐỘNG CỘNG ĐỒNG CỦA SINH VIÊN TỪ {request.FromDate.ToString("dd/MM/yyyy")} - {request.ToDate.ToString("dd/MM/yyyy")}";
+
         worksheet.Cells[beginRow, 1].Value = header;
         worksheet.Cells[beginRow, 1, 1, header.Length - 1].Merge = true;
         worksheet.Cells[beginRow, 1].Style.Font.Bold = true;

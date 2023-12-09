@@ -119,6 +119,17 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
         return (attendanceEvents, total);
     }
 
+    public Task<List<EventReadModel>> GetAttendanceEventsOfStudentAsync(Guid studentId, DateTime? startAt, DateTime? endAt)
+    {
+        return Collection.AsQueryable()
+            .Where(x =>
+                (!startAt.HasValue || x.StartAt >= startAt.Value) &&
+                (!endAt.HasValue || x.EndAt <= endAt.Value) &&
+                x.AttendanceInfos.Any(y =>
+                    y.AttendanceStudents.Any(z => z.StudentId == studentId)))
+            .ToListAsync();
+    }
+
     public async Task<(List<EventReadModel>, int)> GetRegisteredEventsOfStudentAsync(Guid studentId, int page, int size)
     {
         var queryable = Collection.AsQueryable()

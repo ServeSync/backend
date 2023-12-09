@@ -146,6 +146,6 @@ public class StudentController : ControllerBase
     public async Task<IActionResult> ExportStudentAttendanceEventsAsync(Guid id, ExportStudentAttendanceEventsDto dto)
     {
         var byteArray = await _mediator.Send(new ExportStudentAttendanceEventsCommand(id, dto.FromDate, dto.ToDate));
-        return File(byteArray, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "student.xlsx");
+        return File(byteArray, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ket-qua-pvcđ.xlsx");
     }
 }
