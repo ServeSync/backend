@@ -187,7 +187,7 @@ public class ProofDomainService : IProofDomainService
         double score, 
         Guid activityId)
     {
-        if (proof.SpecialProof!.ActivityId != activityId || proof.ExternalProof!.Score != score)
+        if (proof.SpecialProof!.ActivityId != activityId || proof.SpecialProof!.Score != score)
         {
             await CheckValidActivityAsync(activityId, score);
         }
