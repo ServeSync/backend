@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
-using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.UseCases.EventManagement.EventCategories.Dtos;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Exceptions;
 using ServeSync.Domain.EventManagement.EventCategoryAggregate.Specifications;
 using ServeSync.Domain.SeedWorks.Repositories;
+using ServeSync.Domain.SeedWorks.Specifications;
+using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 
 namespace ServeSync.Application.UseCases.EventManagement.EventCategories.Queries;
 
@@ -27,14 +28,30 @@ public class GetAllEventActivityQueryHandler : IQueryHandler<GetAllEventActivity
     
     public async Task<IEnumerable<EventActivityDto>> Handle(GetAllEventActivityQuery request, CancellationToken cancellationToken)
     {
-        if (!await _eventCategoryRepository.IsExistingAsync(request.EventCategoryId))
-        {
-            throw new EventCategoryNotFoundException(request.EventCategoryId);
-        }
-
-        var specification = new EventActivityByCategorySpecification(request.EventCategoryId);
+        var specification = await GetSpecificationAsync(request);
         var activities = await _eventActivityRepository.FilterAsync(specification);
 
         return _mapper.Map<IEnumerable<EventActivityDto>>(activities.OrderBy(x => x.Index));
+    }
+
+    private async Task<ISpecification<EventActivity, Guid>> GetSpecificationAsync(GetAllEventActivityQuery request)
+    {
+        var specification = EmptySpecification<EventActivity, Guid>.Instance;
+        if (request.EventCategoryId.HasValue)
+        {
+            if (!await _eventCategoryRepository.IsExistingAsync(request.EventCategoryId.Value))
+            {
+                throw new EventCategoryNotFoundException(request.EventCategoryId.Value);
+            }
+
+            specification = specification.And(new EventActivityByCategorySpecification(request.EventCategoryId.Value));
+        }
+
+        if (request.Type.HasValue)
+        {
+            specification = specification.And(new EventActivityByTypeSpecification(request.Type.Value));
+        }
+
+        return specification;
     }
 }

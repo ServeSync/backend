@@ -604,6 +604,55 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.ToTable("HomeRoom");
                 });
 
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.Proof", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("AttendanceAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ProofStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProofType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RejectReason")
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Proof");
+
+                    b.UseTptMappingStrategy();
+                });
+
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.Student", b =>
                 {
                     b.Property<Guid>("Id")
@@ -986,6 +1035,89 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.ToTable("UserInTenant");
                 });
 
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.ExternalProof", b =>
+                {
+                    b.HasBaseType("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.Proof");
+
+                    b.Property<Guid>("ActivityId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("EndAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("EventName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("OrganizationName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("StartAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasIndex("ActivityId");
+
+                    b.ToTable("ExternalProof", (string)null);
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.InternalProof", b =>
+                {
+                    b.HasBaseType("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.Proof");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("EventRoleId")
+                        .HasColumnType("char(36)");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("EventRoleId");
+
+                    b.ToTable("InternalProof", (string)null);
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.SpecialProof", b =>
+                {
+                    b.HasBaseType("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.Proof");
+
+                    b.Property<Guid>("ActivityId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("EndAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("StartAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasIndex("ActivityId");
+
+                    b.ToTable("SpecialProof", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("ServeSync.Infrastructure.Identity.Models.RoleAggregate.Entities.ApplicationRole", null)
@@ -1288,6 +1420,17 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Navigation("Faculty");
                 });
 
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.Proof", b =>
+                {
+                    b.HasOne("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.Student", b =>
                 {
                     b.HasOne("ServeSync.Domain.StudentManagement.EducationProgramAggregate.Entities.EducationProgram", "EducationProgram")
@@ -1415,6 +1558,71 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.ExternalProof", b =>
+                {
+                    b.HasOne("ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities.EventActivity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.Proof", "Proof")
+                        .WithOne("ExternalProof")
+                        .HasForeignKey("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.ExternalProof", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("Proof");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.InternalProof", b =>
+                {
+                    b.HasOne("ServeSync.Domain.EventManagement.EventAggregate.Entities.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServeSync.Domain.EventManagement.EventAggregate.Entities.EventRole", "EventRole")
+                        .WithMany()
+                        .HasForeignKey("EventRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.Proof", "Proof")
+                        .WithOne("InternalProof")
+                        .HasForeignKey("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.InternalProof", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("EventRole");
+
+                    b.Navigation("Proof");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.SpecialProof", b =>
+                {
+                    b.HasOne("ServeSync.Domain.EventManagement.EventCategoryAggregate.Entities.EventActivity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.Proof", "Proof")
+                        .WithOne("SpecialProof")
+                        .HasForeignKey("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.SpecialProof", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("Proof");
+                });
+
             modelBuilder.Entity("ServeSync.Domain.EventManagement.EventAggregate.Entities.Event", b =>
                 {
                     b.Navigation("AttendanceInfos");
@@ -1446,6 +1654,15 @@ namespace ServeSync.Infrastructure.EfCore.Migrations
                     b.Navigation("Contacts");
 
                     b.Navigation("OrganizationInEvents");
+                });
+
+            modelBuilder.Entity("ServeSync.Domain.StudentManagement.ProofAggregate.Entities.Proof", b =>
+                {
+                    b.Navigation("ExternalProof");
+
+                    b.Navigation("InternalProof");
+
+                    b.Navigation("SpecialProof");
                 });
 
             modelBuilder.Entity("ServeSync.Domain.StudentManagement.StudentAggregate.Entities.Student", b =>

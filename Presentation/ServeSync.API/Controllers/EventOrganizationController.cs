@@ -72,7 +72,7 @@ public class EventOrganizationController : Controller
     }
 
     [HttpGet("{id:guid}/contacts")]
-    [HasPermission(Permissions.EventOrganizations.View)]
+    [HasPermission(Permissions.EventOrganizations.ViewContact)]
     [ProducesResponseType(typeof(PagedResultDto<EventOrganizationContactDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetContactByOrganizationAsync(Guid id, [FromQuery] EventOrganizationContactFilterRequestDto dto)
     {
@@ -81,7 +81,7 @@ public class EventOrganizationController : Controller
     }
 
     [HttpPost("{id:guid}/contacts")]
-    [HasPermission(Permissions.EventOrganizations.Create)]
+    [HasPermission(Permissions.EventOrganizations.AddContact)]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateEventOrganizationContactAsync(Guid id, EventOrganizationContactCreateDto dto)
     {
@@ -90,7 +90,7 @@ public class EventOrganizationController : Controller
     }
 
     [HttpPut("{id:guid}/contacts/{contactId:guid}")]
-    [HasPermission(Permissions.EventOrganizations.Update)]
+    [HasPermission(Permissions.EventOrganizations.UpdateContact)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateEventOrganizationContactByIdAsync(Guid id, Guid contactId,
         [FromBody] EventOrganizationContactUpdateDto dto)
@@ -100,7 +100,7 @@ public class EventOrganizationController : Controller
     }
     
     [HttpDelete("{id:guid}/contacts/{contactId:guid}")]
-    [HasPermission(Permissions.EventOrganizations.Delete)]
+    [HasPermission(Permissions.EventOrganizations.RemoveContact)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteEventOrganizationContactByIdAsync(Guid id, Guid contactId)
     {

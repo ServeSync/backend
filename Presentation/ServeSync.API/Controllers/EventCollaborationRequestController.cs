@@ -30,7 +30,7 @@ public class EventCollaborationRequest : ControllerBase
     }
     
     [HttpGet]
-    [HasPermission(Permissions.EventCollaborationRequests.View)]
+    [HasPermission(Permissions.EventCollaborationRequests.Management)]
     [ProducesResponseType(typeof(PagedResultDto<EventCollaborationRequestDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventCollaborationRequestsAsync([FromQuery] EventCollaborationRequestFilterRequestDto dto)
     {

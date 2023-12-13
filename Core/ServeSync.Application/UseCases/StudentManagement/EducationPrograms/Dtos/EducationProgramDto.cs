@@ -10,6 +10,10 @@ public class EducationProgramDto
 
 public class StudentEducationProgramDto : EducationProgramDto
 {
-    public double GainScore { get; set; }
+    public double GainScore => EventScore + ProofScore;
+    public double EventScore { get; set; }
+    public double ProofScore { get; set; }
     public int NumberOfEvents { get; set; }
+    public int NumberOfProofs { get; set; }
+    public int NumberOfApprovedProofs { get; set; }
 }

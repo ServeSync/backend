@@ -8,4 +8,9 @@ public class StudentAlreadyAttendanceException : ResourceAlreadyExistException
         : base($"Student has already attendance to event attendance {id}!", ErrorCodes.StudentAlreadyAttendance)
     {
     }
+    
+    public StudentAlreadyAttendanceException(Guid studentId, Guid eventId) 
+        : base($"Student has already attendance to event {eventId}!", ErrorCodes.StudentAlreadyAttendance)
+    {
+    }
 }

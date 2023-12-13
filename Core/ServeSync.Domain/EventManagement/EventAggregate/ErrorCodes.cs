@@ -11,6 +11,7 @@ public static class ErrorCodes
     public const string EventCanNotBeApproved = "Event:000007";
     public const string EventCanNotBeRejected = "Event:000008";
     public const string EventCanNotBeUpdated = "Event:000009";
+    public const string EventIsNotDone = "Event:000010";
     
     public const string EventAttendanceInfoOverlapped = "EventAttendanceInfo:000001";
     public const string EventAttendanceInfoHeldShorter = "EventAttendanceInfo:000002";
@@ -36,4 +37,5 @@ public static class ErrorCodes
     public const string EventRegistrationInfoCannotBeUpdated = "EventRegistration:000003";
     public const string EventRegistrationInfoOverlapped = "EventRegistration:000004";
     public const string EventRegistrationInfoNotFound = "EventRegistration:000005";
+    public const string EventRegistrationInfoCannotBeAdded = "EventRegistration:000006";
 }

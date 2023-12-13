@@ -102,6 +102,27 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
         return template;
     }
 
+    public string GetOrganizationContactInvitation(string name, string organizationName, string approveUrlCallBack, string rejectUrlCallBack)
+    {
+        var template = GetTemplate("OrganizationContactInvitation")
+            .Replace("{{FullName}}", name)
+            .Replace("{{OrganizationName}}", organizationName)
+            .Replace("{{ApproveUrlCallBack}}", approveUrlCallBack)
+            .Replace("{{RejectUrlCallBack}}", rejectUrlCallBack);
+        
+        return template;
+    }
+
+    public string GetRejectProof(string studentName, string proofName, string rejectReason)
+    {
+        var template = GetTemplate("RejectProof")
+            .Replace("{{StudentName}}", studentName)
+            .Replace("{{ProofName}}", proofName)
+            .Replace("{{RejectReason}}", rejectReason);
+
+        return template;
+    }
+
     private string GetTemplate(string templateName)
     {
         var pathToFile = GetTemplatePath(templateName);

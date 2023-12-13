@@ -4,4 +4,5 @@ public static class ErrorCodes
 {
     public const string EventCategoryNotFound = "EventCategory:000001";
     public const string EventActivityNotFound = "EventActivity:000001";
+    public const string EventActivityScoreOutOfRange = "EventActivity:000002";
 }

@@ -24,13 +24,13 @@ public class GetAllStudentQueryHandler : IQueryHandler<GetAllStudentQuery, Paged
     {
         var specification = GetQuerySpecification(request);
 
-        var students = await _studentRepository.GetPagedListAsync(specification);
+        var students = await _studentRepository.GetPagedListAsync(specification, new StudentDetailDto());
         var total = await _studentRepository.GetCountAsync(specification);
 
         return new PagedResultDto<StudentDetailDto>(
             total, 
             request.Size,
-            _mapper.Map<IEnumerable<StudentDetailDto>>(students));
+            students);
     }
 
     private IPagingAndSortingSpecification<Student, Guid> GetQuerySpecification(GetAllStudentQuery request)

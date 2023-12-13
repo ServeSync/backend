@@ -44,5 +44,7 @@ public class StudentManagementMapperProfile : Profile
                         RequiredCredit = src.EducationProgram.RequiredCredit
                     }))
             .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.EventRegisters.Sum(x => x.StudentEventAttendance != null ? x.EventRole!.Score : 0)));
+
+        CreateMap<Student, SimpleStudentDto>();
     }
 }

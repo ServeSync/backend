@@ -19,7 +19,7 @@ public class EducationProgramController : ControllerBase
     }
     
     [HttpGet]
-    [HasPermission(Permissions.EducationPrograms.View)]
+    // [HasPermission(Permissions.EducationPrograms.View)]
     [ProducesResponseType(typeof(IEnumerable<EducationProgramDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEducationProgramsAsync()
     {

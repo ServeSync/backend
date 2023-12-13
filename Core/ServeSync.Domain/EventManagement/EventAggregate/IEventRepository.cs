@@ -6,7 +6,11 @@ namespace ServeSync.Domain.EventManagement.EventAggregate;
 
 public interface IEventRepository : IRepository<Event>
 {
-    public Task<IList<Student>> GetRegisteredStudentAsync(Guid eventId);
+    Task<IList<Student>> GetRegisteredStudentAsync(Guid eventId);
     
-    public Task<string> GetEventOwnerByRegistrationAsync(Guid eventRegisterId);
+    Task<string> GetEventOwnerByRegistrationAsync(Guid eventRegisterId);
+    
+    Task<bool> IsStudentRegisteredToEventAsync(Guid studentId, Guid eventId, Guid eventRoleId);
+    
+    Task<bool> IsStudentAttendedToEventAsync(Guid studentId, Guid eventId);
 }

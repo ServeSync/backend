@@ -8,4 +8,9 @@ public class StudentEventRegisterNotFoundException : ResourceNotFoundException
         : base($"Student registration with Id '{id}' does not exist!", ErrorCodes.StudentEventRegisterNotFound)
     {
     }
+    
+    public StudentEventRegisterNotFoundException(Guid studentId, Guid eventId, Guid eventRoleId) 
+        : base($"Student registration with StudentId '{studentId}' and EventId '{eventId}' EventRoleId '{eventRoleId}' does not exist!", ErrorCodes.StudentEventRegisterNotFound)
+    {
+    }
 }

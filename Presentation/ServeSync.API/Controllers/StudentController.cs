@@ -27,7 +27,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet]
-    [HasPermission(Permissions.Students.View)]
+    [HasPermission(Permissions.Students.Management)]
     [ProducesResponseType(typeof(PagedResultDto<StudentDetailDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllStudentsAsync([FromQuery] StudentFilterRequestDto dto)
     {
@@ -53,7 +53,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("import")]
-    [HasPermission(Permissions.Students.Create)]
+    [HasPermission(Permissions.Students.Import)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ImportStudentsAsync([FromForm] IFormFile file)
     {
@@ -91,7 +91,7 @@ public class StudentController : ControllerBase
     public async Task<IActionResult> DeleteStudentByIdAsync(Guid id)
     {
         await _mediator.Send(new DeleteStudentCommand(id));
-        return Ok();
+        return NoContent();
     }
     
     [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/approve")]
@@ -115,10 +115,20 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet("{id:guid}/attendance-events")]
+    [HasPermission(Permissions.Students.View)]
     [ProducesResponseType(typeof(PagedResultDto<StudentAttendanceEventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAttendanceEventsOfStudentAsync(Guid id, [FromQuery] PagingRequestDto dto)
     {
         var events = await _mediator.Send(new GetAllAttendanceEventsOfStudentQuery(id, dto.Page, dto.Size));
+        return Ok(events);
+    }
+    
+    [HttpGet("{id:guid}/registered-events")]
+    [HasPermission(Permissions.Students.View)]
+    [ProducesResponseType(typeof(PagedResultDto<StudentRegisteredEventDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRegisteredEventsOfStudentAsync(Guid id, [FromQuery] PagingRequestDto dto)
+    {
+        var events = await _mediator.Send(new GetAllRegisteredEventsOfStudentQuery(id, dto.Page, dto.Size));
         return Ok(events);
     }
     
@@ -132,10 +142,10 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("{id:guid}/attendance-events/export")]
-    [HasPermission(Permissions.Students.View)]
+    [HasPermission(Permissions.Students.Export)]
     public async Task<IActionResult> ExportStudentAttendanceEventsAsync(Guid id, ExportStudentAttendanceEventsDto dto)
     {
         var byteArray = await _mediator.Send(new ExportStudentAttendanceEventsCommand(id, dto.FromDate, dto.ToDate));
-        return File(byteArray, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "student.xlsx");
+        return File(byteArray, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ket-qua-pvcđ.xlsx");
     }
 }

@@ -19,7 +19,7 @@ public class HomeRoomController : ControllerBase
     }
     
     [HttpGet]
-    [HasPermission(Permissions.HomeRooms.View)]
+    // [HasPermission(Permissions.HomeRooms.View)]
     [ProducesResponseType(typeof(IEnumerable<HomeRoomDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllHomeRoomsAsync([FromQuery] HomeRoomFilterRequestDto dto)
     {
