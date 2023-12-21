@@ -160,7 +160,25 @@ public class EventController : ControllerBase
     [ProducesResponseType(typeof(EventStatisticDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventStatisticAsync([FromQuery] EventStatisticRequestDto dto)
     {
-        var events = await _mediator.Send(new GetEventStatisticQuery(dto.Type));
-        return Ok(events);
+        var result = await _mediator.Send(new GetEventStatisticQuery(dto.Type));
+        return Ok(result);
+    }
+    
+    [HttpGet("registered-students/statistic")]
+    [HasPermission(Permissions.Events.Management)]
+    [ProducesResponseType(typeof(List<EventStudentStatisticDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEventRegisteredStudentStatisticAsync([FromQuery] EventStudentStatisticRequestDto dto)
+    {
+        var result = await _mediator.Send(new GetEventRegisteredStudentStatisticQuery(dto.Type, dto.NumberOfRecords));
+        return Ok(result);
+    }
+    
+    [HttpGet("attendance-students/statistic")]
+    [HasPermission(Permissions.Events.Management)]
+    [ProducesResponseType(typeof(List<EventStudentStatisticDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEventAttendanceStudentStatisticAsync([FromQuery] EventStudentStatisticRequestDto dto)
+    {
+        var result = await _mediator.Send(new GetEventAttendanceStudentStatisticQuery(dto.Type, dto.NumberOfRecords));
+        return Ok(result);
     }
 }
