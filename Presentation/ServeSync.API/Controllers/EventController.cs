@@ -154,4 +154,13 @@ public class EventController : ControllerBase
         await _mediator.Send(new SyncEventsCommand(ids));
         return NoContent();
     }
+    
+    [HttpGet("statistic")]
+    [HasPermission(Permissions.Events.Management)]
+    [ProducesResponseType(typeof(EventStatisticDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEventStatisticAsync([FromQuery] EventStatisticRequestDto dto)
+    {
+        var events = await _mediator.Send(new GetEventStatisticQuery(dto.Type));
+        return Ok(events);
+    }
 }

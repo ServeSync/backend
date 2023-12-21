@@ -2,6 +2,7 @@
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.SeedWorks.Sessions;
+using ServeSync.Application.Services.Interfaces;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
@@ -17,17 +18,20 @@ namespace ServeSync.Application.UseCases.EventManagement.Events.Queries;
 public class GetAllEventsQueryHandler : IQueryHandler<GetAllEventsQuery, PagedResultDto<FlatEventDto>>
 {
     private readonly ICurrentUser _currentUser;
+    private readonly ISpecificationService _specificationService;
     private readonly IBasicReadOnlyRepository<Event, Guid> _eventRepository;
     private readonly IBasicReadOnlyRepository<EventOrganization, Guid> _eventOrganizationRepository;
     private readonly IMapper _mapper;
     
     public GetAllEventsQueryHandler(
         ICurrentUser currentUser,
+        ISpecificationService specificationService,
         IBasicReadOnlyRepository<Event, Guid> eventRepository, 
         IBasicReadOnlyRepository<EventOrganization, Guid> eventOrganizationRepository,
         IMapper mapper)
     {
         _currentUser = currentUser;
+        _specificationService = specificationService;
         _eventOrganizationRepository = eventOrganizationRepository;
         _eventRepository = eventRepository;
         _mapper = mapper;
@@ -60,38 +64,12 @@ public class GetAllEventsQueryHandler : IQueryHandler<GetAllEventsQuery, PagedRe
                 switch (filter)
                 {
                     case EventDefaultFilter.Personalized:
-                        specification = specification.And(await GetPersonalizedSpecificationAsync());
+                        specification = specification.And(await _specificationService.GetEventPersonalizedSpecificationAsync());
                         break;
                 }
             }
         }
         
         return specification;
-    }
-    
-    private async Task<ISpecification<Event, Guid>> GetPersonalizedSpecificationAsync()
-    {
-        if (_currentUser.IsAuthenticated)
-        {
-            if (await _currentUser.IsOrganizationAsync())
-            {
-                return new EventByOrganizationSpecification(Guid.Parse(_currentUser.ReferenceId), _currentUser.Id, _currentUser.TenantId);    
-            }
-            else if (await _currentUser.IsOrganizationContactAsync())
-            {
-                var organization = await _eventOrganizationRepository.FindAsync(new EventOrganizationByContactSpecification(Guid.Parse(_currentUser.ReferenceId)));
-                if (organization == null)
-                {
-                    return EmptyFalseSpecification<Event, Guid>.Instance;
-                }
-                
-                return new EventByOrganizationContactSpecification(
-                    Guid.Parse(_currentUser.ReferenceId),
-                    organization.IdentityId!,
-                    organization.TenantId!.Value);    
-            }
-        }
-        
-        return EmptySpecification<Event, Guid>.Instance;
     }
 }
