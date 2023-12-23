@@ -28,10 +28,10 @@ public class GetEventStatisticQueryHandler : IQueryHandler<GetEventStatisticQuer
     {
         var statisticStatuses = new List<EventStatus>()
         {
+            EventStatus.Rejected,
             EventStatus.Cancelled,
             EventStatus.Happening,
             EventStatus.Done,
-            EventStatus.Cancelled,
             EventStatus.Expired,
             EventStatus.Upcoming,
             EventStatus.Pending
