@@ -2,7 +2,7 @@
 using ServeSync.Application.Common.Helpers;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.Services.Interfaces;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Application.UseCases.Statistics.Dtos;
 using ServeSync.Domain.EventManagement.EventAggregate.Entities;
 using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventAggregate.Specifications;
@@ -10,7 +10,7 @@ using ServeSync.Domain.SeedWorks.Repositories;
 using ServeSync.Domain.SeedWorks.Specifications;
 using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 
-namespace ServeSync.Application.UseCases.EventManagement.Events.Queries;
+namespace ServeSync.Application.UseCases.Statistics.Queries;
 
 public class GetEventStatisticQueryHandler : IQueryHandler<GetEventStatisticQuery, EventStatisticDto>
 {

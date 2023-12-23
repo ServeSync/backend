@@ -1,8 +1,9 @@
 ﻿using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Application.UseCases.Statistics.Dtos;
 
-namespace ServeSync.Application.UseCases.EventManagement.Events.Queries;
+namespace ServeSync.Application.UseCases.Statistics.Queries;
 
 public class GetEventRegisteredStudentStatisticQuery : IQuery<List<EventStudentStatisticDto>>
 {

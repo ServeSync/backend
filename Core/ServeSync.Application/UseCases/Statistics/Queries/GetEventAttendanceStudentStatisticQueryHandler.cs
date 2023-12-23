@@ -1,15 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.SeedWorks.Cqrs;
-using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+using ServeSync.Application.UseCases.Statistics.Dtos;
 using ServeSync.Domain.SeedWorks.Specifications;
 using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
-using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Specifications;
 
-namespace ServeSync.Application.UseCases.EventManagement.Events.Queries;
+namespace ServeSync.Application.UseCases.Statistics.Queries;
 
 public class GetEventAttendanceStudentStatisticQueryHandler : IQueryHandler<GetEventAttendanceStudentStatisticQuery, List<EventStudentStatisticDto>>
 {

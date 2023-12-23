@@ -11,6 +11,8 @@ using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.StudentInEvents;
 using ServeSync.Application.UseCases.EventManagement.Events.Queries;
+using ServeSync.Application.UseCases.Statistics.Dtos;
+using ServeSync.Application.UseCases.Statistics.Queries;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Infrastructure.Identity.Commons.Constants;

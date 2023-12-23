@@ -1,6 +1,6 @@
 ﻿using ServeSync.Application.Common.Dtos;
 
-namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+namespace ServeSync.Application.UseCases.Statistics.Dtos;
 
 public class EventStatisticRequestDto
 {

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 
-namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
+namespace ServeSync.Application.UseCases.Statistics.Dtos;
 
 public class EventStatisticDto
 {
