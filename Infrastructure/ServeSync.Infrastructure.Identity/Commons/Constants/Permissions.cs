@@ -21,6 +21,7 @@ public static class Permissions
         new(Users.ViewPermissions, "Xem quyền của người dùng."),
         new(Users.ViewProfile, "Xem thông tin cá nhân."),
         new(Users.View, "Xem danh sách người dùng."),
+        new(Users.EditRoles, "Cập nhật vai trò người dùng."),
 
         new(Students.Management, "Quản lý sinh viên."),
         new(Students.View, "Xem danh sách sinh viên."),
@@ -96,6 +97,7 @@ public static class Permissions
         public const string ViewProfile = $"{Group}.ViewProfile";
         public const string ViewPermissions = $"{Group}.ViewPermissions";
         public const string View = $"{Group}.View";
+        public const string EditRoles = $"{Group}.EditRoles";
     }
     
     public static class Students

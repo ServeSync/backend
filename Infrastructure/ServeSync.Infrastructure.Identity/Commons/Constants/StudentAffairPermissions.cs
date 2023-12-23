@@ -16,6 +16,7 @@ public static class StudentAffairPermissions
         
         Permissions.Users.ViewPermissions,
         Permissions.Users.ViewProfile,
+        Permissions.Users.EditRoles,
         
         Permissions.Students.Management,
         Permissions.Students.View,

@@ -8,6 +8,8 @@ using ServeSync.Infrastructure.Identity.UseCases.Permissions.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Queries;
 using ServeSync.Infrastructure.Identity.UseCases.Users.Dtos;
 using ServeSync.Infrastructure.Identity.UseCases.Users.Queries;
+using ServeSync.Infrastructure.Identity.UseCases.Users.Commands;
+using ServeSync.Infrastructure.Identity.UseCases.Users.Queries;
 
 namespace ServeSync.API.Controllers;
 
@@ -29,6 +31,23 @@ public class UserController : ControllerBase
     {
         var permissions = await _mediator.Send(new GetAllPermissionForUserQuery(id, tenantId));
         return Ok(permissions);
+    }
+    
+    [HttpGet("{id}/tenants/{tenantId}/roles")]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRolesForUserAsync(string id, Guid tenantId)
+    {
+        var roles = await _mediator.Send(new GetRolesForUserQuery(id, tenantId));
+        return Ok(roles);
+    }
+    
+    [HttpPut("{id}/tenants/{tenantId}/roles")]
+    [HasPermission(Permissions.Users.EditRoles)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateRolesForUserAsync(string id, Guid tenantId, [FromBody] IEnumerable<string> roleIds)
+    {
+        await _mediator.Send(new UpdateRolesForUserCommand(id, tenantId, roleIds));
+        return NoContent();
     }
     
     [HttpGet]

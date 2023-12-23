@@ -7,4 +7,13 @@ public static class AppRole
     public const string StudentAffair = "Phòng CTSV";
     public const string EventOrganization = "Tổ chức";
     public const string EventOrganizer = "Thành viên tổ chức";
+
+    public static readonly List<string> All = new()
+    {
+        Admin,
+        Student,
+        StudentAffair,
+        EventOrganization,
+        EventOrganizer
+    };
 }

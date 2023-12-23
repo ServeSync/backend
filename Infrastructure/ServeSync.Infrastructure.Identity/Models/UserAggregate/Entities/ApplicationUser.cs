@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using ServeSync.Application.Common;
 using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 using ServeSync.Domain.SeedWorks.Models;
+using ServeSync.Infrastructure.Identity.Models.UserAggregate.DomainEvents;
 using ServeSync.Infrastructure.Identity.Models.UserAggregate.Exceptions;
 
 namespace ServeSync.Infrastructure.Identity.Models.UserAggregate.Entities;
@@ -53,6 +55,19 @@ public partial class ApplicationUser : IdentityUser<string>
         }
     }
 
+    public void ClearRole(Guid tenantId)
+    {
+        var deletedRole = Roles.Where(x => !AppRole.All.Contains(x.Role!.Name!) && 
+                                           x.TenantId == tenantId)
+            .ToList();
+        foreach (var role in deletedRole)
+        {
+            Roles.Remove(role);
+        }
+        
+        AddDomainEvent(new UserRoleUpdatedDomainEvent(Id, tenantId));
+    }
+
     public void GrantRole(string roleId, Guid tenantId)
     {
         if (Roles.Any(x => x.RoleId == roleId && x.TenantId == tenantId))
@@ -61,6 +76,7 @@ public partial class ApplicationUser : IdentityUser<string>
         }
         
         Roles.Add(new ApplicationUserInRole(Id, roleId, tenantId));
+        AddDomainEvent(new UserRoleUpdatedDomainEvent(Id, tenantId));
     }
     
     public void UnGrantRole(string roleId, Guid tenantId)
@@ -73,6 +89,7 @@ public partial class ApplicationUser : IdentityUser<string>
         }
 
         Roles.Remove(role);
+        AddDomainEvent(new UserRoleUpdatedDomainEvent(Id, tenantId));
     }
 
     public void AddToTenant(string fullName, string avatarUrl, Guid tenantId, bool isOwner)

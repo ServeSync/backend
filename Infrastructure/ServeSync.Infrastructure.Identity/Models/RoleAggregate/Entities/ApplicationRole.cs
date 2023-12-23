@@ -85,10 +85,6 @@ public partial class ApplicationRole : IdentityRole
 
     private bool IsDefaultRole(string name)
     {
-        return string.Equals(name, AppRole.Admin, StringComparison.CurrentCultureIgnoreCase)
-               || string.Equals(name, AppRole.EventOrganization, StringComparison.CurrentCultureIgnoreCase)
-               || string.Equals(name, AppRole.StudentAffair, StringComparison.CurrentCultureIgnoreCase)
-               || string.Equals(name, AppRole.Student, StringComparison.CurrentCultureIgnoreCase)
-               || string.Equals(name, AppRole.EventOrganizer, StringComparison.CurrentCultureIgnoreCase);
+        return AppRole.All.Contains(name);
     }
 }
