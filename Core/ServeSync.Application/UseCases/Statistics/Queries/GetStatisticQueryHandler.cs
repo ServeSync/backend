@@ -10,16 +10,16 @@ namespace ServeSync.Application.UseCases.Statistics.Queries;
 
 public class GetStatisticQueryHandler : IQueryHandler<GetStatisticQuery, StatisticDto>
 {
-    private readonly IReadOnlyRepository<Event, Guid> _eventRepository;
-    private readonly IReadOnlyRepository<Student, Guid> _studentRepository;
-    private readonly IReadOnlyRepository<EventOrganization, Guid> _organizationRepository;
-    private readonly IReadOnlyRepository<Proof, Guid> _proofRepository;
+    private readonly IBasicReadOnlyRepository<Event, Guid> _eventRepository;
+    private readonly IBasicReadOnlyRepository<Student, Guid> _studentRepository;
+    private readonly IBasicReadOnlyRepository<EventOrganization, Guid> _organizationRepository;
+    private readonly IBasicReadOnlyRepository<Proof, Guid> _proofRepository;
     
     public GetStatisticQueryHandler(
-        IReadOnlyRepository<Event, Guid> eventRepository,
-        IReadOnlyRepository<Student, Guid> studentRepository,
-        IReadOnlyRepository<EventOrganization, Guid> organizationRepository,
-        IReadOnlyRepository<Proof, Guid> proofRepository)
+        IBasicReadOnlyRepository<Event, Guid> eventRepository,
+        IBasicReadOnlyRepository<Student, Guid> studentRepository,
+        IBasicReadOnlyRepository<EventOrganization, Guid> organizationRepository,
+        IBasicReadOnlyRepository<Proof, Guid> proofRepository)
     {
         _eventRepository = eventRepository;
         _studentRepository = studentRepository;

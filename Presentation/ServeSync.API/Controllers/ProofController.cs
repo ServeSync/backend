@@ -4,6 +4,8 @@ using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
 using ServeSync.Application.Common;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.UseCases.Statistics.Dtos;
+using ServeSync.Application.UseCases.Statistics.Queries;
 using ServeSync.Application.UseCases.StudentManagement.Proofs.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Proofs.Dtos;
 using ServeSync.Application.UseCases.StudentManagement.Proofs.Queries;
@@ -132,5 +134,14 @@ public class ProofController : ControllerBase
     {
         await _mediator.Send(new DeleteProofCommand(id));
         return NoContent();
+    }
+    
+    [HttpGet("statistics")]
+    [HasPermission(Permissions.Proofs.Management)]
+    [ProducesResponseType(typeof(ProofStatisticDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetProofStatisticAsync([FromQuery] RecurringFilterType? type)
+    {
+        var statistic = await _mediator.Send(new GetProofStatisticQuery(type));
+        return Ok(statistic);
     }
 }

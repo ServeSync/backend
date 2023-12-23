@@ -5,6 +5,7 @@ using ServeSync.Application.UseCases.Statistics.Queries;
 
 namespace ServeSync.API.Controllers;
 
+[ApiController]
 [Route("api/statistics")]
 public class StatisticController : ControllerBase
 {
