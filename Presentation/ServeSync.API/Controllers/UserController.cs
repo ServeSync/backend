@@ -61,4 +61,13 @@ public class UserController : ControllerBase
         return Ok(users);
     }
     
+    [HttpGet("{id}")]
+    // [HasPermission(Permissions.Users.View)]
+    [ProducesResponseType(typeof(UserDetailDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUserByIdAsync(string id)
+    {
+        var user = await _mediator.Send(new GetUserByIdQuery(id));
+        return Ok(user);
+    }
+    
 }
