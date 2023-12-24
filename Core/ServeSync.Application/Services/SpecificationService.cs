@@ -43,6 +43,10 @@ public class SpecificationService : ISpecificationService
                     organization.IdentityId!,
                     organization.TenantId!.Value);    
             }
+            else if (await _currentUser.IsStudentAsync())
+            {
+                return new EventRegisteredByStudentSpecification(Guid.Parse(_currentUser.ReferenceId));
+            }
         }
         
         return EmptySpecification<Event, Guid>.Instance;
