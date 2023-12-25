@@ -9,6 +9,7 @@ namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 
 public class EventFilterRequestDto : PagingAndSortingRequestDto
 {
+    public bool? IsPaging { get; set; }
     public string? Search { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }

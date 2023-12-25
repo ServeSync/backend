@@ -41,7 +41,9 @@ public class GetAllEventsQueryHandler : IQueryHandler<GetAllEventsQuery, PagedRe
     {
         var specification = await GetSpecification(request);
         
-        var events = await _eventRepository.GetPagedListAsync(specification);
+        var events = request.IsPaging.HasValue && !request.IsPaging.Value 
+            ? await _eventRepository.FilterAsync(specification)
+            : await _eventRepository.GetPagedListAsync(specification);
         var total = await _eventRepository.GetCountAsync(specification);
 
         return new PagedResultDto<FlatEventDto>(

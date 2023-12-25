@@ -34,7 +34,7 @@ public class EventController : ControllerBase
     [ProducesResponseType(typeof(PagedResultDto<FlatEventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventsAsync([FromQuery] EventFilterRequestDto dto)
     {
-        var query = new GetAllEventsQuery(dto.StartDate, dto.EndDate, dto.EventType, dto.EventStatus, dto.DefaultFilters, dto.Search, dto.Page, dto.Size, dto.Sorting);
+        var query = new GetAllEventsQuery(dto.IsPaging, dto.StartDate, dto.EndDate, dto.EventType, dto.EventStatus, dto.DefaultFilters, dto.Search, dto.Page, dto.Size, dto.Sorting);
         
         var events = await _mediator.Send(query);
         return Ok(events);
