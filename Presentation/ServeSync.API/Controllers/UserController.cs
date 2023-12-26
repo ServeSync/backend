@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
+using ServeSync.Application.Common;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Infrastructure.EfCore.Migrations;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
@@ -25,7 +26,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}/permissions")]
-    [HasPermission(Permissions.Users.ViewPermissions)]
+    [HasPermission(AppPermissions.Users.ViewPermissions)]
     [ProducesResponseType(typeof(IEnumerable<PermissionDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPermissionsForUserAsync(string id, [FromQuery] Guid tenantId)
     {
@@ -34,6 +35,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("{id}/tenants/{tenantId}/roles")]
+    [HasPermission(AppPermissions.Users.ViewRoles)]
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRolesForUserAsync(string id, Guid tenantId)
     {
@@ -42,7 +44,7 @@ public class UserController : ControllerBase
     }
     
     [HttpPut("{id}/tenants/{tenantId}/roles")]
-    [HasPermission(Permissions.Users.EditRoles)]
+    [HasPermission(AppPermissions.Users.EditRoles)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateRolesForUserAsync(string id, Guid tenantId, [FromBody] IEnumerable<string> roleIds)
     {
@@ -51,7 +53,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet]
-    // [HasPermission(Permissions.Users.View)]
+    [HasPermission(AppPermissions.Users.Management)]
     [ProducesResponseType(typeof(PagedResultDto<UserBasicInfoDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllUsersAsync([FromQuery] UserRequestDto dto)
     {
@@ -62,7 +64,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("{id}")]
-    // [HasPermission(Permissions.Users.View)]
+    [HasPermission(AppPermissions.Users.View)]
     [ProducesResponseType(typeof(UserDetailDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUserByIdAsync(string id)
     {

@@ -50,7 +50,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPost]
-    [HasPermission(Permissions.Events.Create)]
+    [HasPermission(AppPermissions.Events.Create)]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateEvent([FromBody] EventCreateDto dto)
     {
@@ -59,7 +59,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPut("{id:guid}")]
-    [HasPermission(Permissions.Events.Edit)]
+    [HasPermission(AppPermissions.Events.Edit)]
     [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] EventUpdateDto dto)
@@ -121,7 +121,7 @@ public class EventController : ControllerBase
     }
 
     [HttpPost("{id:guid}/cancel")]
-    [HasPermission(Permissions.Events.Cancel)]
+    [HasPermission(AppPermissions.Events.Cancel)]
     [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> CancelEventAsync(Guid id)
@@ -131,7 +131,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPost("{id:guid}/approve")]
-    [HasPermission(Permissions.Events.Approve)]
+    [HasPermission(AppPermissions.Events.Approve)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ApproveEventAsync(Guid id)
     {
@@ -140,7 +140,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPost("{id:guid}/reject")]
-    [HasPermission(Permissions.Events.Reject)]
+    [HasPermission(AppPermissions.Events.Reject)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RejectEventAsync(Guid id)
     {
@@ -158,7 +158,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("statistic")]
-    [HasPermission(Permissions.Events.Management)]
+    [HasPermission(AppPermissions.Events.Management)]
     [ProducesResponseType(typeof(EventStatisticDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventStatisticAsync([FromQuery] EventStatisticRequestDto dto)
     {
@@ -167,7 +167,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("registered-students/statistic")]
-    [HasPermission(Permissions.Events.Management)]
+    [HasPermission(AppPermissions.Events.Management)]
     [ProducesResponseType(typeof(List<EventStudentStatisticDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventRegisteredStudentStatisticAsync([FromQuery] EventStudentStatisticRequestDto dto)
     {
@@ -176,7 +176,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("attendance-students/statistic")]
-    [HasPermission(Permissions.Events.Management)]
+    [HasPermission(AppPermissions.Events.Management)]
     [ProducesResponseType(typeof(List<EventStudentStatisticDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventAttendanceStudentStatisticAsync([FromQuery] EventStudentStatisticRequestDto dto)
     {

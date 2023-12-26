@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
+using ServeSync.Application.Common;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Commands;
 using ServeSync.Application.UseCases.EventManagement.EventCollaborationRequests.Dtos;
@@ -30,7 +31,7 @@ public class EventCollaborationRequest : ControllerBase
     }
     
     [HttpGet]
-    [HasPermission(Permissions.EventCollaborationRequests.Management)]
+    [HasPermission(AppPermissions.EventCollaborationRequests.Management)]
     [ProducesResponseType(typeof(PagedResultDto<EventCollaborationRequestDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventCollaborationRequestsAsync([FromQuery] EventCollaborationRequestFilterRequestDto dto)
     {
@@ -41,7 +42,7 @@ public class EventCollaborationRequest : ControllerBase
     }
     
     [HttpGet("{id:guid}")]
-    [HasPermission(Permissions.EventCollaborationRequests.View)]
+    [HasPermission(AppPermissions.EventCollaborationRequests.View)]
     [ProducesResponseType(typeof(EventCollaborationRequestDetailDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventCollaborationRequestByIdAsync([FromRoute] Guid id)
     {
@@ -50,7 +51,7 @@ public class EventCollaborationRequest : ControllerBase
     }
     
     [HttpPost("{id:guid}/approve")]
-    [HasPermission(Permissions.EventCollaborationRequests.Approve)]
+    [HasPermission(AppPermissions.EventCollaborationRequests.Approve)]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ApproveEventCollaborationRequestAsync([FromRoute] Guid id)
     {
@@ -59,7 +60,7 @@ public class EventCollaborationRequest : ControllerBase
     }
     
     [HttpPost("{id:guid}/reject")]
-    [HasPermission((Permissions.EventCollaborationRequests.Reject))]
+    [HasPermission((AppPermissions.EventCollaborationRequests.Reject))]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RejectEventCollaborationRequestAsync([FromRoute] Guid id)
     {

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
+using ServeSync.Application.Common;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 using ServeSync.Infrastructure.Identity.UseCases.Permissions.Dtos;
@@ -20,7 +21,7 @@ public class PermissionController : ControllerBase
     }
 
     [HttpGet]
-    [HasPermission(Permissions.PermissionManagement.View)]
+    [HasPermission(AppPermissions.PermissionManagement.View)]
     [ProducesResponseType(typeof(IEnumerable<PermissionDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPagedRoleAsync([FromQuery] PermissionFilterRequestDto dto)
     {

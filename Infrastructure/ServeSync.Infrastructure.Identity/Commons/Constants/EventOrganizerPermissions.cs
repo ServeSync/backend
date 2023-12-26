@@ -1,16 +1,18 @@
-﻿namespace ServeSync.Infrastructure.Identity.Commons.Constants;
+﻿using ServeSync.Application.Common;
+
+namespace ServeSync.Infrastructure.Identity.Commons.Constants;
 
 public static class EventOrganizerPermissions
 {
     public static List<string> Provider = new()
     {
-        Permissions.Users.ViewProfile,
+        AppPermissions.Users.ViewProfile,
         
-        Permissions.Events.Management,
-        Permissions.Events.View,
+        AppPermissions.Events.Management,
+        AppPermissions.Events.View,
         
-        Permissions.EventOrganizations.View,
-        Permissions.EventOrganizations.ViewContact,
-        Permissions.EventOrganizations.UpdateContact,
+        AppPermissions.EventOrganizations.View,
+        AppPermissions.EventOrganizations.ViewContact,
+        AppPermissions.EventOrganizations.UpdateContact,
     };
 }

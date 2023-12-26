@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
+using ServeSync.Application.Common;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Commands;
 using ServeSync.Application.UseCases.EventManagement.EventOrganizations.Dtos;
@@ -24,7 +25,7 @@ public class EventOrganizationController : Controller
     }
 
     [HttpGet]
-    [HasPermission(Permissions.EventOrganizations.View)]
+    [HasPermission(AppPermissions.EventOrganizations.View)]
     [ProducesResponseType(typeof(PagedResultDto<EventOrganizationDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventOrganizationsAsync([FromQuery] EventOrganizationFilterRequestDto dto)
     {
@@ -34,7 +35,7 @@ public class EventOrganizationController : Controller
     }
     
     [HttpGet("{id:guid}")]
-    [HasPermission(Permissions.EventOrganizations.View)]
+    [HasPermission(AppPermissions.EventOrganizations.View)]
     [ProducesResponseType(typeof(EventOrganizationDetailDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventOrganizationByIdAsync(Guid id)
     {
@@ -43,7 +44,7 @@ public class EventOrganizationController : Controller
     }
     
     [HttpPost]
-    [HasPermission(Permissions.EventOrganizations.Create)]
+    [HasPermission(AppPermissions.EventOrganizations.Create)]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateEventOrganizationAsync([FromBody] EventOrganizationCreateDto dto)
     {
@@ -52,7 +53,7 @@ public class EventOrganizationController : Controller
     }
     
     [HttpPut("{id:guid}")]
-    [HasPermission(Permissions.EventOrganizations.Update)]
+    [HasPermission(AppPermissions.EventOrganizations.Update)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateEventOrganizationAsync(Guid id, [FromBody] EventOrganizationUpdateDto dto)
     {
@@ -63,7 +64,7 @@ public class EventOrganizationController : Controller
     }
     
     [HttpDelete("{id:guid}")]
-    [HasPermission(Permissions.EventOrganizations.Delete)]
+    [HasPermission(AppPermissions.EventOrganizations.Delete)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteEventOrganizationByIdAsync(Guid id)
     {
@@ -72,7 +73,7 @@ public class EventOrganizationController : Controller
     }
 
     [HttpGet("{id:guid}/contacts")]
-    [HasPermission(Permissions.EventOrganizations.ViewContact)]
+    [HasPermission(AppPermissions.EventOrganizations.ViewContact)]
     [ProducesResponseType(typeof(PagedResultDto<EventOrganizationContactDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetContactByOrganizationAsync(Guid id, [FromQuery] EventOrganizationContactFilterRequestDto dto)
     {
@@ -81,7 +82,7 @@ public class EventOrganizationController : Controller
     }
 
     [HttpPost("{id:guid}/contacts")]
-    [HasPermission(Permissions.EventOrganizations.AddContact)]
+    [HasPermission(AppPermissions.EventOrganizations.AddContact)]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateEventOrganizationContactAsync(Guid id, EventOrganizationContactCreateDto dto)
     {
@@ -90,7 +91,7 @@ public class EventOrganizationController : Controller
     }
 
     [HttpPut("{id:guid}/contacts/{contactId:guid}")]
-    [HasPermission(Permissions.EventOrganizations.UpdateContact)]
+    [HasPermission(AppPermissions.EventOrganizations.UpdateContact)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateEventOrganizationContactByIdAsync(Guid id, Guid contactId,
         [FromBody] EventOrganizationContactUpdateDto dto)
@@ -100,7 +101,7 @@ public class EventOrganizationController : Controller
     }
     
     [HttpDelete("{id:guid}/contacts/{contactId:guid}")]
-    [HasPermission(Permissions.EventOrganizations.RemoveContact)]
+    [HasPermission(AppPermissions.EventOrganizations.RemoveContact)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteEventOrganizationContactByIdAsync(Guid id, Guid contactId)
     {

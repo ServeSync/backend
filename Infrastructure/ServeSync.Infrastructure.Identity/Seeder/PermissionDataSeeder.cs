@@ -52,8 +52,8 @@ public class PermissionDataSeeder : IDataSeeder
 
         var permissions = await _permissionRepository.FindAllAsync();
 
-        var deletePermissions = permissions.ExceptBy(Permissions.Provider.Select(x => x.Name), x => x.Name);
-        var newPermissions = Permissions.Provider.ExceptBy(permissions.Select(x => x.Name), x => x.Name);
+        var deletePermissions = permissions.ExceptBy(PermissionProvider.Provider.Select(x => x.Name), x => x.Name);
+        var newPermissions = PermissionProvider.Provider.ExceptBy(permissions.Select(x => x.Name), x => x.Name);
         foreach (var permission in deletePermissions)
         {
             _permissionRepository.Delete(permission);
