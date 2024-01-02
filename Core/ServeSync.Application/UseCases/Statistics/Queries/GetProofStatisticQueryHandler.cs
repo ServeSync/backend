@@ -33,7 +33,7 @@ public class GetProofStatisticQueryHandler : IQueryHandler<GetProofStatisticQuer
 
         var dateTime = DateTime.UtcNow.CurrentTimeZone();
         
-        var specification = GetSpecificationByRecurringType(request.Type, dateTime);
+        var specification = GetSpecificationByRecurringType(request.Type, dateTime, request.StartAt, request.EndAt);
         var result = new ProofStatisticDto()
         {
             Total = await _proofRepository.GetCountAsync(specification),
@@ -54,14 +54,19 @@ public class GetProofStatisticQueryHandler : IQueryHandler<GetProofStatisticQuer
         return result;
     }
     
-    private ISpecification<Proof, Guid> GetSpecificationByRecurringType(RecurringFilterType? type, DateTime dateTime)
+    private ISpecification<Proof, Guid> GetSpecificationByRecurringType(RecurringFilterType? type, 
+        DateTime dateTime,
+        DateTime? startAt,
+        DateTime? endAt)
     {
         if (!type.HasValue)
         {
             return EmptySpecification<Proof, Guid>.Instance;
         }
         
-        var (startAt, endAt) = DateTimeHelper.GetByRecurringType(type.Value, dateTime);
+        if (type is not RecurringFilterType.Custom)
+            (startAt, endAt) = DateTimeHelper.GetByRecurringType(type.Value, dateTime);
+        
         return new ProofByCreateTimeSpecification(startAt, endAt);
     }
 }

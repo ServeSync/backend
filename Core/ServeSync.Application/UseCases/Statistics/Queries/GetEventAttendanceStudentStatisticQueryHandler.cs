@@ -3,6 +3,7 @@ using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.Common.Helpers;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.UseCases.Statistics.Dtos;
+using ServeSync.Domain.SeedWorks.Exceptions.Resources;
 using ServeSync.Domain.SeedWorks.Specifications;
 using ServeSync.Domain.SeedWorks.Specifications.Interfaces;
 using ServeSync.Domain.StudentManagement.StudentAggregate;
@@ -25,7 +26,11 @@ public class GetEventAttendanceStudentStatisticQueryHandler : IQueryHandler<GetE
         var queryable = await GetQueryableAsync(request);
         var result =  await queryable.ToListAsync(cancellationToken);
         
-        return StatisticHelper.EnrichResult(result, request.TimeType, request.NumberOfRecords);
+        return StatisticHelper.EnrichResult(result, 
+            request.TimeType, 
+            GetTimeType(request), 
+            request.EndAt,
+            request.NumberOfRecords);
     }
 
     private async Task<IQueryable<EventStudentStatisticDto>> GetQueryableAsync(GetEventAttendanceStudentStatisticQuery request)
@@ -33,7 +38,8 @@ public class GetEventAttendanceStudentStatisticQueryHandler : IQueryHandler<GetE
         var specification = GetSpecification(request);
         var queryable = await _studentRepository.GetEventStudentAttendanceQueryable(specification);
 
-        switch (request.TimeType)
+        var timeType = GetTimeType(request);
+        switch (timeType)
         {
             case TimeType.Month:
                 return queryable.GroupBy(x => new { x.AttendanceAt.Month, x.AttendanceAt.Year })
@@ -81,8 +87,32 @@ public class GetEventAttendanceStudentStatisticQueryHandler : IQueryHandler<GetE
             
             case TimeType.Year:
                 return new EventAttendanceByTimeFrameSpecification(dateTime.AddYears(-request.NumberOfRecords), dateTime);
+            
+            case TimeType.Custom:
+                return new EventAttendanceByTimeFrameSpecification(request.StartAt, request.EndAt);
         }
         
         return EmptySpecification<StudentEventAttendance, Guid>.Instance;
+    }
+
+    private TimeType GetTimeType(GetEventAttendanceStudentStatisticQuery request)
+    {
+        if (request.TimeType is not TimeType.Custom)
+            return request.TimeType;
+
+        var totalDayDiffs = request.EndAt!.Value.GetTotalSubtractDays(request.StartAt!.Value);
+        if (totalDayDiffs > StatisticConstant.DayInYear && request.StartAt!.Value.Year != request.EndAt!.Value.Year)
+        {
+            request.NumberOfRecords = request.EndAt.Value.Year - request.StartAt.Value.Year + 1;
+            return TimeType.Year;
+        }
+        else if (totalDayDiffs > StatisticConstant.DayInMonth && request.StartAt.Value!.Month != request.EndAt.Value.Month)
+        {
+            request.NumberOfRecords = request.EndAt.Value.Month - request.StartAt.Value.Month + 1;
+            return TimeType.Month;
+        }
+
+        request.NumberOfRecords = totalDayDiffs + 1;
+        return TimeType.Date;
     }
 }

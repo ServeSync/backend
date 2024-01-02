@@ -7,9 +7,13 @@ namespace ServeSync.Application.UseCases.Statistics.Queries;
 public class GetEventStatisticQuery : IQuery<EventStatisticDto>
 {
     public RecurringFilterType? Type { get; set; }
+    public DateTime? StartAt { get; set; }
+    public DateTime? EndAt { get; set; }
     
-    public GetEventStatisticQuery(RecurringFilterType? type)
+    public GetEventStatisticQuery(RecurringFilterType? type, DateTime? startAt, DateTime? endAt)
     {
         Type = type;
+        StartAt = startAt;
+        EndAt = endAt;
     }
 }

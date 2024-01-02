@@ -162,7 +162,7 @@ public class EventController : ControllerBase
     [ProducesResponseType(typeof(EventStatisticDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventStatisticAsync([FromQuery] EventStatisticRequestDto dto)
     {
-        var result = await _mediator.Send(new GetEventStatisticQuery(dto.Type));
+        var result = await _mediator.Send(new GetEventStatisticQuery(dto.Type, dto.StartAt, dto.EndAt));
         return Ok(result);
     }
     
@@ -171,7 +171,7 @@ public class EventController : ControllerBase
     [ProducesResponseType(typeof(List<EventStudentStatisticDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventRegisteredStudentStatisticAsync([FromQuery] EventStudentStatisticRequestDto dto)
     {
-        var result = await _mediator.Send(new GetEventRegisteredStudentStatisticQuery(dto.Type, dto.NumberOfRecords));
+        var result = await _mediator.Send(new GetEventRegisteredStudentStatisticQuery(dto.Type, dto.NumberOfRecords, dto.StartAt, dto.EndAt));
         return Ok(result);
     }
     
@@ -180,7 +180,7 @@ public class EventController : ControllerBase
     [ProducesResponseType(typeof(List<EventStudentStatisticDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetEventAttendanceStudentStatisticAsync([FromQuery] EventStudentStatisticRequestDto dto)
     {
-        var result = await _mediator.Send(new GetEventAttendanceStudentStatisticQuery(dto.Type, dto.NumberOfRecords));
+        var result = await _mediator.Send(new GetEventAttendanceStudentStatisticQuery(dto.Type, dto.NumberOfRecords, dto.StartAt, dto.EndAt));
         return Ok(result);
     }
 }

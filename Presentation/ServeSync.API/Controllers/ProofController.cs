@@ -139,9 +139,10 @@ public class ProofController : ControllerBase
     [HttpGet("statistics")]
     [HasPermission(AppPermissions.Proofs.Management)]
     [ProducesResponseType(typeof(ProofStatisticDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetProofStatisticAsync([FromQuery] RecurringFilterType? type)
+    public async Task<IActionResult> GetProofStatisticAsync([FromQuery] ProofStatisticRequestDto dto)
     {
-        var statistic = await _mediator.Send(new GetProofStatisticQuery(type));
+        var query = new GetProofStatisticQuery(dto.Type, dto.StartAt, dto.EndAt);
+        var statistic = await _mediator.Send(query);
         return Ok(statistic);
     }
 }

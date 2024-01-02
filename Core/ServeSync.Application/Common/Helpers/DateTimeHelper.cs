@@ -41,4 +41,9 @@ public static class DateTimeHelper
         
         return localDateTime;
     }
+
+    public static int GetTotalSubtractDays(this DateTime dateTime, DateTime otherDateTime)
+    {
+        return (int)(dateTime - otherDateTime).TotalDays;
+    }
 }

@@ -6,11 +6,17 @@ namespace ServeSync.Application.Common.Helpers;
 
 public static class StatisticHelper
 {
-    public static List<EventStudentStatisticDto> EnrichResult(List<EventStudentStatisticDto> result, TimeType timeType, int numberOfRecords)
+    public static List<EventStudentStatisticDto> EnrichResult(List<EventStudentStatisticDto> result,
+        TimeType timeType,
+        TimeType calculatedTimeType,
+        DateTime? endAt,
+        int numberOfRecords)
     {
-        var dateTime = DateTime.UtcNow.CurrentTimeZone();
+        var dateTime = timeType is TimeType.Custom
+            ? endAt!.Value
+            : DateTime.UtcNow.CurrentTimeZone();
         
-        switch (timeType)
+        switch (calculatedTimeType)
         {
             case TimeType.Date:
                 result.AddRange(Enumerable.Range(0, numberOfRecords)
@@ -34,8 +40,8 @@ public static class StatisticHelper
                     {
                         Name = $"{dt.Month}/{dt.Year}",
                         Value = 0,
-                        Day = dt.Month,
-                        Month = dt.Year
+                        Month = dt.Month,
+                        Year = dt.Year
                     }).ToList());
                 break;
             
@@ -57,4 +63,10 @@ public static class StatisticHelper
             .ThenBy(x => x.Day)
             .ToList();
     }
+}
+
+public struct StatisticConstant
+{
+    public const int DayInMonth = 28;
+    public const int DayInYear = 365;
 }

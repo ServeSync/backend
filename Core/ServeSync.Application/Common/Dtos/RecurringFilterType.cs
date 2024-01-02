@@ -5,5 +5,6 @@ public enum RecurringFilterType
     Today,
     ThisWeek,
     ThisMonth,
-    ThisYear
+    ThisYear,
+    Custom
 }

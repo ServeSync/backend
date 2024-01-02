@@ -4,5 +4,6 @@ public enum TimeType
 {
     Date,
     Month,
-    Year
+    Year,
+    Custom
 }

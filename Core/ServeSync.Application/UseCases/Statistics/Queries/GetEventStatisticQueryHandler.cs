@@ -39,7 +39,7 @@ public class GetEventStatisticQueryHandler : IQueryHandler<GetEventStatisticQuer
         
         var dateTime = DateTime.UtcNow.CurrentTimeZone();
         var specification = (await _specificationService.GetEventPersonalizedSpecificationAsync())
-            .And(GetSpecificationByRecurringType(request.Type, dateTime));
+            .And(GetSpecificationByRecurringType(request.Type, dateTime, request.StartAt, request.EndAt));
         
         var result = new EventStatisticDto()
         {
@@ -61,14 +61,19 @@ public class GetEventStatisticQueryHandler : IQueryHandler<GetEventStatisticQuer
         return result;
     }
     
-    private ISpecification<Event, Guid> GetSpecificationByRecurringType(RecurringFilterType? type, DateTime dateTime)
+    private ISpecification<Event, Guid> GetSpecificationByRecurringType(RecurringFilterType? type, 
+        DateTime dateTime,
+        DateTime? startAt,
+        DateTime? endAt)
     {
         if (!type.HasValue)
         {
             return EmptySpecification<Event, Guid>.Instance;
         }
         
-        var (startAt, endAt) = DateTimeHelper.GetByRecurringType(type.Value, dateTime);
+        if (type is not RecurringFilterType.Custom)
+            (startAt, endAt) = DateTimeHelper.GetByRecurringType(type.Value, dateTime);
+        
         return new EventByTimeFrameSpecification(startAt, endAt);
     }
 }

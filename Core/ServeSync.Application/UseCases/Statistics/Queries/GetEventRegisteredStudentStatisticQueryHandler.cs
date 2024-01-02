@@ -26,15 +26,20 @@ public class GetEventRegisteredStudentStatisticQueryHandler : IQueryHandler<GetE
         var queryable = await GetQueryableAsync(request);
         var result =  await queryable.ToListAsync(cancellationToken);
         
-        return StatisticHelper.EnrichResult(result, request.TimeType, request.NumberOfRecords);
+        return StatisticHelper.EnrichResult(result, 
+            request.TimeType, 
+            GetTimeType(request), 
+            request.EndAt,
+            request.NumberOfRecords);
     }
 
     private async Task<IQueryable<EventStudentStatisticDto>> GetQueryableAsync(GetEventRegisteredStudentStatisticQuery request)
     {
         var specification = GetSpecification(request);
         var queryable = await _studentRepository.GetEventStudentRegisteredQueryable(specification);
-
-        switch (request.TimeType)
+        
+        var timeType = GetTimeType(request);
+        switch (timeType)
         {
             case TimeType.Month:
                 return queryable.GroupBy(x => new { x.Created.Month, x.Created.Year })
@@ -86,8 +91,33 @@ public class GetEventRegisteredStudentStatisticQueryHandler : IQueryHandler<GetE
             case TimeType.Year:
                 specification = specification.And(new EventRegisterByTimeFrameSpecification(dateTime.AddYears(-request.NumberOfRecords), dateTime));
                 break;
+            
+            case TimeType.Custom:
+                specification = specification.And(new EventRegisterByTimeFrameSpecification(request.StartAt, request.EndAt));
+                break;
         }
         
         return specification;
+    }
+    
+    private TimeType GetTimeType(GetEventRegisteredStudentStatisticQuery request)
+    {
+        if (request.TimeType is not TimeType.Custom)
+            return request.TimeType;
+
+        var totalDayDiffs = request.EndAt!.Value.GetTotalSubtractDays(request.StartAt!.Value);
+        if (totalDayDiffs > StatisticConstant.DayInYear && request.StartAt!.Value.Year != request.EndAt!.Value.Year)
+        {
+            request.NumberOfRecords = request.EndAt.Value.Year - request.StartAt.Value.Year + 1;
+            return TimeType.Year;
+        }
+        else if (totalDayDiffs > StatisticConstant.DayInMonth && request.StartAt.Value!.Month != request.EndAt.Value.Month)
+        {
+            request.NumberOfRecords = request.EndAt.Value.Month - request.StartAt.Value.Month + 1;
+            return TimeType.Month;
+        }
+
+        request.NumberOfRecords = totalDayDiffs + 1;
+        return TimeType.Date;
     }
 }
