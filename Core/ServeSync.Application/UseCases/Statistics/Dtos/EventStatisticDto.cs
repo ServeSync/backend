@@ -21,8 +21,11 @@ public class EventStudentStatisticDto
     public int Value { get; set; }
     
     [JsonIgnore]
-    public int Key { get; set; }
+    public int Day { get; set; }
     
     [JsonIgnore]
-    public int SubKey { get; set; }
+    public int Month { get; set; }
+    
+    [JsonIgnore]
+    public int Year { get; set; }
 }

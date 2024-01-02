@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ServeSync.Application.Common.Dtos;
+using ServeSync.Application.Common.Helpers;
 using ServeSync.Application.SeedWorks.Cqrs;
 using ServeSync.Application.UseCases.Statistics.Dtos;
 using ServeSync.Domain.SeedWorks.Specifications;
@@ -24,7 +25,7 @@ public class GetEventAttendanceStudentStatisticQueryHandler : IQueryHandler<GetE
         var queryable = await GetQueryableAsync(request);
         var result =  await queryable.ToListAsync(cancellationToken);
         
-        return EnrichResult(result, request);;
+        return StatisticHelper.EnrichResult(result, request.TimeType, request.NumberOfRecords);
     }
 
     private async Task<IQueryable<EventStudentStatisticDto>> GetQueryableAsync(GetEventAttendanceStudentStatisticQuery request)
@@ -40,8 +41,8 @@ public class GetEventAttendanceStudentStatisticQueryHandler : IQueryHandler<GetE
                     {
                         Name = $"{x.Key.Month}/{x.Key.Year}",
                         Value = x.Count(),
-                        Key = x.Key.Month,
-                        SubKey = x.Key.Year
+                        Month = x.Key.Month,
+                        Year = x.Key.Year
                     });
             
             case TimeType.Year:
@@ -50,7 +51,7 @@ public class GetEventAttendanceStudentStatisticQueryHandler : IQueryHandler<GetE
                     {
                         Name = x.Key.ToString(),
                         Value = x.Count(),
-                        Key = x.Key,
+                        Year = x.Key,
                     });
             
             default:
@@ -59,83 +60,29 @@ public class GetEventAttendanceStudentStatisticQueryHandler : IQueryHandler<GetE
                     {
                         Name = x.Key.ToString("dd/MM/yyyy"),
                         Value = x.Count(),
-                        Key = x.Key.Day
+                        Day = x.Key.Day,
+                        Month = x.Key.Month,
+                        Year = x.Key.Year
                     });
         }
     }
     
     private ISpecification<StudentEventAttendance, Guid> GetSpecification(GetEventAttendanceStudentStatisticQuery request)
     {
-        var dateTime = DateTime.UtcNow;
+        var dateTime = DateTime.UtcNow.CurrentTimeZone();
         
         switch (request.TimeType)
         {
             case TimeType.Date:
                 return new EventAttendanceByTimeFrameSpecification(dateTime.AddDays(-request.NumberOfRecords), dateTime);
-                break;
-            
-            case TimeType.Week:
-                break;
             
             case TimeType.Month:
                 return new EventAttendanceByTimeFrameSpecification(dateTime.AddMonths(-request.NumberOfRecords), dateTime);
-                break;
             
             case TimeType.Year:
                 return new EventAttendanceByTimeFrameSpecification(dateTime.AddYears(-request.NumberOfRecords), dateTime);
-                break;
         }
         
         return EmptySpecification<StudentEventAttendance, Guid>.Instance;
-    }
-    
-    private List<EventStudentStatisticDto> EnrichResult(List<EventStudentStatisticDto> result, GetEventAttendanceStudentStatisticQuery request)
-    {
-        var dateTime = DateTime.UtcNow;
-        
-        switch (request.TimeType)
-        {
-            case TimeType.Date:
-                result.AddRange(Enumerable.Range(0, request.NumberOfRecords)
-                    .Select(offset => dateTime.AddDays(-offset))
-                    .Where(dt => result.All(x => x.Key != dt.Day))
-                    .Select(dt => new EventStudentStatisticDto
-                    {
-                        Name = dt.ToString("dd/MM/yyyy"),
-                        Value = 0,
-                        Key = dt.Day
-                    }));
-                break;
-            
-            case TimeType.Week:
-                break;
-            
-            case TimeType.Month:
-                result.AddRange(Enumerable.Range(0, request.NumberOfRecords)
-                    .Select(offset => dateTime.AddMonths(-offset))
-                    .Where(dt => result.All(x => x.Key != dt.Month || x.SubKey != dt.Year))
-                    .Select(dt => new EventStudentStatisticDto
-                    {
-                        Name = $"{dt.Month}/{dt.Year}",
-                        Value = 0,
-                        Key = dt.Month,
-                        SubKey = dt.Year
-                    }).ToList());
-                break;
-            
-            case TimeType.Year:
-                result.AddRange(Enumerable.Range(0, request.NumberOfRecords)
-                    .Select(offset => dateTime.AddYears(-offset))
-                    .Where(dt => result.All(x => x.Key != dt.Year))
-                    .Select(dt => new EventStudentStatisticDto
-                    {
-                        Name = dt.Year.ToString(),
-                        Value = 0,
-                        Key = dt.Year
-                    }));
-                break;
-        }
-
-        return result.OrderBy(x => x.SubKey).ThenBy(x => x.Key).ToList();
     }
 }

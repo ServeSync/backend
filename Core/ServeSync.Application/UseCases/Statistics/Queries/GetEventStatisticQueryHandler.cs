@@ -37,7 +37,7 @@ public class GetEventStatisticQueryHandler : IQueryHandler<GetEventStatisticQuer
             EventStatus.Pending
         };
         
-        var dateTime = DateTime.UtcNow;
+        var dateTime = DateTime.UtcNow.CurrentTimeZone();
         var specification = (await _specificationService.GetEventPersonalizedSpecificationAsync())
             .And(GetSpecificationByRecurringType(request.Type, dateTime));
         

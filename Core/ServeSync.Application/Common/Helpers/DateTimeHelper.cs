@@ -33,4 +33,12 @@ public static class DateTimeHelper
         
         return (dateTime, dateTime);
     }
+    
+    public static DateTime CurrentTimeZone(this DateTime dateTime)
+    {
+        var vietnamZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+        var localDateTime = TimeZoneInfo.ConvertTimeFromUtc(dateTime, vietnamZone);
+        
+        return localDateTime;
+    }
 }

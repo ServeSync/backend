@@ -6,6 +6,8 @@ public static class StudentPermissions
 {
     public static List<string> Provider = new()
     {
+        AppPermissions.Users.ViewProfile,
+        
         AppPermissions.Students.View,
         
         AppPermissions.Students.ViewProfile,

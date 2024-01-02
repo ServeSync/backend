@@ -31,7 +31,7 @@ public class GetProofStatisticQueryHandler : IQueryHandler<GetProofStatisticQuer
             ProofStatus.Rejected
         };
 
-        var dateTime = DateTime.UtcNow;
+        var dateTime = DateTime.UtcNow.CurrentTimeZone();
         
         var specification = GetSpecificationByRecurringType(request.Type, dateTime);
         var result = new ProofStatisticDto()

@@ -3,7 +3,6 @@
 public enum TimeType
 {
     Date,
-    Week,
     Month,
     Year
 }
