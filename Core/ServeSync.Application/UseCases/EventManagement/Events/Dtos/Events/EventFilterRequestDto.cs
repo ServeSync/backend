@@ -26,3 +26,8 @@ public class EventFilterRequestDto : PagingAndSortingRequestDto
     [SortConstraint(Fields = $"{nameof(Event.Name)}, {nameof(Event.Address)}, {nameof(Event.StartAt)}, {nameof(Event.EndAt)}, {nameof(Event.Type)}, RepresentativeOrganization")]
     public override string? Sorting { get; set; } = string.Empty;
 }
+
+public class AttendanceEventFilterRequestDto : PagingRequestDto
+{
+    public bool IsPaging { get; set; } = true;
+}

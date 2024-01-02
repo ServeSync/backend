@@ -102,18 +102,19 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
         return (attendanceStudents, total);
     }
 
-    public async Task<(List<EventReadModel>, int)> GetAttendanceEventsOfStudentAsync(Guid studentId, int page, int size)
+    public async Task<(List<EventReadModel>, int)> GetAttendanceEventsOfStudentAsync(Guid studentId, int page, int size, bool isPaging)
     {
         var queryable = Collection.AsQueryable()
             .Where(x =>
                 x.AttendanceInfos.Any(y =>
                     y.AttendanceStudents.Any(z => z.StudentId == studentId)));
+
+        if (isPaging)
+        {
+            queryable = queryable.Skip((page - 1) * size).Take(size);
+        }
         
-        var attendanceEvents = await queryable
-            .Skip((page - 1) * size)
-            .Take(size)
-            .ToListAsync();
-        
+        var attendanceEvents = await queryable.ToListAsync();
         var total = await queryable.CountAsync();
 
         return (attendanceEvents, total);
