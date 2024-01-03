@@ -190,11 +190,11 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             .Set("Roles.$[role].RegisteredStudents.$[registeredStudent].Phone", student.Phone)
             .Set("Roles.$[role].RegisteredStudents.$[registeredStudent].ImageUrl", student.ImageUrl)
             .Set("Roles.$[role].RegisteredStudents.$[registeredStudent].HomeRoomName", student.HomeRoom!.Name)
-            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Name", student.HomeRoom!.Name)
-            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Code", student.HomeRoom!.Name)
-            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Email", student.HomeRoom!.Name)
-            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Phone", student.HomeRoom!.Name)
-            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].ImageUrl", student.HomeRoom!.Name)
+            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Name", student.FullName)
+            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Code", student.Code)
+            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Email", student.Email)
+            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Phone", student.Phone)
+            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].ImageUrl", student.ImageUrl)
             .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].HomeRoomName", student.HomeRoom!.Name);
         
         var arrayFilters = new List<ArrayFilterDefinition>
