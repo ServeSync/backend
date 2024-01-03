@@ -17,6 +17,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using Serilog;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.ExceptionHandlers;
 using ServeSync.Application;
@@ -92,6 +93,7 @@ using ServeSync.Infrastructure.Identity.Services;
 using ServeSync.Infrastructure.MongoDb;
 using ServeSync.Infrastructure.MongoDb.Repositories;
 using ServeSync.Infrastructure.MongoDb.Settings;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace ServeSync.API.Extensions;
 
@@ -386,12 +388,8 @@ public static class DependencyInjectionExtensions
     {
         services.AddScoped<IDataSeeder, IdentityDataSeeder>();
         services.AddScoped<IDataSeeder, PermissionDataSeeder>();
-        
-        if (environment.IsDevelopment())
-        {
-            services.AddScoped<IDataSeeder, StudentManagementDataSeeder>();
-            services.AddScoped<IDataSeeder, EventManagementDataSeeder>();
-        }
+        services.AddScoped<IDataSeeder, StudentManagementDataSeeder>();
+        services.AddScoped<IDataSeeder, EventManagementDataSeeder>();
         
         return services;
     }
@@ -488,6 +486,19 @@ public static class DependencyInjectionExtensions
     //     using var command = new MySqlCommand($"CREATE DATABASE IF NOT EXISTS {dbName};", connection);
     //     command.ExecuteNonQuery();
     // }
+    
+    public static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
+    {
+        var seqServerUrl = configuration["Serilog:ServerUrl"];
+
+        return new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.Seq(seqServerUrl)
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+    }
     
     private static IServiceCollection AddMongoRepository<T, TKey>(this IServiceCollection services, string collectionName) where T : BaseReadModel<TKey> where TKey : IEquatable<TKey>
     {

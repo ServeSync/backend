@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Domain.StudentManagement.EducationProgramAggregate;
@@ -25,6 +26,7 @@ public class StudentManagementDataSeeder : IDataSeeder
     private readonly IHomeRoomDomainService _homeRoomDomainService;
     private readonly IStudentDomainService _studentDomainService;
 
+    private readonly IHostEnvironment _hostEnvironment;
     private readonly ILogger<StudentManagementDataSeeder> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -37,6 +39,7 @@ public class StudentManagementDataSeeder : IDataSeeder
         IFacultyDomainService facultyDomainService,
         IHomeRoomDomainService homeRoomDomainService,
         IStudentDomainService studentDomainService,
+        IHostEnvironment hostEnvironment,
         ILogger<StudentManagementDataSeeder> logger,
         IUnitOfWork unitOfWork)
     {
@@ -47,7 +50,8 @@ public class StudentManagementDataSeeder : IDataSeeder
         _educationProgramDomainService = educationProgramDomainService;
         _facultyDomainService = facultyDomainService;
         _homeRoomDomainService = homeRoomDomainService;
-        _studentDomainService = studentDomainService;
+        _studentDomainService = studentDomainService;   
+        _hostEnvironment = hostEnvironment;
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
@@ -58,7 +62,11 @@ public class StudentManagementDataSeeder : IDataSeeder
         await SeedFacultyAsync();
         await SeedHomeRoomsAsync();
         await SeedEducationProgramsAsync();
-        await SeedStudentsAsync();
+        
+        if (_hostEnvironment.IsDevelopment())
+        {
+            await SeedStudentsAsync();
+        }
     }
 
     private async Task SeedFacultyAsync()

@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Domain.EventManagement.EventAggregate;
@@ -43,7 +44,8 @@ public class EventManagementDataSeeder : IDataSeeder
     private readonly IBasicReadOnlyRepository<StudentEventRegister, Guid> _studentEventRegisterRepository;
     private readonly IBasicReadOnlyRepository<EventActivity, Guid> _eventActivityRepository;
     private readonly IBasicReadOnlyRepository<StudentEventAttendance, Guid> _studentAttendanceRepository;
-    
+
+    private readonly IHostEnvironment _hostEnvironment;
     private readonly ILogger<StudentManagementDataSeeder> _logger;
     private readonly IUnitOfWork _unitOfWork;
     
@@ -63,6 +65,7 @@ public class EventManagementDataSeeder : IDataSeeder
         IBasicReadOnlyRepository<StudentEventRegister, Guid> studentEventRegisterRepository,
         IBasicReadOnlyRepository<EventActivity, Guid> eventActivityRepository,
         IBasicReadOnlyRepository<StudentEventAttendance, Guid> studentAttendanceRepository,
+        IHostEnvironment hostEnvironment,
         ILogger<StudentManagementDataSeeder> logger, 
         IUnitOfWork unitOfWork)
     {
@@ -81,6 +84,7 @@ public class EventManagementDataSeeder : IDataSeeder
         _studentEventRegisterRepository = studentEventRegisterRepository;
         _eventActivityRepository = eventActivityRepository;
         _studentAttendanceRepository = studentAttendanceRepository;
+        _hostEnvironment = hostEnvironment;
         _logger = logger;
         _unitOfWork = unitOfWork;
     }
@@ -88,13 +92,17 @@ public class EventManagementDataSeeder : IDataSeeder
     public async Task SeedAsync()
     {
         await SeedEventCategoriesAsync();
-        await SeedEventOrganizationsAsync();
-        await SeedEventsAsync();
-        await SeedRegisterEventAsync();
-        await SeedInternalProofAsync();
-        await SeedExternalProofAsync();
-        await SeedAttendanceEventsForStudentAsync();
-        await SeedEventCollaborationRequestsAsync();
+        
+        if (_hostEnvironment.IsDevelopment())
+        {
+            await SeedEventOrganizationsAsync();
+            await SeedEventsAsync();
+            await SeedRegisterEventAsync();
+            await SeedInternalProofAsync();
+            await SeedExternalProofAsync();
+            await SeedAttendanceEventsForStudentAsync();
+            await SeedEventCollaborationRequestsAsync();
+        }
     }
 
     private async Task SeedEventCategoriesAsync()
