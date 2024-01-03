@@ -18,7 +18,7 @@ builder.Services
     .AddRedisCache(builder.Configuration)
     .AddEmailSender(builder.Configuration)
     .AddDomainServices()
-    .AddDataSeeders()
+    .AddDataSeeders(builder.Environment)
     .AddCloudinary(builder.Configuration)
     .AddQueryObjects()
     .AddMongoDB(builder.Configuration)

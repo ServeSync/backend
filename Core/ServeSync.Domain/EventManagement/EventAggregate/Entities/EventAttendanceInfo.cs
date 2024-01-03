@@ -20,6 +20,8 @@ public class EventAttendanceInfo : Entity
         StartAt = Guard.NotNull(startAt, nameof(StartAt));
         SetEndAt(endAt);
         EventId = Guard.NotNull(eventId, nameof(EventId));
+        
+        AddDomainEvent(new NewEventAttendanceInfoCreatedDomainEvent(eventId));
     }
     
     internal bool IsOverlapped(DateTime startAt, DateTime endAt)
