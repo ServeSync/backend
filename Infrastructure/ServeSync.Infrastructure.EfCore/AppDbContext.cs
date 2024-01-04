@@ -63,17 +63,28 @@ public class AppDbContext : IdentityDbContext<
         }
     }
     
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    // public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    // {
+    //     ProcessAuditEntityState();
+    //     
+    //     var domainEvents = await DispatchDomainEventsAsync();
+    //     
+    //     var result = await base.SaveChangesAsync(cancellationToken);
+    //
+    //     await DispatchPersistedDomainEventsAsync(domainEvents);
+    //
+    //     return result;
+    // }
+
+    public async Task<IList<IDomainEvent>> SaveChangesAppAsync()
     {
         ProcessAuditEntityState();
         
         var domainEvents = await DispatchDomainEventsAsync();
+
+        await base.SaveChangesAsync();
         
-        var result = await base.SaveChangesAsync(cancellationToken);
-
-        await DispatchPersistedDomainEventsAsync(domainEvents);
-
-        return result;
+        return domainEvents;
     }
 
     private async Task<IList<IDomainEvent>> DispatchDomainEventsAsync()

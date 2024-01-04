@@ -2,7 +2,7 @@
 
 public interface IUnitOfWork
 {
-    Task<int> CommitAsync();
+    Task CommitAsync();
 
     Task BeginTransactionAsync();
 
