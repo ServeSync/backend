@@ -108,7 +108,7 @@ public class GetEventAttendanceStudentStatisticQueryHandler : IQueryHandler<GetE
         }
         else if (totalDayDiffs > StatisticConstant.DayInMonth && request.StartAt.Value!.Month != request.EndAt.Value.Month)
         {
-            request.NumberOfRecords = request.EndAt.Value.Month - request.StartAt.Value.Month + 1;
+            request.NumberOfRecords = Math.Abs(request.EndAt.Value.Month - request.StartAt.Value.Month) + 1;
             return TimeType.Month;
         }
 

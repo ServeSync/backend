@@ -108,12 +108,12 @@ public class GetEventRegisteredStudentStatisticQueryHandler : IQueryHandler<GetE
         var totalDayDiffs = request.EndAt!.Value.GetTotalSubtractDays(request.StartAt!.Value);
         if (totalDayDiffs > StatisticConstant.DayInYear && request.StartAt!.Value.Year != request.EndAt!.Value.Year)
         {
-            request.NumberOfRecords = request.EndAt.Value.Year - request.StartAt.Value.Year + 1;
+            request.NumberOfRecords = Math.Abs(request.EndAt.Value.Year - request.StartAt.Value.Year) + 1;
             return TimeType.Year;
         }
         else if (totalDayDiffs > StatisticConstant.DayInMonth && request.StartAt.Value!.Month != request.EndAt.Value.Month)
         {
-            request.NumberOfRecords = request.EndAt.Value.Month - request.StartAt.Value.Month + 1;
+            request.NumberOfRecords = Math.Abs(request.EndAt.Value.Month - request.StartAt.Value.Month) + 1;
             return TimeType.Month;
         }
 
