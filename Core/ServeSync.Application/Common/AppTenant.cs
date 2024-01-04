@@ -1,4 +1,4 @@
-﻿namespace ServeSync.Infrastructure.Identity.Commons.Constants;
+﻿namespace ServeSync.Application.Common;
 
 public static class AppTenant
 {
