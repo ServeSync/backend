@@ -37,6 +37,7 @@ public class UserRepository : EfCoreRepository<ApplicationUser, string>, IUserRe
                                     .ThenInclude(x => x.Tenants)
                                .Include(x => x.User)
                                     .ThenInclude(x => x.Roles)
+                                    .ThenInclude(x => x.Role)
                                .Include(x => x.User)
                                     .ThenInclude(x => x.RefreshToken)
                                .FirstOrDefaultAsync(x => x.Value == refreshToken))?.User;
