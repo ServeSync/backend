@@ -308,12 +308,13 @@ public class Event : AuditableTenantAggregateRoot
     
     internal void AddRegistrationInfo(DateTime startAt, DateTime endAt, DateTime dateTime)
     {
-        if (dateTime >= StartAt || GetCurrentStatus(dateTime) is EventStatus.Expired 
-                                                              or EventStatus.Cancelled 
-                                                              or EventStatus.Rejected)
-        {
-            throw new EventRegistrationInfoCannotBeAddedException();
-        }
+        CheckCanUpdateRegistrationInfo(dateTime);
+        // if (dateTime >= StartAt || GetCurrentStatus(dateTime) is EventStatus.Expired 
+        //                                                       or EventStatus.Cancelled 
+        //                                                       or EventStatus.Rejected)
+        // {
+        //     throw new EventRegistrationInfoCannotBeAddedException();
+        // }
         
         if (startAt >= StartAt || endAt >= StartAt)
         {
@@ -331,23 +332,25 @@ public class Event : AuditableTenantAggregateRoot
     
     internal void UpdateRegistrationInfo(Guid id, DateTime startAt, DateTime endAt, DateTime dateTime)
     {
+        CheckCanUpdateRegistrationInfo(dateTime);
+        
         var registrationInfo = RegistrationInfos.FirstOrDefault(x => x.Id == id);
         if (registrationInfo == null)
         {
             throw new EventRegistrationInfoNotFoundException(id, Id);
         }
         
-        if (registrationInfo.StartAt == startAt && registrationInfo.EndAt == endAt)
-        {
-            return;
-        }
-
-        if (registrationInfo.StartAt <= dateTime || GetCurrentStatus(dateTime) is EventStatus.Expired 
-                                                                               or EventStatus.Cancelled 
-                                                                               or EventStatus.Rejected)
-        {
-            throw new EventRegistrationInfoCannotBeUpdatedException(id);
-        }
+        // if (registrationInfo.StartAt == startAt && registrationInfo.EndAt == endAt)
+        // {
+        //     return;
+        // }
+        //
+        // if (registrationInfo.StartAt <= dateTime || GetCurrentStatus(dateTime) is EventStatus.Expired 
+        //                                                                        or EventStatus.Cancelled 
+        //                                                                        or EventStatus.Rejected)
+        // {
+        //     throw new EventRegistrationInfoCannotBeUpdatedException(id);
+        // }
         
         if (RegistrationInfos.Any(x => x.Id != id && x.IsOverlapped(startAt, endAt)))
         {
@@ -360,6 +363,8 @@ public class Event : AuditableTenantAggregateRoot
     
     internal void RemoveRegistrationInfo(Guid id, DateTime dateTime)
     {
+        CheckCanUpdateRegistrationInfo(dateTime);
+        
         var registrationInfo = RegistrationInfos.FirstOrDefault(x => x.Id == id);
         if (registrationInfo == null)
         {
