@@ -336,6 +336,11 @@ public class Event : AuditableTenantAggregateRoot
         {
             throw new EventRegistrationInfoNotFoundException(id, Id);
         }
+        
+        if (registrationInfo.StartAt == startAt && registrationInfo.EndAt == endAt)
+        {
+            return;
+        }
 
         if (registrationInfo.StartAt <= dateTime || GetCurrentStatus(dateTime) is EventStatus.Expired 
                                                                                or EventStatus.Cancelled 
