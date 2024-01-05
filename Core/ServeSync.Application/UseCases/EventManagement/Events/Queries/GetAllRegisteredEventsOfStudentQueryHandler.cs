@@ -19,7 +19,7 @@ public class GetAllRegisteredEventsOfStudentQueryHandler : IQueryHandler<GetAllR
     
     public async Task<PagedResultDto<StudentRegisteredEventDto>> Handle(GetAllRegisteredEventsOfStudentQuery request, CancellationToken cancellationToken)
     {
-        var (events, total) = await _eventReadModelRepository.GetRegisteredEventsOfStudentAsync(request.StudentId, request.Page, request.Size);
+        var (events, total) = await _eventReadModelRepository.GetRegisteredEventsOfStudentAsync(request.StudentId, request.Status, request.Page, request.Size);
         
         var attendanceEventDtos = _mapper.Map<List<StudentRegisteredEventDto>>(events);
         foreach (var attendanceEventDto in attendanceEventDtos)

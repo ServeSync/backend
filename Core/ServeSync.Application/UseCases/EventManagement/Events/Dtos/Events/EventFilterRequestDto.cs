@@ -31,3 +31,8 @@ public class AttendanceEventFilterRequestDto : PagingRequestDto
 {
     public bool IsPaging { get; set; } = true;
 }
+
+public class RegisteredEventsOfStudentFilterRequestDto : PagingRequestDto
+{
+    public EventStatus? Status { get; set; }
+}

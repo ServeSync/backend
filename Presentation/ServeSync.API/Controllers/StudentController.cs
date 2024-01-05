@@ -127,9 +127,9 @@ public class StudentController : ControllerBase
     [HttpGet("{id:guid}/registered-events")]
     [HasPermission(AppPermissions.Students.View)]
     [ProducesResponseType(typeof(PagedResultDto<StudentRegisteredEventDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetRegisteredEventsOfStudentAsync(Guid id, [FromQuery] PagingRequestDto dto)
+    public async Task<IActionResult> GetRegisteredEventsOfStudentAsync(Guid id, [FromQuery] RegisteredEventsOfStudentFilterRequestDto dto)
     {
-        var events = await _mediator.Send(new GetAllRegisteredEventsOfStudentQuery(id, dto.Page, dto.Size));
+        var events = await _mediator.Send(new GetAllRegisteredEventsOfStudentQuery(id, dto.Page, dto.Size, dto.Status));
         return Ok(events);
     }
     

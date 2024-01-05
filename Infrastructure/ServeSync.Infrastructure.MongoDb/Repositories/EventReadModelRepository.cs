@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using ServeSync.Application.ReadModels.Events;
+using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
@@ -131,7 +132,7 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             .ToListAsync();
     }
 
-    public async Task<(List<EventReadModel>, int)> GetRegisteredEventsOfStudentAsync(Guid studentId, int page, int size)
+    public async Task<(List<EventReadModel>, int)> GetRegisteredEventsOfStudentAsync(Guid studentId, EventStatus? status, int page, int size)
     {
         var queryable = Collection.AsQueryable()
             .Where(x =>
@@ -139,6 +140,11 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
                     y.RegisteredStudents.Any(z => z.StudentId == studentId && z.Status == EventRegisterStatus.Approved))
                 && x.AttendanceInfos.All(y =>
                     y.AttendanceStudents.All(z => z.StudentId != studentId)));
+
+        if (status.HasValue && status.Value == EventStatus.Done)
+        {
+            queryable = queryable.Where(x => x.Status == EventStatus.Approved && x.EndAt < DateTime.UtcNow);
+        }
 
         var registeredEvents = await queryable
             .Skip((page - 1) * size)
