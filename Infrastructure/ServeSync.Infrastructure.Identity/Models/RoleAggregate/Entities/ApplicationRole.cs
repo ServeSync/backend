@@ -83,8 +83,13 @@ public partial class ApplicationRole : IdentityRole
         return Permissions.Any(x => x.PermissionId == permissionId);
     }
 
-    private bool IsDefaultRole(string name)
+    public bool IsDefaultRole(string name)
     {
         return AppRole.All.Contains(name);
+    }
+    
+    public bool IsDefaultRole()
+    {
+        return AppRole.All.Contains(Name);
     }
 }

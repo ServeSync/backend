@@ -126,6 +126,15 @@ public partial class ApplicationUser : IdentityUser<string>
         Tenants.Remove(tenant);
     }
 
+    public string GetDefaultRole(Guid tenantId)
+    {
+        return Roles.Where(x => x.TenantId == tenantId)
+            .Select(x => x.Role)
+            .Where(x => x!.IsDefaultRole())
+            .Select(x => x!.Name)
+            .FirstOrDefault()!;
+    }
+
     private bool CanRefreshToken(string accessTokenId, string refreshToken)
     {
         var token = GetRefreshToken(accessTokenId, refreshToken);

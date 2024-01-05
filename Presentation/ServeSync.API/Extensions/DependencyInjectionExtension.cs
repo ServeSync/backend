@@ -106,6 +106,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IExceptionHandler, ExceptionHandler>();
         services.AddScoped<ITokenProvider, JwtTokenProvider>();
         services.AddScoped<ISpecificationService, SpecificationService>();
+        services.AddScoped<IdentityUserClaimGenerator>();
         
         return services;
     }

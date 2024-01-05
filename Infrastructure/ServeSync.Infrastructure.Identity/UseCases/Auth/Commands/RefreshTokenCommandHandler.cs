@@ -20,17 +20,20 @@ public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, A
     private readonly ITokenProvider _tokenProvider;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IdentityUserClaimGenerator _identityUserClaimGenerator;
     
     public RefreshTokenCommandHandler(
         IOptions<JwtSetting> jwtOptions,
         ITokenProvider tokenProvider,
         IUserRepository userRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IdentityUserClaimGenerator identityUserClaimGenerator)
     {
         _jwtSetting = jwtOptions.Value;
         _tokenProvider = tokenProvider;
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _identityUserClaimGenerator = identityUserClaimGenerator;
     }
     
     public async Task<AuthCredentialDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
@@ -51,7 +54,7 @@ public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, A
         user.UseRefreshToken(accessTokenId, request.RefreshToken);
 
         var tenantId = claims.FirstOrDefault(x => x.Type == AppClaim.TenantId)?.Value;
-        var accessToken = _tokenProvider.GenerateAccessToken(IdentityUserClaimGenerator.Generate(user, tenantId == null ? null : Guid.Parse(tenantId)));
+        var accessToken = _tokenProvider.GenerateAccessToken(await _identityUserClaimGenerator.GenerateAsync(user, tenantId == null ? null : Guid.Parse(tenantId)));
         var credential = new AuthCredentialDto()
         {
             AccessToken = accessToken.Value,
