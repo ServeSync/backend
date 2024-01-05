@@ -183,4 +183,12 @@ public class EventController : ControllerBase
         var result = await _mediator.Send(new GetEventAttendanceStudentStatisticQuery(dto.Type, dto.NumberOfRecords, dto.StartAt, dto.EndAt));
         return Ok(result);
     }
+    
+    [HttpPut("generate-qr-code")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> GenerateQrCodeAsync([FromBody] Guid[] ids)
+    {
+        await _mediator.Send(new GenerateQrCodeCommand(ids));
+        return NoContent();
+    }
 }
