@@ -35,4 +35,13 @@ public class ProofRepository : EfCoreRepository<Proof>, IProofRepository
                     ? x.ExternalProof!.Score
                     : x.SpecialProof!.Score);
     }
+
+    public async Task<IList<Proof>> GetProofsByInternalEventAsync(Guid eventId, Guid studentId)
+    {
+        return await GetQueryable()
+            .Where(x => x.StudentId == studentId &&
+                        x.ProofStatus == ProofStatus.Pending &&
+                        x.InternalProof!.EventId == eventId)
+            .ToListAsync();
+    }
 }
