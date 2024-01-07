@@ -1,21 +1,25 @@
-﻿namespace ServeSync.Infrastructure.Identity.Commons.Constants;
+﻿using ServeSync.Application.Common;
+
+namespace ServeSync.Infrastructure.Identity.Commons.Constants;
 
 public static class StudentPermissions
 {
     public static List<string> Provider = new()
     {
-        Permissions.Students.View,
+        AppPermissions.Users.ViewProfile,
         
-        Permissions.Students.ViewProfile,
-        Permissions.Students.EditProfile,
+        AppPermissions.Students.View,
         
-        Permissions.Events.View,
+        AppPermissions.Students.ViewProfile,
+        AppPermissions.Students.EditProfile,
         
-        Permissions.Students.Export,
+        AppPermissions.Events.View,
         
-        Permissions.Proofs.View,
-        Permissions.Proofs.Create,
-        Permissions.Proofs.Delete,
-        Permissions.Proofs.Update
+        AppPermissions.Students.Export,
+        
+        AppPermissions.Proofs.View,
+        AppPermissions.Proofs.Create,
+        AppPermissions.Proofs.Delete,
+        AppPermissions.Proofs.Update
     };
 }

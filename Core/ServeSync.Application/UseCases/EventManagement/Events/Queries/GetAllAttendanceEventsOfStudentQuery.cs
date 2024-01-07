@@ -7,9 +7,11 @@ namespace ServeSync.Application.UseCases.EventManagement.Events.Queries;
 public class GetAllAttendanceEventsOfStudentQuery : PagingRequestDto, IQuery<PagedResultDto<StudentAttendanceEventDto>>
 {
     public Guid StudentId { get; set; }
+    public bool IsPaging { get; set; }
 
-    public GetAllAttendanceEventsOfStudentQuery(Guid studentId, int page, int size) : base(page, size)
+    public GetAllAttendanceEventsOfStudentQuery(Guid studentId, bool isPaging, int page, int size) : base(page, size)
     {
         StudentId = studentId;
+        IsPaging = isPaging;
     }
 }

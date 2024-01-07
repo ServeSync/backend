@@ -11,6 +11,8 @@ using ServeSync.Application.UseCases.EventManagement.Events.Dtos.EventRoles;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.StudentInEvents;
 using ServeSync.Application.UseCases.EventManagement.Events.Queries;
+using ServeSync.Application.UseCases.Statistics.Dtos;
+using ServeSync.Application.UseCases.Statistics.Queries;
 using ServeSync.Application.UseCases.StudentManagement.Students.Commands;
 using ServeSync.Application.UseCases.StudentManagement.Students.Dtos;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
@@ -32,7 +34,7 @@ public class EventController : ControllerBase
     [ProducesResponseType(typeof(PagedResultDto<FlatEventDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllEventsAsync([FromQuery] EventFilterRequestDto dto)
     {
-        var query = new GetAllEventsQuery(dto.StartDate, dto.EndDate, dto.EventType, dto.EventStatus, dto.DefaultFilters, dto.Search, dto.Page, dto.Size, dto.Sorting);
+        var query = new GetAllEventsQuery(dto.IsPaging, dto.StartDate, dto.EndDate, dto.EventType, dto.EventStatus, dto.DefaultFilters, dto.Search, dto.Page, dto.Size, dto.Sorting);
         
         var events = await _mediator.Send(query);
         return Ok(events);
@@ -48,7 +50,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPost]
-    [HasPermission(Permissions.Events.Create)]
+    [HasPermission(AppPermissions.Events.Create)]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateEvent([FromBody] EventCreateDto dto)
     {
@@ -57,7 +59,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPut("{id:guid}")]
-    [HasPermission(Permissions.Events.Edit)]
+    [HasPermission(AppPermissions.Events.Edit)]
     [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] EventUpdateDto dto)
@@ -119,7 +121,7 @@ public class EventController : ControllerBase
     }
 
     [HttpPost("{id:guid}/cancel")]
-    [HasPermission(Permissions.Events.Cancel)]
+    [HasPermission(AppPermissions.Events.Cancel)]
     [EventAccessControl(EventSourceAccessControl.Event)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> CancelEventAsync(Guid id)
@@ -129,7 +131,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPost("{id:guid}/approve")]
-    [HasPermission(Permissions.Events.Approve)]
+    [HasPermission(AppPermissions.Events.Approve)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ApproveEventAsync(Guid id)
     {
@@ -138,7 +140,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPost("{id:guid}/reject")]
-    [HasPermission(Permissions.Events.Reject)]
+    [HasPermission(AppPermissions.Events.Reject)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RejectEventAsync(Guid id)
     {
@@ -152,6 +154,41 @@ public class EventController : ControllerBase
     public async Task<IActionResult> SyncEventsAsync([FromQuery] Guid[] ids)
     {
         await _mediator.Send(new SyncEventsCommand(ids));
+        return NoContent();
+    }
+    
+    [HttpGet("statistic")]
+    [HasPermission(AppPermissions.Events.Management)]
+    [ProducesResponseType(typeof(EventStatisticDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEventStatisticAsync([FromQuery] EventStatisticRequestDto dto)
+    {
+        var result = await _mediator.Send(new GetEventStatisticQuery(dto.Type, dto.StartAt, dto.EndAt));
+        return Ok(result);
+    }
+    
+    [HttpGet("registered-students/statistic")]
+    [HasPermission(AppPermissions.Events.Management)]
+    [ProducesResponseType(typeof(List<EventStudentStatisticDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEventRegisteredStudentStatisticAsync([FromQuery] EventStudentStatisticRequestDto dto)
+    {
+        var result = await _mediator.Send(new GetEventRegisteredStudentStatisticQuery(dto.Type, dto.NumberOfRecords, dto.StartAt, dto.EndAt));
+        return Ok(result);
+    }
+    
+    [HttpGet("attendance-students/statistic")]
+    [HasPermission(AppPermissions.Events.Management)]
+    [ProducesResponseType(typeof(List<EventStudentStatisticDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEventAttendanceStudentStatisticAsync([FromQuery] EventStudentStatisticRequestDto dto)
+    {
+        var result = await _mediator.Send(new GetEventAttendanceStudentStatisticQuery(dto.Type, dto.NumberOfRecords, dto.StartAt, dto.EndAt));
+        return Ok(result);
+    }
+    
+    [HttpPut("generate-qr-code")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> GenerateQrCodeAsync([FromBody] Guid[] ids)
+    {
+        await _mediator.Send(new GenerateQrCodeCommand(ids));
         return NoContent();
     }
 }

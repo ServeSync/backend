@@ -34,7 +34,7 @@ public class ApproveProofCommandHandler : ICommandHandler<ApproveProofCommand>
             throw new ProofNotFoundException(request.Id);
         }
 
-        _proofDomainService.ApproveProof(proof);
+        await _proofDomainService.ApproveProofAsync(proof);
         _proofRepository.Update(proof);
         await _unitOfWork.CommitAsync();
         

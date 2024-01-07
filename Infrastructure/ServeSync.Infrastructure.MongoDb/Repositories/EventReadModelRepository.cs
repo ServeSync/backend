@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using ServeSync.Application.ReadModels.Events;
+using ServeSync.Domain.EventManagement.EventAggregate.Enums;
 using ServeSync.Domain.EventManagement.EventOrganizationAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Entities;
 using ServeSync.Domain.StudentManagement.StudentAggregate.Enums;
@@ -102,18 +103,19 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
         return (attendanceStudents, total);
     }
 
-    public async Task<(List<EventReadModel>, int)> GetAttendanceEventsOfStudentAsync(Guid studentId, int page, int size)
+    public async Task<(List<EventReadModel>, int)> GetAttendanceEventsOfStudentAsync(Guid studentId, int page, int size, bool isPaging)
     {
         var queryable = Collection.AsQueryable()
             .Where(x =>
                 x.AttendanceInfos.Any(y =>
                     y.AttendanceStudents.Any(z => z.StudentId == studentId)));
+
+        if (isPaging)
+        {
+            queryable = queryable.Skip((page - 1) * size).Take(size);
+        }
         
-        var attendanceEvents = await queryable
-            .Skip((page - 1) * size)
-            .Take(size)
-            .ToListAsync();
-        
+        var attendanceEvents = await queryable.ToListAsync();
         var total = await queryable.CountAsync();
 
         return (attendanceEvents, total);
@@ -130,7 +132,7 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             .ToListAsync();
     }
 
-    public async Task<(List<EventReadModel>, int)> GetRegisteredEventsOfStudentAsync(Guid studentId, int page, int size)
+    public async Task<(List<EventReadModel>, int)> GetRegisteredEventsOfStudentAsync(Guid studentId, EventStatus? status, int page, int size)
     {
         var queryable = Collection.AsQueryable()
             .Where(x =>
@@ -138,6 +140,11 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
                     y.RegisteredStudents.Any(z => z.StudentId == studentId && z.Status == EventRegisterStatus.Approved))
                 && x.AttendanceInfos.All(y =>
                     y.AttendanceStudents.All(z => z.StudentId != studentId)));
+
+        if (status.HasValue && status.Value == EventStatus.Done)
+        {
+            queryable = queryable.Where(x => x.Status == EventStatus.Approved && x.EndAt < DateTime.UtcNow);
+        }
 
         var registeredEvents = await queryable
             .Skip((page - 1) * size)
@@ -189,11 +196,11 @@ public class EventReadModelRepository : MongoDbRepository<EventReadModel, Guid>,
             .Set("Roles.$[role].RegisteredStudents.$[registeredStudent].Phone", student.Phone)
             .Set("Roles.$[role].RegisteredStudents.$[registeredStudent].ImageUrl", student.ImageUrl)
             .Set("Roles.$[role].RegisteredStudents.$[registeredStudent].HomeRoomName", student.HomeRoom!.Name)
-            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Name", student.HomeRoom!.Name)
-            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Code", student.HomeRoom!.Name)
-            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Email", student.HomeRoom!.Name)
-            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Phone", student.HomeRoom!.Name)
-            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].ImageUrl", student.HomeRoom!.Name)
+            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Name", student.FullName)
+            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Code", student.Code)
+            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Email", student.Email)
+            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].Phone", student.Phone)
+            .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].ImageUrl", student.ImageUrl)
             .Set("AttendanceInfos.$[attendanceInfo].AttendanceStudents.$[attendanceStudent].HomeRoomName", student.HomeRoom!.Name);
         
         var arrayFilters = new List<ArrayFilterDefinition>

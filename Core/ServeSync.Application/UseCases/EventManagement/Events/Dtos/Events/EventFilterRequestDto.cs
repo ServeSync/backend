@@ -9,6 +9,7 @@ namespace ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 
 public class EventFilterRequestDto : PagingAndSortingRequestDto
 {
+    public bool? IsPaging { get; set; }
     public string? Search { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
@@ -24,4 +25,14 @@ public class EventFilterRequestDto : PagingAndSortingRequestDto
 
     [SortConstraint(Fields = $"{nameof(Event.Name)}, {nameof(Event.Address)}, {nameof(Event.StartAt)}, {nameof(Event.EndAt)}, {nameof(Event.Type)}, RepresentativeOrganization")]
     public override string? Sorting { get; set; } = string.Empty;
+}
+
+public class AttendanceEventFilterRequestDto : PagingRequestDto
+{
+    public bool IsPaging { get; set; } = true;
+}
+
+public class RegisteredEventsOfStudentFilterRequestDto : PagingRequestDto
+{
+    public EventStatus? Status { get; set; }
 }

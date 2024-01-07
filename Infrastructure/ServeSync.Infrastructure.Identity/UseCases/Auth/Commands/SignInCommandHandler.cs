@@ -24,19 +24,22 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
     private readonly ITokenProvider _tokenProvider;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IdentityUserClaimGenerator _identityUserClaimGenerator;
 
     public SignInCommandHandler(
         IOptions<JwtSetting> jwtOptions,
         SignInManager<ApplicationUser> signInManager,
         ITokenProvider tokenProvider,
         IUserRepository userRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IdentityUserClaimGenerator identityUserClaimGenerator)
     {
         _jwtSetting = jwtOptions.Value;
         _signInManager = signInManager;
         _tokenProvider = tokenProvider;
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _identityUserClaimGenerator = identityUserClaimGenerator;
     }
     
     public async Task<AuthCredentialDto> Handle(SignInCommand request, CancellationToken cancellationToken)
@@ -50,7 +53,7 @@ public class SignInCommandHandler : ICommandHandler<SignInCommand, AuthCredentia
         var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, true);
         if (result.Succeeded)
         {
-            var accessToken = _tokenProvider.GenerateAccessToken(IdentityUserClaimGenerator.Generate(user));
+            var accessToken = _tokenProvider.GenerateAccessToken(await _identityUserClaimGenerator.GenerateAsync(user));
             var credential = new AuthCredentialDto()
             {
                 AccessToken = accessToken.Value,

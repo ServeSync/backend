@@ -8,6 +8,7 @@ namespace ServeSync.Application.UseCases.EventManagement.Events.Queries;
 
 public class GetAllEventsQuery : PagingAndSortingRequestDto, IQuery<PagedResultDto<FlatEventDto>>
 {
+    public bool? IsPaging { get; set; }
     public string? Search { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
@@ -16,6 +17,7 @@ public class GetAllEventsQuery : PagingAndSortingRequestDto, IQuery<PagedResultD
     public IEnumerable<EventDefaultFilter>? DefaultFilters { get; set; }
     
     public GetAllEventsQuery(
+        bool? isPaging,
         DateTime? startDate,
         DateTime? endDate,
         EventType? eventType,
@@ -26,6 +28,7 @@ public class GetAllEventsQuery : PagingAndSortingRequestDto, IQuery<PagedResultD
         int size, 
         string? sorting) : base(page, size, sorting)
     {
+        IsPaging = isPaging;
         StartDate = startDate;
         EndDate = endDate;
         EventType = eventType;

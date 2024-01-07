@@ -26,7 +26,8 @@ public class ProfileController : ControllerBase
     }
     
     [HttpGet]
-    [HasPermission(Permissions.Users.ViewProfile)]
+    // [HasPermission(AppPermissions.Users.ViewProfile)]
+    [Authorize]
     [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetProfileAsync()
     {

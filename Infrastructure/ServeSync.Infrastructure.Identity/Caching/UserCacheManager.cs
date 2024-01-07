@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using ServeSync.Application.Caching;
-using ServeSync.Application.Caching.Interfaces;
+﻿using ServeSync.Application.Caching.Interfaces;
 using ServeSync.Application.Common.Helpers;
 using ServeSync.Infrastructure.Identity.Caching.Interfaces;
 
@@ -20,7 +18,13 @@ public class UserCacheManager : IUserCacheManager
         var key = KeyGenerator.Generate("UserRole", $"{id}{tenantId}");
         return _cacheService.GetRecordAsync<IEnumerable<string>?>(key);
     }
-    
+
+    public Task RemoveRolesAsync(string id, Guid tenantId)
+    {
+        var key = KeyGenerator.Generate("UserRole", $"{id}{tenantId}");
+        return _cacheService.RemoveRecordAsync(key);
+    }
+
     public async Task SetRolesAsync(string id, Guid tenantId, IEnumerable<string> roles)
     {
         var key = KeyGenerator.Generate("UserRole", $"{id}{tenantId}");

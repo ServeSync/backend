@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using ServeSync.API.Common.Enums;
+using ServeSync.Application.Common;
 using ServeSync.Infrastructure.Identity.Commons.Constants;
 
 namespace ServeSync.API.Authorization;
@@ -29,7 +30,7 @@ public class ServeSyncAuthorizationPolicyProvider : IAuthorizationPolicyProvider
             return Task.FromResult(policyBuilder.Build());
         }
         
-        if (policyName.StartsWith(Permissions.Default, StringComparison.OrdinalIgnoreCase))
+        if (policyName.StartsWith(AppPermissions.Default, StringComparison.OrdinalIgnoreCase))
         {
             var policyBuilder = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()

@@ -3,7 +3,9 @@ using System.Text;
 using CloudinaryDotNet;
 using FluentValidation;
 using Hangfire;
-using Hangfire.MySql;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,11 +17,10 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using MySqlConnector;
+using Serilog;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.ExceptionHandlers;
 using ServeSync.Application;
-using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.Common.Settings;
 using ServeSync.Application.SeedWorks.Data;
 using ServeSync.Application.SeedWorks.Sessions;
@@ -92,6 +93,7 @@ using ServeSync.Infrastructure.Identity.Services;
 using ServeSync.Infrastructure.MongoDb;
 using ServeSync.Infrastructure.MongoDb.Repositories;
 using ServeSync.Infrastructure.MongoDb.Settings;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace ServeSync.API.Extensions;
 
@@ -103,6 +105,8 @@ public static class DependencyInjectionExtensions
         
         services.AddScoped<IExceptionHandler, ExceptionHandler>();
         services.AddScoped<ITokenProvider, JwtTokenProvider>();
+        services.AddScoped<ISpecificationService, SpecificationService>();
+        services.AddScoped<IdentityUserClaimGenerator>();
         
         return services;
     }
@@ -374,15 +378,14 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPersistedDomainEventHandler<StudentEventRegisterRejectedDomainEvent>, SyncEventReadModelDomainEventHandler>();
         services.AddScoped<IPersistedDomainEventHandler<StudentAttendedToEventDomainEvent>, SyncEventReadModelDomainEventHandler>();
         services.AddScoped<IPersistedDomainEventHandler<StudentRegisteredToEventRoleDomainEvent>, SyncEventReadModelDomainEventHandler>();
-        services.AddScoped<IPersistedDomainEventHandler<StudentContactInfoUpdatedDomainEvent>, SyncStudentReadModelDomainEventHandler>();
-        services.AddScoped<IPersistedDomainEventHandler<StudentCodeUpdatedDomainEvent>, SyncStudentReadModelDomainEventHandler>();
+        services.AddScoped<IPersistedDomainEventHandler<StudentUpdatedDomainEvent>, SyncStudentReadModelDomainEventHandler>();
         services.AddScoped<IPersistedDomainEventHandler<EventOrganizationUpdatedDomainEvent>, SyncEventOrganizationReadModelDomainEventHandler>();
         services.AddScoped<IPersistedDomainEventHandler<EventOrganizationContactUpdatedDomainEvent>, SyncEventOrganizationContactReadModelDomainEventHandler>();
         
         return services;
     }
 
-    public static IServiceCollection AddDataSeeders(this IServiceCollection services)
+    public static IServiceCollection AddDataSeeders(this IServiceCollection services, IWebHostEnvironment environment)
     {
         services.AddScoped<IDataSeeder, IdentityDataSeeder>();
         services.AddScoped<IDataSeeder, PermissionDataSeeder>();
@@ -414,26 +417,33 @@ public static class DependencyInjectionExtensions
 
     public static IServiceCollection AddHangFireBackGroundJob(this IServiceCollection services, IConfiguration configuration)
     {
-        InitHangFireDb(configuration);
-        
-        services.AddHangfire(config => config
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UseStorage(
-                    new MySqlStorage(configuration.GetConnectionString("HangFire"), new MySqlStorageOptions()
-                    {
-                        QueuePollInterval = TimeSpan.FromSeconds(3),
-                        JobExpirationCheckInterval = TimeSpan.FromHours(1),
-                        CountersAggregateInterval = TimeSpan.FromMinutes(5),
-                        TransactionTimeout = TimeSpan.FromMinutes(1),
-                        PrepareSchemaIfNecessary = true
-                    })
-                ));
+        var mongoUrlBuilder = new MongoUrlBuilder(configuration.GetConnectionString("MongoDb"));
+        var mongoClient = new MongoClient(mongoUrlBuilder.ToMongoUrl());
+
+        services.AddHangfire(x => x
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseMongoStorage(mongoClient, "ServeSync", new MongoStorageOptions
+            {
+                MigrationOptions = new MongoMigrationOptions
+                {
+                    MigrationStrategy = new MigrateMongoMigrationStrategy(),
+                    BackupStrategy = new CollectionMongoBackupStrategy()
+                },
+                CheckQueuedJobsStrategy = CheckQueuedJobsStrategy.TailNotificationsCollection,
+                Prefix = "HangFire",
+                CheckConnection = false
+            })
+        );
+
+        services.AddHangfireServer(serverOptions =>
+        {
+            serverOptions.ServerName = "Hangfire";
+        });
 
         services.AddScoped<IBackGroundJobManager, HangFireBackGroundJobManager>();
         services.AddScoped<IBackGroundJobPublisher, BackGroundJobPublisher>();
-        services.AddHangfireServer();
         
         return services;
     }
@@ -467,15 +477,28 @@ public static class DependencyInjectionExtensions
         return services;
     }
 
-    private static void InitHangFireDb(IConfiguration configuration)
+    // private static void InitHangFireDb(IConfiguration configuration)
+    // {
+    //     using var connection = new MySqlConnection(configuration.GetConnectionString("HangFireMaster"));
+    //     connection.Open();
+    //         
+    //     var dbName = new MySqlConnection(configuration.GetConnectionString("HangFire")).Database;
+    //     
+    //     using var command = new MySqlCommand($"CREATE DATABASE IF NOT EXISTS {dbName};", connection);
+    //     command.ExecuteNonQuery();
+    // }
+    
+    public static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
     {
-        using var connection = new MySqlConnection(configuration.GetConnectionString("HangFireMaster"));
-        connection.Open();
-            
-        var dbName = new MySqlConnection(configuration.GetConnectionString("HangFire")).Database;
-        
-        using var command = new MySqlCommand($"CREATE DATABASE IF NOT EXISTS {dbName};", connection);
-        command.ExecuteNonQuery();
+        var seqServerUrl = configuration["Serilog:ServerUrl"];
+
+        return new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.Seq(seqServerUrl)
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
     }
     
     private static IServiceCollection AddMongoRepository<T, TKey>(this IServiceCollection services, string collectionName) where T : BaseReadModel<TKey> where TKey : IEquatable<TKey>

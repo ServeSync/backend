@@ -1,7 +1,10 @@
 using Newtonsoft.Json.Converters;
+using Serilog;
 using ServeSync.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = DependencyInjectionExtensions.CreateSerilogLogger(builder.Configuration);
 
 builder.Services
     .AddHttpContextAccessor()
@@ -18,7 +21,7 @@ builder.Services
     .AddRedisCache(builder.Configuration)
     .AddEmailSender(builder.Configuration)
     .AddDomainServices()
-    .AddDataSeeders()
+    .AddDataSeeders(builder.Environment)
     .AddCloudinary(builder.Configuration)
     .AddQueryObjects()
     .AddMongoDB(builder.Configuration)
@@ -34,6 +37,8 @@ builder.Services.Configure<RouteOptions>(options =>
 {
     options.LowercaseUrls = true;
 });
+
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 

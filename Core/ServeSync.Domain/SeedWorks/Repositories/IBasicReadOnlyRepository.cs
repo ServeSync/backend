@@ -7,6 +7,8 @@ public interface IBasicReadOnlyRepository<TEntity, TKey> : ISpecificationReposit
     where TEntity : IEntity<TKey>
     where TKey : IEquatable<TKey>
 {
+    IQueryable<TEntity> GetQuery();
+    
     Task<IList<TEntity>> FindByIncludedIdsAsync(IEnumerable<TKey> ids);
     
     Task<IList<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? expression = null, string? sorting = null);

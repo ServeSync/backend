@@ -74,7 +74,7 @@ public interface IProofDomainService
 
     Proof RejectProof(Proof proof, string reason);
     
-    Proof ApproveProof(Proof proof);
+    Task<Proof> ApproveProofAsync(Proof proof);
     
     void Delete(Proof proof);
 }

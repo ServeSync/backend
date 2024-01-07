@@ -18,19 +18,22 @@ public class ExchangeTenantAccessTokenCommandHandler : ICommandHandler<ExchangeT
     private readonly IUserRepository _userRepository;
     private readonly ITokenProvider _tokenProvider;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IdentityUserClaimGenerator _identityUserClaimGenerator;
     
     public ExchangeTenantAccessTokenCommandHandler(
         IOptions<JwtSetting> jwtOptions,
         ICurrentUser currentUser, 
         IUserRepository userRepository,
         ITokenProvider tokenProvider,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IdentityUserClaimGenerator identityUserClaimGenerator)
     {
         _jwtSetting = jwtOptions.Value;
         _currentUser = currentUser;
         _userRepository = userRepository;
         _tokenProvider = tokenProvider;
         _unitOfWork = unitOfWork;
+        _identityUserClaimGenerator = identityUserClaimGenerator;
     }
     
     public async Task<AuthCredentialDto> Handle(ExchangeTenantAccessTokenCommand request, CancellationToken cancellationToken)
@@ -41,7 +44,7 @@ public class ExchangeTenantAccessTokenCommandHandler : ICommandHandler<ExchangeT
             throw new UserNotFoundException(_currentUser.Id);
         }
         
-        var accessToken = _tokenProvider.GenerateAccessToken(IdentityUserClaimGenerator.Generate(user, request.TenantId));
+        var accessToken = _tokenProvider.GenerateAccessToken(await _identityUserClaimGenerator.GenerateAsync(user, request.TenantId));
         var credential = new AuthCredentialDto()
         {
             AccessToken = accessToken.Value,

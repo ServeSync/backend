@@ -94,6 +94,8 @@ public class Student : AuditableAggregateRoot
         Phone = Guard.NotNullOrEmpty(phone, nameof(Phone));
         HomeTown = homeTown;
         Address = address;
+        
+        AddDomainEvent(new StudentUpdatedDomainEvent(Id));
     }
     
     internal void UpdateEducationInfo(string code, Guid educationProgramId, Guid homeRoomId)
@@ -106,6 +108,8 @@ public class Student : AuditableAggregateRoot
         Code = Guard.NotNullOrEmpty(code, nameof(Code));
         EducationProgramId = Guard.NotNull(educationProgramId, nameof(EducationProgramId));
         HomeRoomId = Guard.NotNull(homeRoomId, nameof(HomeRoomId));
+        
+        AddDomainEvent(new StudentUpdatedDomainEvent(Id));
     }
     
     internal void RegisterEvent(Guid eventRoleId, string? description = null)

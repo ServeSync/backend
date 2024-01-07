@@ -45,7 +45,7 @@ public class GenerateAttendanceQrCodeBackGroundJobHandler : IBackGroundJobHandle
         }
         
         var attendanceUrl = _configuration["Urls:Web:AttendanceUrl"];
-        foreach (var attendance in @event.AttendanceInfos)
+        foreach (var attendance in @event.AttendanceInfos.Where(x => string.IsNullOrEmpty(x.QrCodeUrl)))
         {
             var callBackUrlWithToken = QueryHelpers.AddQueryString(attendanceUrl, new Dictionary<string, string>()
             {

@@ -289,6 +289,11 @@ public class IdentityService : IIdentityService
             {
                 return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityRoleNotFound, $"Role with name {roleName} not found!");
             }
+
+            if (user.Roles.Any(x => x.TenantId == tenantId) && AppRole.All.Contains(roleName))
+            {
+                return IdentityResult<bool>.Failed(IdentityErrorCodes.IdentityDefaultRoleNotAccessible,"Default role can not assign to user");
+            }
             
             user.GrantRole(role.Id, tenantId);
             

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ServeSync.API.Authorization;
 using ServeSync.API.Common.Dtos;
 using ServeSync.API.Common.Enums;
+using ServeSync.Application.Common;
 using ServeSync.Application.Common.Dtos;
 using ServeSync.Application.UseCases.EventManagement.Events.Dtos.Events;
 using ServeSync.Application.UseCases.EventManagement.Events.Queries;
@@ -27,7 +28,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet]
-    [HasPermission(Permissions.Students.Management)]
+    [HasPermission(AppPermissions.Students.Management)]
     [ProducesResponseType(typeof(PagedResultDto<StudentDetailDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllStudentsAsync([FromQuery] StudentFilterRequestDto dto)
     {
@@ -40,7 +41,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPost]
-    [HasPermission(Permissions.Students.Create)]
+    [HasPermission(AppPermissions.Students.Create)]
     [ProducesResponseType(typeof(SimpleIdResponse<Guid>), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateStudentAsync(StudentCreateDto dto)
     {
@@ -53,7 +54,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("import")]
-    [HasPermission(Permissions.Students.Import)]
+    [HasPermission(AppPermissions.Students.Import)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ImportStudentsAsync([FromForm] IFormFile file)
     {
@@ -64,7 +65,7 @@ public class StudentController : ControllerBase
 
     [HttpGet("{id:guid}")]
     [ActionName(nameof(GetStudentByIdAsync))]
-    [HasPermission(Permissions.Students.View)]
+    [HasPermission(AppPermissions.Students.View)]
     [ProducesResponseType(typeof(FlatStudentDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStudentByIdAsync(Guid id)
     {
@@ -73,7 +74,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPut("{id:guid}")]
-    [HasPermission(Permissions.Students.Edit)]
+    [HasPermission(AppPermissions.Students.Edit)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> UpdateStudentByIdAsync(Guid id, StudentUpdateDto dto)
     {
@@ -86,7 +87,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpDelete("{id:guid}")]
-    [HasPermission(Permissions.Students.Delete)]
+    [HasPermission(AppPermissions.Students.Delete)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteStudentByIdAsync(Guid id)
     {
@@ -95,7 +96,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/approve")]
-    [HasPermission(Permissions.Events.ApproveRegistration)]
+    [HasPermission(AppPermissions.Events.ApproveRegistration)]
     [EventAccessControl(EventSourceAccessControl.EventRegister)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ApproveStudentEventRegisterAsync(Guid id, Guid eventRegisterId)
@@ -105,7 +106,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("{id:guid}/event-registers/{eventRegisterId:guid}/reject")]
-    [HasPermission(Permissions.Events.RejectRegistration)]
+    [HasPermission(AppPermissions.Events.RejectRegistration)]
     [EventAccessControl(EventSourceAccessControl.EventRegister)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RejectStudentEventRegisterAsync(Guid id, Guid eventRegisterId, [FromBody] RejectStudentEventRegistrationDto dto)
@@ -115,25 +116,25 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet("{id:guid}/attendance-events")]
-    [HasPermission(Permissions.Students.View)]
+    [HasPermission(AppPermissions.Students.View)]
     [ProducesResponseType(typeof(PagedResultDto<StudentAttendanceEventDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAttendanceEventsOfStudentAsync(Guid id, [FromQuery] PagingRequestDto dto)
+    public async Task<IActionResult> GetAttendanceEventsOfStudentAsync(Guid id, [FromQuery] AttendanceEventFilterRequestDto dto)
     {
-        var events = await _mediator.Send(new GetAllAttendanceEventsOfStudentQuery(id, dto.Page, dto.Size));
+        var events = await _mediator.Send(new GetAllAttendanceEventsOfStudentQuery(id, dto.IsPaging, dto.Page, dto.Size));
         return Ok(events);
     }
     
     [HttpGet("{id:guid}/registered-events")]
-    [HasPermission(Permissions.Students.View)]
+    [HasPermission(AppPermissions.Students.View)]
     [ProducesResponseType(typeof(PagedResultDto<StudentRegisteredEventDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetRegisteredEventsOfStudentAsync(Guid id, [FromQuery] PagingRequestDto dto)
+    public async Task<IActionResult> GetRegisteredEventsOfStudentAsync(Guid id, [FromQuery] RegisteredEventsOfStudentFilterRequestDto dto)
     {
-        var events = await _mediator.Send(new GetAllRegisteredEventsOfStudentQuery(id, dto.Page, dto.Size));
+        var events = await _mediator.Send(new GetAllRegisteredEventsOfStudentQuery(id, dto.Page, dto.Size, dto.Status));
         return Ok(events);
     }
     
     [HttpGet("{id:guid}/education-program")]
-    [HasPermission(Permissions.Students.View)]
+    [HasPermission(AppPermissions.Students.View)]
     [ProducesResponseType(typeof(StudentEducationProgramDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStudentEducationProgramAsync(Guid id)
     {
@@ -142,7 +143,7 @@ public class StudentController : ControllerBase
     }
     
     [HttpPost("{id:guid}/attendance-events/export")]
-    [HasPermission(Permissions.Students.Export)]
+    [HasPermission(AppPermissions.Students.Export)]
     public async Task<IActionResult> ExportStudentAttendanceEventsAsync(Guid id, ExportStudentAttendanceEventsDto dto)
     {
         var byteArray = await _mediator.Send(new ExportStudentAttendanceEventsCommand(id, dto.FromDate, dto.ToDate));

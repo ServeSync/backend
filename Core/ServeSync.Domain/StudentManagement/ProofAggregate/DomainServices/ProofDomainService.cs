@@ -211,9 +211,21 @@ public class ProofDomainService : IProofDomainService
         return proof;
     }
 
-    public Proof ApproveProof(Proof proof)
+    public async Task<Proof> ApproveProofAsync(Proof proof)
     {
         proof.Approve();
+
+        if (proof.ProofType == ProofType.Internal)
+        {
+            var proofs = await _proofRepository.GetProofsByInternalEventAsync(proof.InternalProof!.EventId, proof.StudentId);
+            foreach (var p in proofs)
+            {
+                if (p.Id != proof.Id)
+                {
+                    p.Reject("Đã chấp thuận minh chứng khác!");
+                }
+            }
+        }
 
         return proof;
     }

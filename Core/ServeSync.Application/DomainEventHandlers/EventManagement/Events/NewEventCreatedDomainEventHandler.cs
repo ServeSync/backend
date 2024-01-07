@@ -7,7 +7,7 @@ using ServeSync.Domain.SeedWorks.Events;
 
 namespace ServeSync.Application.DomainEventHandlers.EventManagement.Events;
 
-public class NewEventCreatedDomainEventHandler : IDomainEventHandler<NewEventCreatedDomainEvent>
+public class NewEventCreatedDomainEventHandler : IDomainEventHandler<NewEventAttendanceInfoCreatedDomainEvent>
 {
     private readonly IBackGroundJobManager _backGroundJobManager;
     private readonly ILogger<NewEventCreatedDomainEventHandler> _logger;
@@ -20,16 +20,11 @@ public class NewEventCreatedDomainEventHandler : IDomainEventHandler<NewEventCre
         _logger = logger;
     }
     
-    public Task Handle(NewEventCreatedDomainEvent @event, CancellationToken cancellationToken)
+    public Task Handle(NewEventAttendanceInfoCreatedDomainEvent @event, CancellationToken cancellationToken)
     {
-        GenerateQrCode(@event.Event);
+        var job = new GenerateAttendanceQrCodeBackGroundJob(@event.EventId);
+        _backGroundJobManager.Fire(job);
         
         return Task.CompletedTask;
-    }
-
-    private void GenerateQrCode(Event @event)
-    {
-        var job = new GenerateAttendanceQrCodeBackGroundJob(@event.Id);
-        _backGroundJobManager.Fire(job);
     }
 }

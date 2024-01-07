@@ -222,11 +222,11 @@ public class ExportStudentAttendanceEventsCommandHandler : ICommandHandler<Expor
                     worksheet.Cells[row, 1].Value = stt++;
                     worksheet.Cells[row, 3].Value = @event.Name;
                     worksheet.Cells[row, 4].Value = @event.RepresentativeOrganization.Name;
-                    worksheet.Cells[row, 5].Value = @event.StartAt;
-                    worksheet.Cells[row, 6].Value = @event.EndAt;
+                    worksheet.Cells[row, 5].Value = @event.StartAt.AddHours(7);
+                    worksheet.Cells[row, 6].Value = @event.EndAt.AddHours(7);
                     worksheet.Cells[row, 7].Value = @event.Roles.First(x => x.RegisteredStudents.Any(y => y.StudentId == studentId)).Name;
                     worksheet.Cells[row, 8].Value = @event.Roles.First(x => x.RegisteredStudents.Any(y => y.StudentId == studentId)).Score;
-                    worksheet.Cells[row, 9].Value = @event.AttendanceInfos.SelectMany(x => x.AttendanceStudents).First(x => x.StudentId == studentId).AttendanceAt;
+                    worksheet.Cells[row, 9].Value = @event.AttendanceInfos.SelectMany(x => x.AttendanceStudents).First(x => x.StudentId == studentId).AttendanceAt.AddHours(7);
                     worksheet.Cells[row, 10].Value = "Đã xác nhận tham gia";
                     
                     worksheet.Cells[row, 5].Style.Numberformat.Format = "HH:mm dd/MM/yyyy";
@@ -256,16 +256,16 @@ public class ExportStudentAttendanceEventsCommandHandler : ICommandHandler<Expor
                     };
                     worksheet.Cells[row, 5].Value = proof.ProofType switch 
                     {
-                        ProofType.External => proof.ExternalProof!.StartAt,
-                        ProofType.Internal => proof.InternalProof!.Event!.StartAt,
-                        ProofType.Special => proof.SpecialProof!.StartAt,
+                        ProofType.External => proof.ExternalProof!.StartAt.AddHours(7),
+                        ProofType.Internal => proof.InternalProof!.Event!.StartAt.AddHours(7),
+                        ProofType.Special => proof.SpecialProof!.StartAt.AddHours(7),
                         _ => string.Empty
                     };
                     worksheet.Cells[row, 6].Value = proof.ProofType switch 
                     {
-                        ProofType.External => proof.ExternalProof!.EndAt,
-                        ProofType.Internal => proof.InternalProof!.Event!.EndAt,
-                        ProofType.Special => proof.SpecialProof!.EndAt,
+                        ProofType.External => proof.ExternalProof!.EndAt.AddHours(7),
+                        ProofType.Internal => proof.InternalProof!.Event!.EndAt.AddHours(7),
+                        ProofType.Special => proof.SpecialProof!.EndAt.AddHours(7),
                         _ => string.Empty
                     };
                     worksheet.Cells[row, 7].Value = proof.ProofType switch 
@@ -284,9 +284,9 @@ public class ExportStudentAttendanceEventsCommandHandler : ICommandHandler<Expor
                     };
                     worksheet.Cells[row, 9].Value = proof.ProofType switch 
                     {
-                        ProofType.External => proof.ExternalProof!.AttendanceAt,
-                        ProofType.Internal => proof.InternalProof!.AttendanceAt,
-                        ProofType.Special => proof.SpecialProof!.AttendanceAt,
+                        ProofType.External => proof.ExternalProof!.AttendanceAt.Value. AddHours(7),
+                        ProofType.Internal => proof.InternalProof!.AttendanceAt.Value.AddHours(7),
+                        ProofType.Special => proof.SpecialProof!.AttendanceAt.Value.AddHours(7),
                         _ => string.Empty
                     };
 

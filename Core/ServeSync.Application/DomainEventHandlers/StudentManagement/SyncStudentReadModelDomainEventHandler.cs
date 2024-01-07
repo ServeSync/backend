@@ -6,9 +6,7 @@ using ServeSync.Domain.StudentManagement.StudentAggregate.DomainEvents;
 
 namespace ServeSync.Application.DomainEventHandlers.StudentManagement;
 
-public class SyncStudentReadModelDomainEventHandler : 
-    IPersistedDomainEventHandler<StudentCodeUpdatedDomainEvent>,
-    IPersistedDomainEventHandler<StudentContactInfoUpdatedDomainEvent>
+public class SyncStudentReadModelDomainEventHandler : IPersistedDomainEventHandler<StudentUpdatedDomainEvent>
 {
     private readonly IBackGroundJobManager _backGroundJobManager;
     private ILogger<SyncStudentReadModelDomainEventHandler> _logger;
@@ -21,13 +19,7 @@ public class SyncStudentReadModelDomainEventHandler :
         _logger = logger;
     }
     
-    public Task Handle(StudentCodeUpdatedDomainEvent @event, CancellationToken cancellationToken)
-    {
-        SyncStudentReadModel(@event.Id);
-        return Task.CompletedTask;
-    }
-
-    public Task Handle(StudentContactInfoUpdatedDomainEvent @event, CancellationToken cancellationToken)
+    public Task Handle(StudentUpdatedDomainEvent @event, CancellationToken cancellationToken)
     {
         SyncStudentReadModel(@event.Id);
         return Task.CompletedTask;

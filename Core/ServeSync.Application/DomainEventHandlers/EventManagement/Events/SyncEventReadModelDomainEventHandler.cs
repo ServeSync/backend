@@ -73,9 +73,6 @@ public class SyncEventReadModelDomainEventHandler :
     
     private async Task SyncEventData(Guid id)
     {
-        var job = new SyncEventReadModelBackGroundJob(id);
-        _backGroundJobManager.Fire(job);
-        
         var @event = await _eventQueries.GetEventReadModelByIdAsync(id);
         if (@event != null)
         {
@@ -83,6 +80,12 @@ public class SyncEventReadModelDomainEventHandler :
                 
             _logger.LogInformation("Sync data for event '{EventId}' success", id);
         }
+    }
+    
+    private void DelaySyncEventData(Guid id)
+    {
+        var job = new SyncEventReadModelBackGroundJob(id);
+        _backGroundJobManager.Fire(job);
     }
 
     private async Task SyncEventDataByEventRoleIdAsync(Guid eventRoleId)
